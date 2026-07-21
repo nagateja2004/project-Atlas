@@ -1,0 +1,187 @@
+{
+  "data_classification": "SYNTHETIC EPC DEMO DATA — NOT AN OFFICIAL STANDARD OR REAL PROJECT RECORD",
+  "project_id": "atlas-demo-dc-01",
+  "expected_compliance_findings": [
+    {
+      "finding_id": "CF-UPS-001",
+      "submittal": "submittals/UPS-002_VoltEdge_UPS-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "UPS-A",
+      "finding": "Offered voltage is 415/240 V rather than the required 480/277 V.",
+      "severity": "high",
+      "evidence": [
+        {"document": "submittals/UPS-002_VoltEdge_UPS-A.md", "page": 1, "excerpt": "Voltage: 415/240 V"},
+        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.1", "excerpt": "480/277 V"}
+      ]
+    },
+    {
+      "finding_id": "CF-UPS-002",
+      "submittal": "submittals/UPS-002_VoltEdge_UPS-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "UPS-A",
+      "finding": "Offered battery autonomy is 10 minutes rather than the required minimum 15 minutes at full rated load.",
+      "severity": "high",
+      "evidence": [
+        {"document": "submittals/UPS-002_VoltEdge_UPS-A.md", "page": 1, "excerpt": "Battery: 10 minutes"},
+        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.4", "excerpt": "not less than 15 minutes"}
+      ]
+    },
+    {
+      "finding_id": "CF-CRAC-001",
+      "submittal": "submittals/CRAC-002_ThermalCore_CRAC-1.md",
+      "submittal_page": 1,
+      "equipment_tag": "CRAC-1",
+      "finding": "Offered net sensible cooling capacity is 105 kW rather than the required minimum 120 kW.",
+      "severity": "high",
+      "evidence": [
+        {"document": "submittals/CRAC-002_ThermalCore_CRAC-1.md", "page": 1, "excerpt": "Net sensible capacity: 105 kW"},
+        {"document": "specifications/CRAC_Specification.md", "page": 2, "clause": "2.3.1", "excerpt": "Minimum net sensible cooling capacity: 120 kW"}
+      ]
+    },
+    {
+      "finding_id": "CF-CRAC-002",
+      "submittal": "submittals/CRAC-002_ThermalCore_CRAC-1.md",
+      "submittal_page": 1,
+      "equipment_tag": "CRAC-1",
+      "finding": "Offered front service clearance is 12 inches rather than the required minimum 24 inches.",
+      "severity": "medium",
+      "evidence": [
+        {"document": "submittals/CRAC-002_ThermalCore_CRAC-1.md", "page": 1, "excerpt": "Service clearance: 12 inches"},
+        {"document": "specifications/CRAC_Specification.md", "page": 2, "clause": "2.4.2", "excerpt": "not less than 24 inches"}
+      ]
+    },
+    {
+      "finding_id": "CF-SWGR-001",
+      "submittal": "submittals/SWGR-002_ArcLine_SWGR-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "SWGR-A",
+      "finding": "Offered interrupting rating is 50 kAIC rather than the required minimum 65 kAIC at 480 V.",
+      "severity": "high",
+      "evidence": [
+        {"document": "submittals/SWGR-002_ArcLine_SWGR-A.md", "page": 1, "excerpt": "Interrupting rating: 50 kAIC"},
+        {"document": "specifications/Switchgear_Specification.md", "page": 2, "clause": "2.2.3", "excerpt": "not less than 65 kAIC"}
+      ]
+    },
+    {
+      "finding_id": "CF-SWGR-002",
+      "submittal": "submittals/SWGR-002_ArcLine_SWGR-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "SWGR-A",
+      "finding": "Offered Type 1 indoor enclosure does not meet the project-specific synthetic Type 2B enclosure requirement.",
+      "severity": "high",
+      "evidence": [
+        {"document": "submittals/SWGR-002_ArcLine_SWGR-A.md", "page": 1, "excerpt": "Enclosure: Type 1 indoor enclosure"},
+        {"document": "specifications/Switchgear_Specification.md", "page": 2, "clause": "2.3.4", "excerpt": "arc-resistant Type 2B"}
+      ]
+    }
+  ],
+  "expected_clean_submittals": [
+    "submittals/UPS-001_ApexPower_UPS-A.md",
+    "submittals/CRAC-001_PolarAir_CRAC-1.md",
+    "submittals/SWGR-001_GridPoint_SWGR-A.md"
+  ],
+  "expected_duplicate_rfi_matches": [
+    {
+      "new_rfi": "rfis/RFI-009_UPS_front_access.md",
+      "matching_answered_rfi": "rfis/RFI-003_UPS_bypass_clearance.md",
+      "reason": "Both request the UPS-A front service and bypass maintenance clearance.",
+      "expected_answer": "Maintain 900 mm minimum clear working space at the UPS-A front service face, including the bypass cabinet operating position.",
+      "evidence": [
+        {"document": "rfis/RFI-003_UPS_bypass_clearance.md", "page": 1},
+        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.5"}
+      ]
+    },
+    {
+      "new_rfi": "rfis/RFI-011_louvre_removal_sequence.md",
+      "matching_answered_rfi": "rfis/RFI-005_switchgear_delivery_route.md",
+      "reason": "Both request the east louvre removal and reinstatement sequence for switchgear delivery.",
+      "expected_answer": "Yes. Use the east equipment louvre. Remove its centre bay after the electrical room slab is cured and before the planned switchgear delivery window; reinstate after final section placement.",
+      "evidence": [
+        {"document": "rfis/RFI-005_switchgear_delivery_route.md", "page": 1},
+        {"document": "specifications/Switchgear_Specification.md", "page": 1, "clause": "1.3"}
+      ]
+    }
+  ],
+  "expected_schedule_risks": [
+    {
+      "risk_id": "SR-SWGR-001",
+      "task_id": "T-140",
+      "task_name": "SWGR-A delivery milestone",
+      "analysis_date": "2026-04-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 35,
+      "impact_chain": ["T-140", "T-160", "T-170", "T-180"],
+      "expected_narrative": "Switchgear delivery is forecast 35 days late and delays installation, critical distribution energization, and integrated systems testing on the critical path.",
+      "evidence": [
+        {"document": "schedules/atlas_demo_schedule.csv", "row": "T-140", "excerpt": "forecast_finish=2026-06-24; delay_days=35; risk_flag=critical"},
+        {"document": "meeting_minutes/MM-014_delivery_risk_review.md", "page": 1, "excerpt": "35 calendar days later than the baseline"},
+        {"document": "change_orders/CO-001_switchgear_recovery.md", "page": 1, "excerpt": "No recovery commitment is approved"}
+      ]
+    }
+  ],
+  "expected_answers": [
+    {
+      "question": "What is the minimum UPS-A battery autonomy?",
+      "split": "development",
+      "answer": "The synthetic specification requires not less than 15 minutes at 100 percent rated load at 25 °C.",
+      "supporting_references": [{"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.4"}]
+    },
+    {
+      "question": "Has the UPS front-clearance question been answered before?",
+      "split": "development",
+      "answer": "Yes. RFI-003 answered that UPS-A requires 900 mm minimum clear working space at the front service face, including bypass operation.",
+      "supporting_references": [
+        {"document": "rfis/RFI-003_UPS_bypass_clearance.md", "page": 1},
+        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.5"}
+      ]
+    },
+    {
+      "question": "What controls alarms are required for CRAC-1?",
+      "split": "development",
+      "answer": "Expose condensate alarm, fan status, supply-air temperature, and common alarm to the project controls gateway.",
+      "supporting_references": [
+        {"document": "specifications/CRAC_Specification.md", "page": 2, "clauses": ["2.3.3", "2.4.1"]},
+        {"document": "rfis/RFI-010_CRAC_controls_alarm.md", "page": 1}
+      ]
+    },
+    {
+      "question": "What is the active schedule risk and what is its downstream impact?",
+      "split": "test",
+      "answer": "T-140 SWGR-A delivery is forecast 35 days late, delaying T-160 installation, T-170 critical distribution energization, and T-180 integrated systems test.",
+      "supporting_references": [
+        {"document": "schedules/atlas_demo_schedule.csv", "row": "T-140"},
+        {"document": "meeting_minutes/MM-014_delivery_risk_review.md", "page": 1}
+      ]
+    },
+    {
+      "question": "Is a switchgear delivery recovery measure approved?",
+      "split": "test",
+      "answer": "No. CO-001 is proposed only; it evaluates after-hours access, a route mock-up, and potential expedited freight without approving a recovery commitment.",
+      "supporting_references": [{"document": "change_orders/CO-001_switchgear_recovery.md", "page": 1}]
+    }
+  ],
+  "expected_insufficient_answers": [
+    {
+      "question": "What is the cooling tower paint colour?",
+      "split": "development"
+    },
+    {
+      "question": "What is the generator fuel polishing interval?",
+      "split": "test"
+    }
+  ],
+  "expected_commissioning_evaluation": {
+    "procedure_documents": [
+      "commissioning/UPS_Procedure_Template.md",
+      "commissioning/CRAC_Procedure_Template.md",
+      "commissioning/Switchgear_Procedure_Template.md"
+    ],
+    "failure_case": {
+      "procedure_document": "commissioning/UPS_Procedure_Template.md",
+      "step_text": "15-minute design autonomy",
+      "observation": "Battery autonomy demonstrated for 10 minutes.",
+      "expected_status": "FAIL",
+      "expected_ncr_count": 1
+    }
+  }
+}

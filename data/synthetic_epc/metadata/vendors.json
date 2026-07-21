@@ -1,0 +1,12 @@
+{
+  "data_classification": "SYNTHETIC EPC DEMO DATA",
+  "project_id": "atlas-demo-dc-01",
+  "vendors": [
+    {"vendor_id": "V-APX", "name": "ApexPower Systems", "equipment_category": "UPS", "submittal_id": "SUB-UPS-001", "status": "compliant_control"},
+    {"vendor_id": "V-VE", "name": "VoltEdge Energy", "equipment_category": "UPS", "submittal_id": "SUB-UPS-002", "status": "intentional_deviations"},
+    {"vendor_id": "V-PA", "name": "PolarAir Controls", "equipment_category": "CRAC", "submittal_id": "SUB-CRAC-001", "status": "compliant_control"},
+    {"vendor_id": "V-TC", "name": "ThermalCore Precision", "equipment_category": "CRAC", "submittal_id": "SUB-CRAC-002", "status": "intentional_deviations"},
+    {"vendor_id": "V-GP", "name": "GridPoint Electric", "equipment_category": "Switchgear", "submittal_id": "SUB-SWGR-001", "status": "compliant_control"},
+    {"vendor_id": "V-AL", "name": "ArcLine Distribution", "equipment_category": "Switchgear", "submittal_id": "SUB-SWGR-002", "status": "intentional_deviations"}
+  ]
+}

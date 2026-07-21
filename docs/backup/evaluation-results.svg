@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="Project Atlas measured synthetic evaluation results">
+  <rect width="1920" height="1080" fill="#f5f7fa"/>
+  <rect width="1920" height="170" fill="#0b1f36"/>
+  <text x="110" y="85" fill="#bae6fd" font-family="Arial" font-size="28" font-weight="700" letter-spacing="5">PROJECT ATLAS · SYNTHETIC EVALUATION</text>
+  <text x="110" y="132" fill="white" font-family="Arial" font-size="48" font-weight="700">Measured prototype results</text>
+  <g font-family="Arial"><g fill="white"><rect x="110" y="240" width="520" height="250" rx="20" fill="#ffffff"/><rect x="700" y="240" width="520" height="250" rx="20" fill="#ffffff"/><rect x="1290" y="240" width="520" height="250" rx="20" fill="#ffffff"/><rect x="110" y="560" width="520" height="250" rx="20" fill="#ffffff"/><rect x="700" y="560" width="520" height="250" rx="20" fill="#ffffff"/><rect x="1290" y="560" width="520" height="250" rx="20" fill="#ffffff"/></g>
+  <g fill="#64748b" font-size="22" font-weight="700"><text x="150" y="295">INGESTION</text><text x="740" y="295">COMPLIANCE</text><text x="1330" y="295">RFI INTELLIGENCE</text><text x="150" y="615">CITATIONS</text><text x="740" y="615">SCHEDULE</text><text x="1330" y="615">COMMISSIONING</text></g>
+  <g fill="#172235" font-size="62" font-weight="700"><text x="150" y="390">27 / 27</text><text x="740" y="390">6 / 0 / 0</text><text x="1330" y="390">1.0 @ 5</text><text x="150" y="710">17 / 17</text><text x="740" y="710">35 days</text><text x="1330" y="710">100%</text></g>
+  <g fill="#475569" font-size="24"><text x="150" y="440">Synthetic documents completed</text><text x="740" y="440">TP / FP / FN; precision &amp; recall 1.0</text><text x="1330" y="440">Both expected pairs rank 1</text><text x="150" y="760">Expected citation checks correct</text><text x="740" y="760">Scenario risk lead time; not historical prediction</text><text x="1330" y="760">Seeded UPS procedure coverage</text></g></g>
+  <text x="110" y="965" fill="#64748b" font-family="Arial" font-size="24">Source: python3 scripts/evaluate_synthetic.py · Synthetic data only · No live procurement tracking claimed</text>
+</svg>

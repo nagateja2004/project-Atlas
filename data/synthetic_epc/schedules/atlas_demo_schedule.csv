@@ -1,0 +1,15 @@
+project_id,data_classification,task_id,task_name,depends_on,category,is_delivery_milestone,baseline_start,baseline_finish,forecast_start,forecast_finish,status,risk_flag,delay_days,notes
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-100,Detailed electrical and mechanical design,,Design,false,2026-01-05,2026-01-30,2026-01-05,2026-01-30,complete,on_track,0,Design release complete
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-110,Release switchgear purchase order,T-100,Procurement,false,2026-02-02,2026-02-06,2026-02-02,2026-02-06,complete,on_track,0,Purchase order released
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-120,Switchgear fabrication,T-110,Procurement,false,2026-02-09,2026-05-08,2026-02-09,2026-06-12,in_progress,at_risk,35,Synthetic busbar material shortage
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-130,Switchgear factory acceptance test,T-120,Procurement,false,2026-05-11,2026-05-13,2026-06-15,2026-06-17,not_started,at_risk,35,Forecast from synthetic vendor update
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-140,SWGR-A delivery milestone,T-130,Delivery,true,2026-05-20,2026-05-20,2026-06-24,2026-06-24,not_started,critical,35,Delivery date referenced by MM-014 and CO-001
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-150,Electrical room ready,T-100,Construction,false,2026-05-01,2026-05-22,2026-05-01,2026-05-22,in_progress,on_track,0,Independent room readiness path
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-160,Install SWGR-A,T-140|T-150,Construction,false,2026-05-25,2026-06-03,2026-06-25,2026-07-03,not_started,critical,30,Blocked by delayed delivery
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-170,Energize critical distribution,T-160,Commissioning,false,2026-06-04,2026-06-10,2026-07-06,2026-07-12,not_started,critical,32,Electrical energization critical path
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-180,Integrated systems test,T-170,Commissioning,false,2026-06-11,2026-06-19,2026-07-13,2026-07-21,not_started,critical,32,Final synthetic critical-path successor
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-210,Release UPS purchase order,T-100,Procurement,false,2026-02-02,2026-02-06,2026-02-02,2026-02-06,complete,on_track,0,Independent UPS path
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-220,UPS delivery milestone,T-210,Delivery,true,2026-04-10,2026-04-10,2026-04-10,2026-04-10,complete,on_track,0,UPS delivered
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-230,Install and test UPS-A,T-220|T-150,Commissioning,false,2026-05-25,2026-06-08,2026-05-25,2026-06-08,in_progress,on_track,0,No critical delay
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-310,Release CRAC purchase order,T-100,Procurement,false,2026-02-09,2026-02-13,2026-02-09,2026-02-13,complete,on_track,0,Independent CRAC path
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA,T-320,CRAC delivery milestone,T-310,Delivery,true,2026-04-24,2026-04-24,2026-04-24,2026-04-24,complete,on_track,0,CRAC delivered

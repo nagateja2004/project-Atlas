@@ -1,0 +1,80 @@
+flowchart LR
+    Dashboard["Next.js dashboard"] -->|"project-scoped REST"| API["FastAPI monolith"]
+    API -->|"project_id enforced"| Router["LangGraph intent router"]
+    Isolation["Project isolation<br/>route validation and storage filters"] -.->|"enforced throughout"| API
+
+    Auth["ROADMAP<br/>Authentication and RBAC"] -.-> API
+
+    subgraph Ingestion["Implemented contextual ingestion"]
+        Upload["Upload and validation"] --> Original["Original document storage<br/>project-scoped local filesystem"]
+        Original --> Parse["Structure-aware parsing<br/>PDF, OCR fallback, CSV"]
+        Parse --> Contextual["Parent sections and child chunks<br/>original_text + contextual_text"]
+        Contextual --> Dense["Dense index<br/>contextual embeddings"]
+        Contextual --> BM25["BM25 lexical index/ranking<br/>contextual payloads"]
+    end
+
+    API --> Upload
+    Dense --> Qdrant[("Qdrant<br/>vectors, chunk payloads, parent_id")]
+    BM25 --> Qdrant
+
+    subgraph RAG["Implemented evidence-grounded RAG"]
+        Hybrid["Project-filtered dense + BM25 retrieval"] --> RRF["Weighted RRF and deduplication"]
+        RRF --> Rerank["Reranking and parent expansion"]
+        Rerank --> Gate["Compression and evidence gate<br/>one corrective retry maximum"]
+        Gate --> Generate["Evidence-only answer generation"]
+        Generate --> Verify["Claim and citation verification<br/>exact supporting spans"]
+    end
+
+    Router -->|"knowledge query / RFI search"| Hybrid
+    Qdrant --> Hybrid
+    Verify --> API
+
+    subgraph Deterministic["Implemented deterministic services"]
+        Compliance["Compliance engine<br/>unit normalization and rule comparison"]
+        Schedule["Schedule / CPM engine<br/>float, critical path, delay propagation"]
+        Supply["Synthetic supply-chain simulator<br/>milestones, risks, alternatives"]
+        Commissioning["Commissioning engine<br/>prerequisites, pass/fail, readiness, NCRs"]
+    end
+
+    Router -->|"compliance intent"| Compliance
+    Router -->|"schedule intent"| Schedule
+    Router -->|"procurement intent"| Supply
+    Router -->|"commissioning intent"| Commissioning
+
+    Compliance --> Impact["Impact Chain LangGraph<br/>causal chain and 3 mitigation scenarios"]
+    Schedule --> Impact
+    Supply --> Impact
+    Commissioning --> Impact
+    Impact --> Human["Human decision<br/>approve, reject, review, RFI, NCR"]
+
+    Postgres[("PostgreSQL<br/>metadata, findings, decisions,<br/>records and audit trail")]
+    Compliance --> Postgres
+    Schedule --> Postgres
+    Supply --> Postgres
+    Commissioning --> Postgres
+    Human --> Postgres
+    API <--> Postgres
+
+    Thread["Equipment Digital Thread<br/>project + equipment relationships"]
+    Postgres --> Thread
+    Thread --> API
+
+    Contextual --> Graph["NetworkX prototype graph<br/>in-memory, project-scoped JSON"]
+    Graph --> API
+    ProductionGraph["ROADMAP<br/>Production graph storage"] -.-> Graph
+
+    Eval["Evaluation harness<br/>ground truth, metrics, JSON and Markdown reports"] --> API
+    API --> Observe["Implemented observability<br/>structured logs, stage latency,<br/>candidate IDs, tokens and status"]
+    Observe --> Eval
+
+    Gateway["Gemini gateway<br/>optional extraction, explanation and generation"]
+    Gate -.->|"configured model call"| Gateway
+    Gateway -.-> Generate
+    Compliance -.->|"evidence-backed explanation only"| Gateway
+
+    LiveAIS["ROADMAP<br/>Live AIS and geospatial feeds"] -.-> Supply
+    Vision["ROADMAP<br/>Computer vision"] -.-> Commissioning
+    Enterprise["ROADMAP<br/>ERP / QMS / P6 integrations"] -.-> API
+
+    classDef roadmap fill:#f8fafc,stroke:#64748b,stroke-width:1px,stroke-dasharray:5 5,color:#475569
+    class Auth,ProductionGraph,LiveAIS,Vision,Enterprise roadmap

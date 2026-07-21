@@ -1,0 +1,140 @@
+{
+  "data_classification": "SYNTHETIC SIMULATION DATA — NOT LIVE TRACKING",
+  "shipments": [
+    {
+      "reference": "SYN-SHP-001",
+      "equipment_id": "SWGR-A",
+      "equipment_name": "Main low-voltage switchgear",
+      "equipment_type": "Switchgear",
+      "status": "at_risk",
+      "origin": "Hamburg, Germany",
+      "destination": "Atlas synthetic data-centre site, India",
+      "planned_arrival": "2026-05-20",
+      "forecast_arrival": "2026-06-24",
+      "supplier_tiers": [
+        {"tier": 1, "supplier": "GridPoint Synthetic Systems", "location": "Hamburg, Germany"},
+        {"tier": 2, "supplier": "NordBus Synthetic Works", "location": "Bremen, Germany"},
+        {"tier": 3, "supplier": "EuroCopper Synthetic Metals", "location": "Katowice, Poland"}
+      ],
+      "milestones": [
+        {"name": "Factory acceptance test", "planned_date": "2026-05-13", "forecast_date": "2026-06-17", "status": "forecast_delayed"},
+        {"name": "Site delivery", "planned_date": "2026-05-20", "forecast_date": "2026-06-24", "status": "forecast_delayed"}
+      ],
+      "schedule_task_id": "T-140",
+      "schedule_float_days": 7,
+      "critical_path": true,
+      "risk_events": [
+        {"event_reference": "SYN-EVT-001", "event_type": "material_shortage", "description": "Synthetic busbar material shortage reported by the tier-2 supplier.", "occurred_at": "2026-04-10T08:00:00Z", "alert_generated_at": "2026-04-10T09:30:00Z", "forecast_delay_days": 35}
+      ],
+      "alternatives": [
+        {"name": "Air-freight priority busbar lot", "option_type": "route", "recovery_days": 18, "assumptions": ["Synthetic premium freight capacity is available.", "Factory sequence can accept the recovered material date."]}
+      ]
+    },
+    {
+      "reference": "SYN-SHP-002",
+      "equipment_id": "UPS-A",
+      "equipment_name": "UPS system A",
+      "equipment_type": "UPS",
+      "status": "delivered",
+      "origin": "Singapore",
+      "destination": "Atlas synthetic data-centre site, India",
+      "planned_arrival": "2026-04-10",
+      "forecast_arrival": "2026-04-10",
+      "supplier_tiers": [
+        {"tier": 1, "supplier": "ApexPower Synthetic", "location": "Singapore"},
+        {"tier": 2, "supplier": "CellCore Synthetic", "location": "Penang, Malaysia"},
+        {"tier": 3, "supplier": "LithiumSource Synthetic", "location": "Perth, Australia"}
+      ],
+      "milestones": [
+        {"name": "Factory release", "planned_date": "2026-03-25", "forecast_date": "2026-03-25", "status": "complete"},
+        {"name": "Site delivery", "planned_date": "2026-04-10", "forecast_date": "2026-04-10", "status": "complete"}
+      ],
+      "schedule_task_id": "T-220",
+      "schedule_float_days": 56,
+      "critical_path": false,
+      "risk_events": [],
+      "alternatives": []
+    },
+    {
+      "reference": "SYN-SHP-003",
+      "equipment_id": "CRAC-1",
+      "equipment_name": "Computer-room air-conditioning unit 1",
+      "equipment_type": "CRAC",
+      "status": "delivered",
+      "origin": "Osaka, Japan",
+      "destination": "Atlas synthetic data-centre site, India",
+      "planned_arrival": "2026-04-24",
+      "forecast_arrival": "2026-04-24",
+      "supplier_tiers": [
+        {"tier": 1, "supplier": "PolarAir Synthetic", "location": "Osaka, Japan"},
+        {"tier": 2, "supplier": "FanDrive Synthetic", "location": "Nagoya, Japan"},
+        {"tier": 3, "supplier": "CoilMetal Synthetic", "location": "Busan, South Korea"}
+      ],
+      "milestones": [
+        {"name": "Export release", "planned_date": "2026-04-08", "forecast_date": "2026-04-08", "status": "complete"},
+        {"name": "Site delivery", "planned_date": "2026-04-24", "forecast_date": "2026-04-24", "status": "complete"}
+      ],
+      "schedule_task_id": "T-320",
+      "schedule_float_days": 56,
+      "critical_path": false,
+      "risk_events": [],
+      "alternatives": []
+    },
+    {
+      "reference": "SYN-SHP-004",
+      "equipment_id": "GEN-A",
+      "equipment_name": "Emergency generator A",
+      "equipment_type": "Generator",
+      "status": "at_risk",
+      "origin": "Pune, India",
+      "destination": "Atlas synthetic data-centre site, India",
+      "planned_arrival": "2026-05-28",
+      "forecast_arrival": "2026-06-09",
+      "supplier_tiers": [
+        {"tier": 1, "supplier": "PrimeGen Synthetic", "location": "Pune, India"},
+        {"tier": 2, "supplier": "AltDrive Synthetic", "location": "Chennai, India"},
+        {"tier": 3, "supplier": "SteelBase Synthetic", "location": "Jamshedpur, India"}
+      ],
+      "milestones": [
+        {"name": "Load-bank test", "planned_date": "2026-05-18", "forecast_date": "2026-05-30", "status": "forecast_delayed"},
+        {"name": "Site delivery", "planned_date": "2026-05-28", "forecast_date": "2026-06-09", "status": "forecast_delayed"}
+      ],
+      "schedule_task_id": "T-170",
+      "schedule_float_days": 1,
+      "critical_path": true,
+      "risk_events": [
+        {"event_reference": "SYN-EVT-002", "event_type": "test_slot_missed", "description": "Synthetic load-bank test slot moved by the supplier.", "occurred_at": "2026-04-12T10:00:00Z", "alert_generated_at": "2026-04-12T10:20:00Z", "forecast_delay_days": 12}
+      ],
+      "alternatives": [
+        {"name": "Regional certified load-bank facility", "option_type": "supplier", "recovery_days": 7, "assumptions": ["Synthetic alternate facility has an open slot.", "Witness approval is granted before dispatch."]}
+      ]
+    },
+    {
+      "reference": "SYN-SHP-005",
+      "equipment_id": "CT-A",
+      "equipment_name": "Cooling tower A",
+      "equipment_type": "Cooling tower",
+      "status": "in_transit_simulation",
+      "origin": "Ahmedabad, India",
+      "destination": "Atlas synthetic data-centre site, India",
+      "planned_arrival": "2026-05-15",
+      "forecast_arrival": "2026-05-18",
+      "supplier_tiers": [
+        {"tier": 1, "supplier": "ThermalFlow Synthetic", "location": "Ahmedabad, India"},
+        {"tier": 2, "supplier": "BladeWorks Synthetic", "location": "Vadodara, India"},
+        {"tier": 3, "supplier": "PolymerFill Synthetic", "location": "Surat, India"}
+      ],
+      "milestones": [
+        {"name": "Dispatch", "planned_date": "2026-05-10", "forecast_date": "2026-05-13", "status": "simulated_delay"},
+        {"name": "Site delivery", "planned_date": "2026-05-15", "forecast_date": "2026-05-18", "status": "simulated_delay"}
+      ],
+      "schedule_task_id": "T-180",
+      "schedule_float_days": 0,
+      "critical_path": true,
+      "risk_events": [],
+      "alternatives": [
+        {"name": "Direct synthetic road route", "option_type": "route", "recovery_days": 3, "assumptions": ["Synthetic road permits are available."]}
+      ]
+    }
+  ]
+}

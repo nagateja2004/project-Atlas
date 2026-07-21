@@ -1,0 +1,4 @@
+id,category,specification,submittal,expected_findings,question,expected_references,expect_insufficient
+compliance-ups-deviation,compliance,UPS_Specification.md,UPS-002_VoltEdge_UPS-A.md,"[{""parameter"":""voltage"",""status"":""NON_COMPLIANT"",""clause"":""2.2.1""},{""parameter"":""battery_autonomy"",""status"":""NON_COMPLIANT"",""clause"":""2.2.4""}]",,[],false
+rag-ups-autonomy,rag,,,[],What is the minimum UPS-A battery autonomy?,"[{""document"":""UPS_Specification.md"",""page"":2}]",false
+rag-insufficient-generator,rag,,,[],What is the approved generator fuel-tank capacity?,[],true

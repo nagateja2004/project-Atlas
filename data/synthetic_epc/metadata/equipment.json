@@ -1,0 +1,9 @@
+{
+  "data_classification": "SYNTHETIC EPC DEMO DATA",
+  "project_id": "atlas-demo-dc-01",
+  "equipment": [
+    {"equipment_id": "EQ-UPS-A", "tag": "UPS-A", "category": "UPS", "specification_id": "SPEC-UPS-001", "selected_vendor_id": "V-APX", "selected_model": "APX-M100", "location": "Electrical Room ER-01"},
+    {"equipment_id": "EQ-CRAC-1", "tag": "CRAC-1", "category": "CRAC", "specification_id": "SPEC-CRAC-001", "selected_vendor_id": "V-PA", "selected_model": "PA-DF120", "location": "Data Hall DH-01"},
+    {"equipment_id": "EQ-SWGR-A", "tag": "SWGR-A", "category": "Switchgear", "specification_id": "SPEC-SWGR-001", "selected_vendor_id": "V-GP", "selected_model": "GP-MTM-4000", "location": "Electrical Room ER-01"}
+  ]
+}

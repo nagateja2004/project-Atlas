@@ -1,0 +1,33 @@
+{
+  "name": "synthetic_small",
+  "data_classification": "SYNTHETIC EPC EVALUATION DATA — NOT PROJECT OR STANDARDS DATA",
+  "synthetic_data": true,
+  "cases": [
+    {
+      "id": "compliance-ups-deviation",
+      "category": "compliance",
+      "specification": "UPS_Specification.md",
+      "submittal": "UPS-002_VoltEdge_UPS-A.md",
+      "expected_findings": [
+        {"parameter": "voltage", "status": "NON_COMPLIANT", "clause": "2.2.1"},
+        {"parameter": "battery_autonomy", "status": "NON_COMPLIANT", "clause": "2.2.4"}
+      ]
+    },
+    {
+      "id": "rag-ups-autonomy",
+      "category": "rag",
+      "question": "What is the minimum UPS-A battery autonomy?",
+      "expected_references": [
+        {"document": "UPS_Specification.md", "page": 2}
+      ],
+      "expect_insufficient": false
+    },
+    {
+      "id": "rag-insufficient-generator",
+      "category": "rag",
+      "question": "What is the approved generator fuel-tank capacity?",
+      "expected_references": [],
+      "expect_insufficient": true
+    }
+  ]
+}

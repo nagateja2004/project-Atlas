@@ -1,0 +1,84 @@
+{
+  "commissioning": {
+    "actual_ncrs": 1,
+    "automatically_evaluated_steps": 21,
+    "automation_coverage": 1.0,
+    "completion_coverage": 1.0,
+    "expected_ncrs": 1,
+    "ncr_correctness": true,
+    "total_steps": 21
+  },
+  "compliance": {
+    "f1": 1.0,
+    "false_negative": 0,
+    "false_positive": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "true_negative": 6,
+    "true_positive": 6
+  },
+  "manual_effort": {
+    "atlas_hours": null,
+    "hours_saved": null,
+    "manual_hours": null,
+    "measurement_count": 0,
+    "note": "Add measured manual_hours, atlas_hours, and sample_count values before claiming hours saved.",
+    "status": "NOT_MEASURED"
+  },
+  "rag": {
+    "advanced": {
+      "average_input_tokens": 94.0,
+      "average_latency_ms": 21.62,
+      "average_output_tokens": 10.0,
+      "citation_precision": 0.0,
+      "correct_document_rate": 0.0,
+      "correct_page_rate": 0.0,
+      "mrr": 1.0,
+      "recall_at_12": 1.0,
+      "recall_at_5": 0.75,
+      "unsupported_claim_rate": 0.0
+    },
+    "baseline": {
+      "average_input_tokens": 413.33,
+      "average_latency_ms": 1.35,
+      "average_output_tokens": 227.33,
+      "citation_precision": 0.8333,
+      "correct_document_rate": 1.0,
+      "correct_page_rate": 1.0,
+      "mrr": 1.0,
+      "recall_at_12": 0.75,
+      "recall_at_5": 0.75,
+      "unsupported_claim_rate": 0.0
+    }
+  },
+  "schedule": {
+    "cases": [
+      {
+        "absolute_prediction_error_days": 0,
+        "actual_or_simulated_delay_days": 35,
+        "lead_time_days": 35,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 0,
+        "schedule_csv_reported_delay_days": 35,
+        "task_id": "T-140"
+      }
+    ],
+    "mean_absolute_prediction_error_days": 0.0,
+    "mean_actual_or_simulated_delay_days": 35.0,
+    "mean_lead_time_days": 35.0,
+    "mean_predicted_delay_days": 35.0,
+    "mean_prediction_error_days": 0.0
+  },
+  "supply_chain": {
+    "alternative_generation_success": 1.0,
+    "alternatives_generated": 3,
+    "expected_shipments": 5,
+    "mean_alert_latency_minutes": 55.0,
+    "mean_supplier_tiers_per_shipment": 3.0,
+    "representation_rate": 1.0,
+    "risk_events_with_alert_latency": 2,
+    "risky_shipments": 3,
+    "shipments_represented": 5,
+    "supplier_tiers_total": 15
+  }
+}

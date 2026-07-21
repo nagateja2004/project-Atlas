@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+html { background: #f5f7fa; }
+body { margin: 0; color: #172235; font-family: Arial, Helvetica, sans-serif; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.mesh { background-image: linear-gradient(125deg, rgba(11,31,54,.04) 25%, transparent 25%), linear-gradient(305deg, rgba(11,31,54,.04) 25%, transparent 25%); background-size: 28px 28px; }
+.graph-node { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; }
+.demo-panel { border-radius: .75rem; }
+
+@media (min-width: 1280px) and (min-height: 760px) {
+  main > div { height: calc(100vh - 69px); overflow: hidden; }
+  main > div > section { max-height: calc(100vh - 117px); overflow: auto; }
+}
