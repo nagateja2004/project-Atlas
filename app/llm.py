@@ -1,5 +1,6 @@
 from google import genai
 from google.genai import errors
+import httpx
 
 from app.config import Settings
 from app.ingestion import IngestionError
@@ -23,6 +24,6 @@ class GeminiGateway:
                 ),
                 config={"temperature": 0, **({"response_mime_type": "application/json"} if json_output else {})},
             )
-        except errors.APIError as exc:
+        except (errors.APIError, httpx.HTTPError, OSError, TimeoutError) as exc:
             raise IngestionError("model_gateway_error", "AI provider request failed", 502) from exc
         return (response.text or "").strip()
