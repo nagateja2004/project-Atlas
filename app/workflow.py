@@ -984,7 +984,8 @@ def _evidence_fallback(context: ContextBundle) -> AnswerResult:
     citations: list[AnswerCitation] = []
     for index, chunk in enumerate(context.chunks[:3], start=1):
         citation_id = f"C{index}"
-        span = (chunk.evidence_spans or _fallback_spans(chunk.text))[0]
+        source_span = (chunk.evidence_spans or _fallback_spans(chunk.text))[0]
+        span = SupportingSpan(text=source_span.text, start=source_span.start, end=source_span.end)
         claims.append(AnswerClaim(text=span.text, type="fact", citation_ids=[citation_id]))
         citations.append(
             AnswerCitation(
