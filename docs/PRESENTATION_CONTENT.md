@@ -15,7 +15,7 @@
 ## 3. Architecture
 
 - Next.js dashboard → FastAPI monolith → PostgreSQL, Qdrant, NetworkX JSON.
-- PyMuPDF/CSV extraction, conditional OCR fallback, local deterministic embeddings, Gemini for optional generation, LangGraph for Knowledge/RFI.
+- PyMuPDF/CSV extraction, conditional OCR fallback, sentence-transformer semantic embeddings, Groq for optional generation, LangGraph for Knowledge/RFI.
 - Source: `docs/ARCHITECTURE.mermaid`.
 
 ## 4. Evidence in, citations out

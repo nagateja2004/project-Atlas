@@ -1,0 +1,259 @@
+{
+  "data_classification": "SYNTHETIC EPC DEMO DATA",
+  "project_id": "atlas-demo-dc-02",
+  "disclaimer": "Synthetic shipment simulation. No live carrier, AIS, or ERP data is represented.",
+  "shipments": [
+    {
+      "shipment_id": "SHP-2001",
+      "reference": "GEN-A-FRT-001",
+      "equipment_id": "GEN-A",
+      "status": "on_schedule",
+      "origin": "Synthetic Port of Origin",
+      "destination": "Atlas Demo Data Hall",
+      "planned_arrival": "2026-08-10",
+      "forecast_arrival": "2026-08-10",
+      "lead_time_days": 210,
+      "delay_days": 0,
+      "supplier_tiers": [
+        {
+          "tier": 1,
+          "supplier": "TitanGen Power Systems",
+          "location": "Synthetic Tier 1 Site"
+        },
+        {
+          "tier": 2,
+          "supplier": "Generator Castings (fictional)",
+          "location": "Synthetic Tier 2 Site"
+        }
+      ],
+      "milestones": [
+        {
+          "name": "Fabrication complete",
+          "planned_date": "2026-07-24",
+          "forecast_date": "2026-07-24",
+          "status": "on_track"
+        },
+        {
+          "name": "Port departure",
+          "planned_date": "2026-07-29",
+          "forecast_date": "2026-07-29",
+          "status": "on_track"
+        }
+      ],
+      "schedule_task_id": "T-280",
+      "synthetic_simulation": true,
+      "live_tracking": false,
+      "live_position": null
+    },
+    {
+      "shipment_id": "SHP-2002",
+      "reference": "CH-A-FRT-002",
+      "equipment_id": "CH-A",
+      "status": "in_transit",
+      "origin": "Synthetic Port of Origin",
+      "destination": "Atlas Demo Data Hall",
+      "planned_arrival": "2026-06-17",
+      "forecast_arrival": "2026-07-15",
+      "lead_time_days": 168,
+      "delay_days": 28,
+      "supplier_tiers": [
+        {
+          "tier": 1,
+          "supplier": "CryoLine Thermal",
+          "location": "Synthetic Tier 1 Site"
+        },
+        {
+          "tier": 2,
+          "supplier": "Chiller Castings (fictional)",
+          "location": "Synthetic Tier 2 Site"
+        }
+      ],
+      "milestones": [
+        {
+          "name": "Fabrication complete",
+          "planned_date": "2026-06-05",
+          "forecast_date": "2026-07-03",
+          "status": "at_risk"
+        },
+        {
+          "name": "Port departure",
+          "planned_date": "2026-06-10",
+          "forecast_date": "2026-07-08",
+          "status": "at_risk"
+        }
+      ],
+      "schedule_task_id": "T-240",
+      "synthetic_simulation": true,
+      "live_tracking": false,
+      "live_position": null
+    },
+    {
+      "shipment_id": "SHP-2003",
+      "reference": "PDU-A-FRT-003",
+      "equipment_id": "PDU-A",
+      "status": "on_schedule",
+      "origin": "Synthetic Port of Origin",
+      "destination": "Atlas Demo Data Hall",
+      "planned_arrival": "2026-08-10",
+      "forecast_arrival": "2026-08-10",
+      "lead_time_days": 120,
+      "delay_days": 0,
+      "supplier_tiers": [
+        {
+          "tier": 1,
+          "supplier": "VoltHub Distribution",
+          "location": "Synthetic Tier 1 Site"
+        },
+        {
+          "tier": 2,
+          "supplier": "PDU Castings (fictional)",
+          "location": "Synthetic Tier 2 Site"
+        }
+      ],
+      "milestones": [
+        {
+          "name": "Fabrication complete",
+          "planned_date": "2026-07-24",
+          "forecast_date": "2026-07-24",
+          "status": "on_track"
+        },
+        {
+          "name": "Port departure",
+          "planned_date": "2026-07-29",
+          "forecast_date": "2026-07-29",
+          "status": "on_track"
+        }
+      ],
+      "schedule_task_id": "T-280",
+      "synthetic_simulation": true,
+      "live_tracking": false,
+      "live_position": null
+    },
+    {
+      "shipment_id": "SHP-2004",
+      "reference": "XFMR-A-FRT-004",
+      "equipment_id": "XFMR-A",
+      "status": "on_schedule",
+      "origin": "Synthetic Port of Origin",
+      "destination": "Atlas Demo Data Hall",
+      "planned_arrival": "2026-08-10",
+      "forecast_arrival": "2026-08-10",
+      "lead_time_days": 196,
+      "delay_days": 0,
+      "supplier_tiers": [
+        {
+          "tier": 1,
+          "supplier": "MagnaCore Transformers",
+          "location": "Synthetic Tier 1 Site"
+        },
+        {
+          "tier": 2,
+          "supplier": "Transformer Castings (fictional)",
+          "location": "Synthetic Tier 2 Site"
+        }
+      ],
+      "milestones": [
+        {
+          "name": "Fabrication complete",
+          "planned_date": "2026-07-24",
+          "forecast_date": "2026-07-24",
+          "status": "on_track"
+        },
+        {
+          "name": "Port departure",
+          "planned_date": "2026-07-29",
+          "forecast_date": "2026-07-29",
+          "status": "on_track"
+        }
+      ],
+      "schedule_task_id": "T-280",
+      "synthetic_simulation": true,
+      "live_tracking": false,
+      "live_position": null
+    },
+    {
+      "shipment_id": "SHP-2005",
+      "reference": "FS-A-FRT-005",
+      "equipment_id": "FS-A",
+      "status": "on_schedule",
+      "origin": "Synthetic Port of Origin",
+      "destination": "Atlas Demo Data Hall",
+      "planned_arrival": "2026-08-10",
+      "forecast_arrival": "2026-08-10",
+      "lead_time_days": 98,
+      "delay_days": 0,
+      "supplier_tiers": [
+        {
+          "tier": 1,
+          "supplier": "SafeGuard Suppression",
+          "location": "Synthetic Tier 1 Site"
+        },
+        {
+          "tier": 2,
+          "supplier": "FireSuppression Castings (fictional)",
+          "location": "Synthetic Tier 2 Site"
+        }
+      ],
+      "milestones": [
+        {
+          "name": "Fabrication complete",
+          "planned_date": "2026-07-24",
+          "forecast_date": "2026-07-24",
+          "status": "on_track"
+        },
+        {
+          "name": "Port departure",
+          "planned_date": "2026-07-29",
+          "forecast_date": "2026-07-29",
+          "status": "on_track"
+        }
+      ],
+      "schedule_task_id": "T-280",
+      "synthetic_simulation": true,
+      "live_tracking": false,
+      "live_position": null
+    },
+    {
+      "shipment_id": "SHP-2006",
+      "reference": "BMS-A-FRT-006",
+      "equipment_id": "BMS-A",
+      "status": "on_schedule",
+      "origin": "Synthetic Port of Origin",
+      "destination": "Atlas Demo Data Hall",
+      "planned_arrival": "2026-08-10",
+      "forecast_arrival": "2026-08-10",
+      "lead_time_days": 84,
+      "delay_days": 0,
+      "supplier_tiers": [
+        {
+          "tier": 1,
+          "supplier": "NexusControls Integration",
+          "location": "Synthetic Tier 1 Site"
+        },
+        {
+          "tier": 2,
+          "supplier": "BMS Castings (fictional)",
+          "location": "Synthetic Tier 2 Site"
+        }
+      ],
+      "milestones": [
+        {
+          "name": "Fabrication complete",
+          "planned_date": "2026-07-24",
+          "forecast_date": "2026-07-24",
+          "status": "on_track"
+        },
+        {
+          "name": "Port departure",
+          "planned_date": "2026-07-29",
+          "forecast_date": "2026-07-29",
+          "status": "on_track"
+        }
+      ],
+      "schedule_task_id": "T-280",
+      "synthetic_simulation": true,
+      "live_tracking": false,
+      "live_position": null
+    }
+  ]
+}

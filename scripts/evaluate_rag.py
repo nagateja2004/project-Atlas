@@ -17,7 +17,7 @@ from qdrant_client import AsyncQdrantClient, models
 from app.config import Settings
 from app.context import ContextBundle, ContextChunk, EvidenceSpan, LexicalReranker, PostRetrievalProcessor
 from app.ingestion import (
-    LocalHashEmbedder,
+    build_embedder,
     RetrievalResult,
     _payload,
     _retrieval_result,
@@ -108,7 +108,7 @@ async def build_index(
     *,
     contextual: bool = True,
 ):
-    embedder = LocalHashEmbedder(settings)
+    embedder = build_embedder(settings)
     catalog: dict[str, tuple[str, int]] = {}
     for document_type, path in sources():
         document_id = uuid.uuid5(project_id, path.name)
@@ -199,6 +199,7 @@ def reciprocal_rank(ranking: list[tuple[str, int]], expected: set[tuple[str, int
 def summarize(rows: list[dict[str, Any]]) -> dict[str, float]:
     positives = [row for row in rows if row["expected"]]
     cited = sum(row["citation_count"] for row in positives)
+    distinct_cited = sum(row["distinct_citation_count"] for row in positives)
     expected = sum(len(row["expected"]) for row in positives)
     claims = sum(row["claim_count"] for row in rows)
     return {
@@ -207,7 +208,19 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, float]:
         "mrr": round(fmean(row["mrr"] for row in positives), 4),
         "correct_document_rate": round(fmean(row["correct_document"] for row in positives), 4),
         "correct_page_rate": round(fmean(row["correct_page"] for row in positives), 4),
-        "citation_precision": round(sum(row["correct_citations"] for row in positives) / max(cited, 1), 4),
+        # Precision over DISTINCT cited references. Counting every citation
+        # separately rewarded redundancy: the responder emits three citations,
+        # and dense retrieval frequently returns three near-duplicate chunks
+        # from one page, which scored 3/3 while a pipeline that diversified its
+        # evidence across the right page plus two others scored 1/3. That made
+        # the metric a measure of how repetitive the top-3 was, not how well
+        # the evidence was chosen. The set-based definition is the standard one.
+        "citation_precision": round(
+            sum(row["distinct_correct_citations"] for row in positives) / max(distinct_cited, 1), 4
+        ),
+        "citation_precision_per_citation": round(
+            sum(row["correct_citations"] for row in positives) / max(cited, 1), 4
+        ),
         "citation_completeness": round(sum(row["covered_references"] for row in positives) / max(expected, 1), 4),
         "unsupported_claim_rate": round(sum(row["unsupported_claims"] for row in rows) / max(claims, 1), 4),
         "insufficient_evidence_accuracy": round(fmean(row["insufficient_correct"] for row in rows), 4),
@@ -240,7 +253,10 @@ def score_row(case: Case, ranking, answer: AnswerResult, input_tokens, retry_cou
         "correct_document": bool(cited_documents & expected_documents),
         "correct_page": bool(set(citation_pairs) & expected),
         "citation_count": len(citation_pairs),
+        "distinct_citation_count": len(set(citation_pairs)),
+        "cited": sorted(set(citation_pairs)),
         "correct_citations": sum(item in expected for item in citation_pairs),
+        "distinct_correct_citations": len(set(citation_pairs) & expected),
         "covered_references": len(set(citation_pairs) & expected),
         "claim_count": len(answer.claims),
         "unsupported_claims": unsupported,
@@ -334,9 +350,20 @@ async def tune(base, development, client, embedder, project_id, catalog):
                 update[name] = value
             report = await evaluate_advanced(development, client, embedder, base.model_copy(update=update), project_id, catalog)
             metrics = report["metrics"]
+            # The tiebreaker used to be measured wall-clock latency, and the
+            # quality terms above it tie on almost every trial - several
+            # candidates score identically on all four. That handed the choice
+            # of hyperparameters to whichever trial happened to run fastest on
+            # the machine that day, so two runs of the same script selected
+            # different parameters and reported different test numbers. Cost is
+            # still worth preferring, but it has to be measured with something
+            # that does not move: prompt size is the real cost driver and is a
+            # function of the pipeline, not the host. With every term
+            # deterministic, `max` keeps the first candidate on an exact tie, so
+            # the search is reproducible.
             rank = (
                 metrics["recall_at_5"], metrics["mrr"], metrics["citation_completeness"],
-                metrics["insufficient_evidence_accuracy"], -metrics["average_latency_ms"],
+                metrics["insufficient_evidence_accuracy"], -metrics["average_input_tokens"],
             )
             options.append((rank, update, metrics))
             trials.append({"parameter": name, "value": value, "metrics": metrics})
@@ -380,8 +407,15 @@ def markdown(report: dict[str, Any]) -> str:
 
 async def evaluate(output_dir: Path) -> dict[str, Any]:
     project_id = uuid.uuid5(uuid.NAMESPACE_DNS, "atlas-rag-evaluation")
+    # Defaults to the deterministic hash backend so the committed numbers stay
+    # reproducible offline. Set ATLAS_EMBEDDING_BACKEND=sentence_transformer to
+    # measure real semantic retrieval; dimensions follow the chosen backend.
+    configured = Settings()
+    semantic = configured.embedding_backend == "sentence_transformer"
     settings = Settings(
-        embedding_dimensions=128,
+        embedding_backend=configured.embedding_backend,
+        embedding_model=configured.embedding_model,
+        embedding_dimensions=configured.embedding_dimensions if semantic else 128,
         qdrant_collection="atlas_rag_evaluation",
         context_min_chunks=1,
     )
@@ -435,6 +469,9 @@ async def evaluate(output_dir: Path) -> dict[str, Any]:
                 "baseline": "dense retrieval top 5, then deterministic extractive generation",
                 "advanced": "QueryPlan, hybrid retrieval, weighted RRF, lexical rerank, parent expansion, compression, evidence gate, grounded extractive generation, verification",
                 "judge": "exact document/page/span checks; no LLM judge",
+                "tuning_tiebreak": "average input tokens; wall-clock latency is not used to select parameters because it is not reproducible",
+                "citation_precision": "distinct cited (document, page) pairs that appear in the labelled references, over all distinct pairs cited; scored only on questions that have labelled references",
+                "citation_precision_per_citation": "the same ratio counting duplicate citations separately; reported alongside because it rewards redundant evidence and is the weaker definition",
                 "token_counting": "ceil(character count / 4), reported as estimated tokens",
                 "development_cases": len(development),
                 "test_cases": len(test),

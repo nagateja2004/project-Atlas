@@ -44,7 +44,18 @@ def test_synthetic_shipments_alert_latency_schedule_links_and_alternatives(tmp_p
             assert risk["schedule_float_consumed_days"] == 7
             assert risk["critical_path_impact_days"] == 28
             assert risk["severity"] == "critical"
-            assert risk["alert_latency_minutes"] == 90
+            # The switchgear disruption is recorded as the sequence it actually
+            # was - a tier-3 copper allocation signal on 2026-03-27, the tier-2
+            # busbar shortage on 04-10, then the tier-1 factory test reslot on
+            # 04-14 - so the reported latency is the most recent event's, not
+            # the only event's. The early tier-3 signal is the one the feature
+            # exists to surface.
+            assert [item["event_type"] for item in risk["risk_events"]] == [
+                "tier3_material_allocation",
+                "material_shortage",
+                "tier1_test_slot_moved",
+            ]
+            assert risk["alert_latency_minutes"] == 40
             assert risk["alternative_option"]["recovery_days"] == 18
 
             event = client.post(
@@ -77,7 +88,8 @@ def test_synthetic_shipments_alert_latency_schedule_links_and_alternatives(tmp_p
                 f"/projects/{project_id}/supply-chain/shipments/{switchgear['shipment_id']}/risk"
             ).json()
             assert restored_risk["forecast_delay_days"] == 35
-            assert restored_risk["alert_latency_minutes"] == 90
+            assert restored_risk["alert_latency_minutes"] == 40
+            assert len(restored_risk["risk_events"]) == 3
 
             assert len(client.post(f"/projects/{project_id}/supply-chain/seed").json()["shipments"]) == 5
             other = client.post("/projects", json={"name": "Other project"}).json()

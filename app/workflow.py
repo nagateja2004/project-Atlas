@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import re
 import uuid
 from time import perf_counter
@@ -20,7 +21,14 @@ from app.ingestion import (
     retrieve_chunks,
     retrieve_parent_chunks,
 )
-from app.llm import GeminiGateway
+from app.llm import LLMGateway
+
+logger = logging.getLogger("atlas.workflow")
+
+# Minimum fused retrieval score for a chunk to count as evidence. Shared by
+# the graph's rrf node and the direct context_bundle path so the two cannot
+# drift apart again.
+MIN_EVIDENCE_SCORE = 0.05
 
 
 class WorkflowState(TypedDict):
@@ -75,9 +83,9 @@ class Planner(Protocol):
     async def plan(self, project_id: uuid.UUID, query: str, history: list[ConversationMessage]) -> QueryPlan: ...
 
 
-class GeminiQueryPlanner:
-    def __init__(self, settings: Settings, gateway: GeminiGateway | None = None) -> None:
-        self.gateway = gateway or GeminiGateway(settings)
+class LLMQueryPlanner:
+    def __init__(self, settings: Settings, gateway: LLMGateway | None = None) -> None:
+        self.gateway = gateway or LLMGateway(settings)
 
     async def plan(self, project_id: uuid.UUID, query: str, history: list[ConversationMessage]) -> QueryPlan:
         fallback = _local_query_plan(project_id, query, history)
@@ -98,7 +106,26 @@ class GeminiQueryPlanner:
                 json_output=True,
             )
             plan = QueryPlan.model_validate_json(raw)
-        except (IngestionError, ValidationError, ValueError, json.JSONDecodeError):
+            if (
+                plan.intent == "commissioning_query"
+                and plan.document_types == ["specification"]
+            ):
+                plan = plan.model_copy(
+                    update={
+                        "document_types": ["commissioning_record"]
+                    }
+                )
+            logger.debug("planner_intent intent=%s raw_chars=%d", plan.intent, len(raw))
+        except (ValidationError, ValueError, json.JSONDecodeError):
+            logger.debug("planner_fallback reason=invalid_plan_payload")
+            return fallback
+        except IngestionError as exc:
+            # A provider outage, rate limit or timeout must not take retrieval
+            # down: planning is the only LLM step in the path, and the
+            # deterministic plan is a complete substitute. Generation keeps
+            # surfacing the failure, because answering without the model would
+            # mean returning an uncited answer.
+            logger.warning("planner_fallback reason=%s", exc.code)
             return fallback
         return _sanitize_query_plan(plan, project_id, query, history, fallback)
 
@@ -111,25 +138,73 @@ def _planner_context(history: list[ConversationMessage]) -> dict[str, object]:
         "latest_messages": [message.model_dump() for message in recent],
     }
 
+def _local_query_plan(
+    project_id: uuid.UUID,
+    query: str,
+    history: list[ConversationMessage],
+) -> QueryPlan:
+    recent_user = next(
+        (message.content for message in reversed(history) if message.role == "user"),
+        "",
+    )
 
-def _local_query_plan(project_id: uuid.UUID, query: str, history: list[ConversationMessage]) -> QueryPlan:
-    recent_user = next((message.content for message in reversed(history) if message.role == "user"), "")
-    follow_up = bool(re.match(r"^(?:and|what about|how about|does it|that|those)\b", query.strip(), re.IGNORECASE))
-    standalone = f"{recent_user} {query}".strip() if follow_up and recent_user else query
+    follow_up = bool(
+        re.match(
+            r"^(?:and|what about|how about|does it|that|those)\b",
+            query.strip(),
+            re.IGNORECASE,
+        )
+    )
+
+    standalone = (
+        f"{recent_user} {query}".strip()
+        if follow_up and recent_user
+        else query
+    )
+
     lower = standalone.lower()
+
+    # Default intent
     intent: QueryIntent = "knowledge_query"
+
     if "rfi" in lower:
         intent = "rfi_search"
-    elif any(term in lower for term in ("compliance", "submittal", "deviation", "non-compliance")):
+    elif any(
+        term in lower
+        for term in (
+            "compliance",
+            "submittal",
+            "deviation",
+            "non-compliance",
+        )
+    ):
         intent = "compliance_query"
-    elif any(term in lower for term in ("schedule", "critical path", "float", "delay")):
+    elif any(
+        term in lower
+        for term in (
+            "schedule",
+            "critical path",
+            "float",
+            "delay",
+        )
+    ):
         intent = "schedule_query"
-    elif any(term in lower for term in ("commissioning", "test procedure", "acceptance criteria")):
-        intent = "commissioning_query"
-    elif any(term in lower for term in ("procurement", "shipment", "supplier tracking")):
+    elif any(
+        term in lower
+        for term in (
+            "procurement",
+            "shipment",
+            "supplier tracking",
+        )
+    ):
         intent = "procurement_query"
+
     document_types = ["RFI"] if intent == "rfi_search" else []
-    equipment_ids = entity_references(_context_text(query, history))["equipment_tags"]
+
+    equipment_ids = entity_references(
+        _context_text(query, history)
+    )["equipment_tags"]
+
     return QueryPlan(
         original_query=query,
         standalone_query=standalone,
@@ -139,8 +214,6 @@ def _local_query_plan(project_id: uuid.UUID, query: str, history: list[Conversat
         equipment_ids=equipment_ids,
         subqueries=_split_subqueries(standalone),
     )
-
-
 def _sanitize_query_plan(
     plan: QueryPlan,
     project_id: uuid.UUID,
@@ -150,18 +223,18 @@ def _sanitize_query_plan(
 ) -> QueryPlan:
     context = _context_text(query, history)
     allowed_document_ids = {uuid.UUID(value) for value in re.findall(r"\b[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\b", context)}
-    allowed_equipment = set(entity_references(context)["equipment_tags"])
+    allowed_equipment = entity_references(context)["equipment_tags"]
     vendor_ids = [value for value in plan.vendor_ids if re.search(rf"\b{re.escape(value)}\b", context, re.IGNORECASE)]
     revision_status = plan.revision_status if plan.revision_status and plan.revision_status.lower() in context.lower() else None
     section = plan.section if plan.section and plan.section.lower() in context.lower() else None
-    standalone = plan.standalone_query.strip() or fallback.standalone_query
+    standalone = (fallback.standalone_query if fallback.standalone_query == query else plan.standalone_query.strip() or fallback.standalone_query)
     return plan.model_copy(
         update={
             "original_query": query,
             "standalone_query": standalone,
             "project_id": project_id,
             "document_ids": [value for value in plan.document_ids if value in allowed_document_ids],
-            "equipment_ids": [value for value in plan.equipment_ids if value in allowed_equipment],
+            "equipment_ids": allowed_equipment,
             "vendor_ids": vendor_ids,
             "revision_status": revision_status,
             "section": section,
@@ -170,16 +243,37 @@ def _sanitize_query_plan(
     )
 
 
-def _validated_subqueries(query: str, proposed: list[str]) -> list[str]:
+def _validated_subqueries(query: str, _proposed: list[str]) -> list[str]:
+    """
+    Subqueries for a multi-part question.
+
+    `_proposed` is what the model suggested. It is intentionally ignored: the
+    deterministic split is reproducible and cannot invent a subquery the user
+    never asked. The parameter is kept so the call site still documents that the
+    planner returns them and that we choose not to trust them.
+    """
     if not _is_multi_part(query):
         return []
-    values = list(dict.fromkeys(value.strip() for value in proposed if value.strip()))[:3]
-    return values if len(values) > 1 else _split_subqueries(query)
+    return _split_subqueries(query)
 
 
 def _split_subqueries(query: str) -> list[str]:
-    parts = [part.strip(" ,?.") for part in re.split(r"\s+(?:and|also)\s+|[;?]+", query, flags=re.IGNORECASE)]
+    # Prefer explicit separators such as semicolons.
+    parts = [
+        part.strip(" ,?.")
+        for part in re.split(r"[;?]+", query)
+    ]
     parts = [part for part in parts if len(part.split()) >= 2]
+
+    # If there are no explicit separators, allow "and" to define
+    # genuinely separate questions.
+    if len(parts) <= 1:
+        parts = [
+            part.strip(" ,?.")
+            for part in re.split(r"\s+(?:and|also)\s+", query, flags=re.IGNORECASE)
+        ]
+        parts = [part for part in parts if len(part.split()) >= 2]
+
     return list(dict.fromkeys(parts))[:3] if len(parts) > 1 else []
 
 
@@ -282,15 +376,19 @@ class Responder(Protocol):
     async def answer(self, question: str, context: ContextBundle) -> AnswerResult: ...
 
 
-class GeminiResponder:
-    def __init__(self, settings: Settings, gateway: GeminiGateway | None = None) -> None:
-        self.gateway = gateway or GeminiGateway(settings)
+class LLMResponder:
+    def __init__(self, settings: Settings, gateway: LLMGateway | None = None) -> None:
+        self.gateway = gateway or LLMGateway(settings)
 
     async def rewrite(self, question: str, history: list[ConversationMessage]) -> str:
         if not history:
             return question
         if not self.gateway.client:
-            raise IngestionError("generation_unavailable", "ATLAS_GEMINI_API_KEY is required for knowledge responses", 503)
+            raise IngestionError(
+                "generation_unavailable",
+                "No model provider is configured. Set ATLAS_LLM_PROVIDERS and the matching API key.",
+                503,
+            )
         context = "\n".join(f"{message.role}: {message.content}" for message in history[-6:])
         return await self._complete(
             "Rewrite the latest user question so it is standalone. Preserve intent and do not answer it.",
@@ -309,7 +407,11 @@ class GeminiResponder:
                 status="INSUFFICIENT_EVIDENCE",
             )
         if not self.gateway.client:
-            raise IngestionError("generation_unavailable", "ATLAS_GEMINI_API_KEY is required for knowledge responses", 503)
+            raise IngestionError(
+                "generation_unavailable",
+                "No model provider is configured. Set ATLAS_LLM_PROVIDERS and the matching API key.",
+                503,
+            )
         citation_map = {f"C{index}": chunk for index, chunk in enumerate(context.chunks, start=1)}
         evidence = [
             {
@@ -323,17 +425,22 @@ class GeminiResponder:
             for citation_id, chunk in citation_map.items()
         ]
         raw = await self.gateway.generate(
-            "Return JSON only. Answer solely from EVIDENCE. Cite each factual claim inline as [C1]. Classify every claim as fact, calculation, or recommendation. Use only supplied citation IDs. State conflicts and missing information; use INSUFFICIENT_EVIDENCE rather than guessing.",
-            json.dumps(
-                {
-                    "question": question,
-                    "evidence": evidence,
-                    "revision_conflicts": [item.model_dump(mode="json") for item in context.revision_conflicts],
-                    "response_schema": _GeneratedAnswer.model_json_schema(),
-                }
-            ),
-            json_output=True,
-        )
+            "Return JSON only. Answer ONLY using the supplied EVIDENCE. If the answer is present in the evidence, extract or summarize it faithfully and cite every factual claim using only the provided citation IDs (e.g., [C1]). Do NOT say information is missing if the evidence contains the requested section. Use INSUFFICIENT_EVIDENCE only when the requested information does not appear anywhere in the supplied evidence. Classify each claim as fact, calculation, or recommendation. Return valid JSON matching the schema.",
+        json.dumps(
+            {
+                "question": question,
+                "evidence": evidence,
+                "revision_conflicts": [
+                    item.model_dump(mode="json")
+                    for item in context.revision_conflicts
+                ],
+                "response_schema": _GeneratedAnswer.model_json_schema(),
+            }
+        ),
+        json_output=True,
+    )  
+                
+
         try:
             generated = _GeneratedAnswer.model_validate_json(raw)
         except (ValidationError, ValueError) as exc:
@@ -395,19 +502,37 @@ def build_knowledge_workflow(service: "KnowledgeService"):
         started = perf_counter()
         service_name, endpoint = _route_destination(state["query_plan"])
         if service_name != "knowledge":
-            raise IngestionError("query_routing_required", f"Query is routed to the {service_name} service at {endpoint}", 409)
+            logger.debug(
+                "route_intent_advisory_only service=%s endpoint=%s; copilot continues on the knowledge path",
+                service_name, endpoint,
+            )
         return {
             "route_service": service_name,
             "route_endpoint": endpoint,
             "stage_latency_ms": _timing(state, "route_intent", started),
         }
-
+    
+    
     async def hybrid_retrieve(state: KnowledgeState) -> dict[str, object]:
         started = perf_counter()
+
         batches = await service._retrieve_batches(
-            state["project_id"], state["rewritten_question"], state["query_plan"]
+            state["project_id"],
+            state["rewritten_question"],
+            state["query_plan"],
         )
-        ids = list(dict.fromkeys([*state.get("candidate_chunk_ids", []), *(item.chunk_id for batch in batches for item in batch)]))
+
+        logger.debug("hybrid_retrieve batches=%s", [len(batch) for batch in batches])
+
+        ids = list(
+            dict.fromkeys(
+                [
+                    *state.get("candidate_chunk_ids", []),
+                    *(item.chunk_id for batch in batches for item in batch),
+                ]
+            )
+        )
+
         return {
             "candidate_batches": batches,
             "candidate_chunk_ids": ids,
@@ -419,7 +544,11 @@ def build_knowledge_workflow(service: "KnowledgeService"):
         evidence = _merge_result_batches(state.get("candidate_batches", []), service.settings.hybrid_retrieval_limit)
         if state.get("previous_evidence"):
             evidence = _merge_result_batches([state["previous_evidence"], evidence], service.settings.hybrid_retrieval_limit)
-        evidence = [item for item in evidence if item.project_id == uuid.UUID(state["project_id"]) and item.score > 0.05]
+        evidence = [
+            item for item in evidence
+            if item.project_id == uuid.UUID(state["project_id"]) and item.score > MIN_EVIDENCE_SCORE
+        ]
+        logger.debug("rrf_fused kept=%d", len(evidence))
         return {"evidence": evidence, "stage_latency_ms": _timing(state, "rrf", started)}
 
     async def rerank(state: KnowledgeState) -> dict[str, object]:
@@ -448,6 +577,7 @@ def build_knowledge_workflow(service: "KnowledgeService"):
             state.get("expanded_items", []),
             state.get("revision_conflicts", []),
         )
+        logger.debug("context_compressed chunks=%d tokens=%d", len(context.chunks), context.total_tokens)
         return {"context_bundle": context, "stage_latency_ms": _timing(state, "compress", started)}
 
     def evidence_gate(state: KnowledgeState) -> dict[str, object]:
@@ -463,6 +593,7 @@ def build_knowledge_workflow(service: "KnowledgeService"):
                 "corrective_query": corrective,
             }
         )
+        logger.debug("evidence_gate sufficient=%s reasons=%s", context.sufficient, reasons)
         return {
             "context_bundle": context,
             "corrective_query": corrective or "",
@@ -493,11 +624,16 @@ def build_knowledge_workflow(service: "KnowledgeService"):
             if not context.sufficient
             else await service._generate_answer(state["rewritten_question"], context)
         )
+        logger.debug("answer_generated status=%s", getattr(generated, "status", None))
         return {"generated_answer": generated, "stage_latency_ms": _timing(state, "generate", started)}
 
     async def verify_claims(state: KnowledgeState) -> dict[str, object]:
         started = perf_counter()
         answer = await service._verify_answer(state["generated_answer"], state["context_bundle"])
+        logger.debug(
+            "answer_verified status=%s claims=%d citations=%d",
+            answer.status, len(answer.claims), len(answer.citations),
+        )
         return {"answer_result": answer, "stage_latency_ms": _timing(state, "verify_claims", started)}
 
     def finalize(state: KnowledgeState) -> dict[str, object]:
@@ -615,8 +751,8 @@ class KnowledgeService:
         postprocessor: PostRetrievalProcessor | None = None,
     ) -> None:
         self.settings, self.qdrant, self.embedder = settings, qdrant, embedder
-        self.responder = responder or GeminiResponder(settings)
-        self.planner = planner or GeminiQueryPlanner(settings)
+        self.responder = responder or LLMResponder(settings)
+        self.planner = planner or LLMQueryPlanner(settings)
         self.postprocessor = postprocessor or PostRetrievalProcessor(settings, parent_loader=self._load_parent)
         self.copilot_workflow = build_knowledge_workflow(self)
         self.rfi_workflow = build_rfi_workflow(self._retrieve_answered_rfis)
@@ -667,12 +803,22 @@ class KnowledgeService:
     async def _retrieve_evidence(self, project_id: str, question: str, plan: QueryPlan) -> list[RetrievalResult]:
         batches = await self._retrieve_batches(project_id, question, plan)
         results = _merge_result_batches(batches, self.settings.hybrid_retrieval_limit)
-        return [result for result in results if result.score > 0.05]
+        scoped = uuid.UUID(project_id)
+        results = [
+            item for item in results
+            if item.project_id == scoped and item.score > MIN_EVIDENCE_SCORE
+        ]
+        logger.debug("retrieve_evidence kept=%d", len(results))
+        return results
 
     async def _retrieve_batches(
         self, project_id: str, question: str, plan: QueryPlan
     ) -> list[list[RetrievalResult]]:
         parsed_project_id = uuid.UUID(project_id)
+        logger.debug(
+            "retrieve_batches document_types=%s equipment_ids=%s subqueries=%d",
+            plan.document_types, plan.equipment_ids, len(plan.subqueries),
+        )
         if plan.project_id != parsed_project_id:
             raise IngestionError("project_scope_mismatch", "Query plan project does not match the request", 400)
         queries = plan.subqueries[:3] if len(plan.subqueries) > 1 and _is_multi_part(plan.standalone_query) else [question]
@@ -759,14 +905,21 @@ def _evidence_sufficiency(context: ContextBundle, plan: QueryPlan, settings: Set
     missing_equipment = sorted(set(plan.equipment_ids) - present_equipment)
     if missing_equipment:
         reasons.append(f"equipment evidence is missing: {', '.join(missing_equipment)}")
-    disallowed = [status for status in (_approval_status(chunk) for chunk in chunks) if status and status not in APPROVED_EVIDENCE]
-    if disallowed:
-        reasons.append(f"non-current revisions found: {', '.join(sorted(set(disallowed)))}")
+    # Refuse only when NO current evidence is present. The previous rule failed
+    # the whole context if *any* selected chunk was non-approved, and
+    # _approval_status falls back to rfi_status, so a single open RFI retrieved
+    # alongside an approved specification blocked an otherwise supported answer.
+    # Chunks with no status at all are treated as usable, matching prior behaviour.
+    statuses = [_approval_status(chunk) for chunk in chunks]
+    disallowed = sorted({status for status in statuses if status and status not in APPROVED_EVIDENCE})
+    if chunks and not any(not status or status in APPROVED_EVIDENCE for status in statuses):
+        reasons.append(f"no current-revision evidence: only {', '.join(disallowed)} found")
     if plan.revision_status and not any(_approval_status(chunk) == plan.revision_status.lower() for chunk in chunks):
         reasons.append(f"required revision status is missing: {plan.revision_status}")
     if _requires_value(context.query) and not re.search(r"\b\d+(?:\.\d+)?\b", " ".join(chunk.text for chunk in chunks)):
         reasons.append("answer-bearing values are missing")
-    if chunks and max(chunk.rerank_score for chunk in chunks) < settings.reranker_score_threshold:
+    scores = [chunk.rerank_score for chunk in chunks]
+    if chunks and max(scores) < settings.reranker_score_threshold:
         reasons.append("reranker score is below threshold")
     return reasons
 
@@ -809,7 +962,7 @@ async def _ground_answer(
     generated: _GeneratedAnswer,
     citation_map: dict[str, ContextChunk],
     context: ContextBundle,
-    gateway: GeminiGateway,
+    gateway: LLMGateway,
 ) -> AnswerResult:
     known = set(citation_map)
     used = set(generated.citation_ids)
@@ -834,6 +987,31 @@ async def _ground_answer(
         for claim, status in zip(generated.claims, statuses, strict=True)
         if status != "UNSUPPORTED"
     ]
+
+    # A refusal was previously undiagnosable: the response says only that the
+    # claims were unsupported, and nothing recorded which claim failed or which
+    # of its literal terms was absent from the cited evidence. Logged at INFO
+    # because this is the one path where the system declines to answer a question
+    # it retrieved evidence for, and that is worth being able to explain.
+    for claim, status in zip(generated.claims, statuses, strict=True):
+        if status != "UNSUPPORTED":
+            continue
+        evidence = " ".join(_evidence_text(citation_map[value]) for value in claim.citation_ids)
+        missing = sorted(
+            value for value in _exact_terms(claim.text) if not _contains_exact(evidence, value)
+        )
+        terms = _query_terms(claim.text)
+        overlap = len(terms & _query_terms(evidence)) / max(len(terms), 1)
+        logger.info(
+            "claim_rejected type=%s citations=%s missing_terms=%s overlap=%.2f evidence_chars=%d claim=%r",
+            claim.type,
+            ",".join(claim.citation_ids) or "none",
+            ";".join(missing) or "none",
+            overlap,
+            len(evidence),
+            claim.text[:180],
+        )
+
     if not claims:
         return _insufficient_answer(
             [*generated.missing_information, "Generated claims were not supported by project evidence."],
@@ -876,12 +1054,23 @@ async def _ground_answer(
     )
 
 
+def _evidence_text(chunk: ContextChunk) -> str:
+    """The retrieved evidence for a chunk, falling back to the shown excerpt."""
+    return chunk.source_text or chunk.text
+
+
 def _deterministic_support(
     claim: _GeneratedClaim, citation_map: dict[str, ContextChunk]
 ) -> ClaimSupport | None:
     if not claim.citation_ids:
         return "UNSUPPORTED"
-    evidence = " ".join(citation_map[value].text for value in claim.citation_ids)
+    # Checked against the retrieved evidence, not the compressed excerpt the
+    # model was shown. Compression exists to fit a prompt budget; using its
+    # output as the evidence of record meant a true claim was rejected whenever
+    # the sentence supporting it had been trimmed for length. The excerpt is a
+    # subset of this text, so widening the check cannot admit a claim that the
+    # documents do not support - it only stops discarding ones they do.
+    evidence = " ".join(_evidence_text(citation_map[value]) for value in claim.citation_ids)
     exact = _exact_terms(claim.text)
     missing_exact = {value for value in exact if not _contains_exact(evidence, value)}
     if missing_exact and claim.type != "calculation":
@@ -896,7 +1085,7 @@ def _deterministic_support(
 
 
 async def _semantic_verify(
-    gateway: GeminiGateway,
+    gateway: LLMGateway,
     claims: list[_GeneratedClaim],
     uncertain: list[int],
     citation_map: dict[str, ContextChunk],
@@ -905,7 +1094,7 @@ async def _semantic_verify(
         {
             "claim_index": index,
             "claim": claims[index].model_dump(),
-            "evidence": [citation_map[value].text for value in claims[index].citation_ids],
+            "evidence": [_evidence_text(citation_map[value]) for value in claims[index].citation_ids],
         }
         for index in uncertain
     ]
@@ -1001,7 +1190,7 @@ def _evidence_fallback(context: ContextBundle) -> AnswerResult:
         claims=claims,
         confidence=0.5,
         status="PARTIAL",
-        missing_information=["Gemini was unavailable; showing retrieved evidence only."],
+        missing_information=["AI generation was unavailable; showing retrieved evidence only."],
         conflicting_sources=context.revision_conflicts,
     )
 

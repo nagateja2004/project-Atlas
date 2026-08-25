@@ -12,22 +12,75 @@
       "planned_arrival": "2026-05-20",
       "forecast_arrival": "2026-06-24",
       "supplier_tiers": [
-        {"tier": 1, "supplier": "GridPoint Synthetic Systems", "location": "Hamburg, Germany"},
-        {"tier": 2, "supplier": "NordBus Synthetic Works", "location": "Bremen, Germany"},
-        {"tier": 3, "supplier": "EuroCopper Synthetic Metals", "location": "Katowice, Poland"}
+        {
+          "tier": 1,
+          "supplier": "GridPoint Synthetic Systems",
+          "location": "Hamburg, Germany"
+        },
+        {
+          "tier": 2,
+          "supplier": "NordBus Synthetic Works",
+          "location": "Bremen, Germany"
+        },
+        {
+          "tier": 3,
+          "supplier": "EuroCopper Synthetic Metals",
+          "location": "Katowice, Poland"
+        }
       ],
       "milestones": [
-        {"name": "Factory acceptance test", "planned_date": "2026-05-13", "forecast_date": "2026-06-17", "status": "forecast_delayed"},
-        {"name": "Site delivery", "planned_date": "2026-05-20", "forecast_date": "2026-06-24", "status": "forecast_delayed"}
+        {
+          "name": "Factory acceptance test",
+          "planned_date": "2026-05-13",
+          "forecast_date": "2026-06-17",
+          "status": "forecast_delayed"
+        },
+        {
+          "name": "Site delivery",
+          "planned_date": "2026-05-20",
+          "forecast_date": "2026-06-24",
+          "status": "forecast_delayed"
+        }
       ],
       "schedule_task_id": "T-140",
       "schedule_float_days": 7,
       "critical_path": true,
       "risk_events": [
-        {"event_reference": "SYN-EVT-001", "event_type": "material_shortage", "description": "Synthetic busbar material shortage reported by the tier-2 supplier.", "occurred_at": "2026-04-10T08:00:00Z", "alert_generated_at": "2026-04-10T09:30:00Z", "forecast_delay_days": 35}
+        {
+          "event_reference": "SYN-EVT-010",
+          "event_type": "tier3_material_allocation",
+          "description": "Tier-3 supplier EuroCopper Synthetic Metals reported a synthetic copper cathode allocation cut affecting the busbar order. No delivery impact forecast at this point.",
+          "occurred_at": "2026-03-27T06:00:00Z",
+          "alert_generated_at": "2026-03-27T07:15:00Z",
+          "forecast_delay_days": 0
+        },
+        {
+          "event_reference": "SYN-EVT-001",
+          "event_type": "material_shortage",
+          "description": "Synthetic busbar material shortage reported by the tier-2 supplier.",
+          "occurred_at": "2026-04-10T08:00:00Z",
+          "alert_generated_at": "2026-04-10T09:30:00Z",
+          "forecast_delay_days": 35
+        },
+        {
+          "event_reference": "SYN-EVT-011",
+          "event_type": "tier1_test_slot_moved",
+          "description": "Tier-1 supplier GridPoint Synthetic Systems moved factory acceptance testing to 2026-06-17 following the tier-2 busbar shortage.",
+          "occurred_at": "2026-04-14T11:00:00Z",
+          "alert_generated_at": "2026-04-14T11:40:00Z",
+          "forecast_delay_days": 35
+        }
       ],
       "alternatives": [
-        {"name": "Air-freight priority busbar lot", "option_type": "route", "recovery_days": 18, "assumptions": ["Synthetic premium freight capacity is available.", "Factory sequence can accept the recovered material date."]}
+        {
+          "name": "Air-freight priority busbar lot",
+          "option_type": "route",
+          "recovery_days": 18,
+          "assumptions": [
+            "Synthetic premium freight capacity is available.",
+            "Factory sequence can accept the recovered material date."
+          ]
+        }
       ]
     },
     {
@@ -41,18 +94,49 @@
       "planned_arrival": "2026-04-10",
       "forecast_arrival": "2026-04-10",
       "supplier_tiers": [
-        {"tier": 1, "supplier": "ApexPower Synthetic", "location": "Singapore"},
-        {"tier": 2, "supplier": "CellCore Synthetic", "location": "Penang, Malaysia"},
-        {"tier": 3, "supplier": "LithiumSource Synthetic", "location": "Perth, Australia"}
+        {
+          "tier": 1,
+          "supplier": "ApexPower Synthetic",
+          "location": "Singapore"
+        },
+        {
+          "tier": 2,
+          "supplier": "CellCore Synthetic",
+          "location": "Penang, Malaysia"
+        },
+        {
+          "tier": 3,
+          "supplier": "LithiumSource Synthetic",
+          "location": "Perth, Australia"
+        }
       ],
       "milestones": [
-        {"name": "Factory release", "planned_date": "2026-03-25", "forecast_date": "2026-03-25", "status": "complete"},
-        {"name": "Site delivery", "planned_date": "2026-04-10", "forecast_date": "2026-04-10", "status": "complete"}
+        {
+          "name": "Factory release",
+          "planned_date": "2026-03-25",
+          "forecast_date": "2026-03-25",
+          "status": "complete"
+        },
+        {
+          "name": "Site delivery",
+          "planned_date": "2026-04-10",
+          "forecast_date": "2026-04-10",
+          "status": "complete"
+        }
       ],
       "schedule_task_id": "T-220",
       "schedule_float_days": 56,
       "critical_path": false,
-      "risk_events": [],
+      "risk_events": [
+        {
+          "event_reference": "SYN-EVT-014",
+          "event_type": "tier2_quality_hold",
+          "description": "Tier-2 supplier CellCore Synthetic quarantined a synthetic battery cell lot. Replaced from stock and closed without affecting the delivery date.",
+          "occurred_at": "2026-02-18T04:00:00Z",
+          "alert_generated_at": "2026-02-18T05:10:00Z",
+          "forecast_delay_days": 0
+        }
+      ],
       "alternatives": []
     },
     {
@@ -66,18 +150,49 @@
       "planned_arrival": "2026-04-24",
       "forecast_arrival": "2026-04-24",
       "supplier_tiers": [
-        {"tier": 1, "supplier": "PolarAir Synthetic", "location": "Osaka, Japan"},
-        {"tier": 2, "supplier": "FanDrive Synthetic", "location": "Nagoya, Japan"},
-        {"tier": 3, "supplier": "CoilMetal Synthetic", "location": "Busan, South Korea"}
+        {
+          "tier": 1,
+          "supplier": "PolarAir Synthetic",
+          "location": "Osaka, Japan"
+        },
+        {
+          "tier": 2,
+          "supplier": "FanDrive Synthetic",
+          "location": "Nagoya, Japan"
+        },
+        {
+          "tier": 3,
+          "supplier": "CoilMetal Synthetic",
+          "location": "Busan, South Korea"
+        }
       ],
       "milestones": [
-        {"name": "Export release", "planned_date": "2026-04-08", "forecast_date": "2026-04-08", "status": "complete"},
-        {"name": "Site delivery", "planned_date": "2026-04-24", "forecast_date": "2026-04-24", "status": "complete"}
+        {
+          "name": "Export release",
+          "planned_date": "2026-04-08",
+          "forecast_date": "2026-04-08",
+          "status": "complete"
+        },
+        {
+          "name": "Site delivery",
+          "planned_date": "2026-04-24",
+          "forecast_date": "2026-04-24",
+          "status": "complete"
+        }
       ],
       "schedule_task_id": "T-320",
       "schedule_float_days": 56,
       "critical_path": false,
-      "risk_events": [],
+      "risk_events": [
+        {
+          "event_reference": "SYN-EVT-015",
+          "event_type": "tier3_material_substitution",
+          "description": "Tier-3 supplier CoilMetal Synthetic substituted coil stock. The signal sat in the synthetic supplier portal for seven hours before an alert was raised.",
+          "occurred_at": "2026-03-05T02:00:00Z",
+          "alert_generated_at": "2026-03-05T09:00:00Z",
+          "forecast_delay_days": 0
+        }
+      ],
       "alternatives": []
     },
     {
@@ -91,22 +206,67 @@
       "planned_arrival": "2026-05-28",
       "forecast_arrival": "2026-06-09",
       "supplier_tiers": [
-        {"tier": 1, "supplier": "PrimeGen Synthetic", "location": "Pune, India"},
-        {"tier": 2, "supplier": "AltDrive Synthetic", "location": "Chennai, India"},
-        {"tier": 3, "supplier": "SteelBase Synthetic", "location": "Jamshedpur, India"}
+        {
+          "tier": 1,
+          "supplier": "PrimeGen Synthetic",
+          "location": "Pune, India"
+        },
+        {
+          "tier": 2,
+          "supplier": "AltDrive Synthetic",
+          "location": "Chennai, India"
+        },
+        {
+          "tier": 3,
+          "supplier": "SteelBase Synthetic",
+          "location": "Jamshedpur, India"
+        }
       ],
       "milestones": [
-        {"name": "Load-bank test", "planned_date": "2026-05-18", "forecast_date": "2026-05-30", "status": "forecast_delayed"},
-        {"name": "Site delivery", "planned_date": "2026-05-28", "forecast_date": "2026-06-09", "status": "forecast_delayed"}
+        {
+          "name": "Load-bank test",
+          "planned_date": "2026-05-18",
+          "forecast_date": "2026-05-30",
+          "status": "forecast_delayed"
+        },
+        {
+          "name": "Site delivery",
+          "planned_date": "2026-05-28",
+          "forecast_date": "2026-06-09",
+          "status": "forecast_delayed"
+        }
       ],
       "schedule_task_id": "T-170",
       "schedule_float_days": 1,
       "critical_path": true,
       "risk_events": [
-        {"event_reference": "SYN-EVT-002", "event_type": "test_slot_missed", "description": "Synthetic load-bank test slot moved by the supplier.", "occurred_at": "2026-04-12T10:00:00Z", "alert_generated_at": "2026-04-12T10:20:00Z", "forecast_delay_days": 12}
+        {
+          "event_reference": "SYN-EVT-012",
+          "event_type": "tier2_rework",
+          "description": "Tier-2 supplier AltDrive Synthetic reported alternator winding rework before the load-bank slot was moved.",
+          "occurred_at": "2026-04-03T09:00:00Z",
+          "alert_generated_at": "2026-04-03T13:30:00Z",
+          "forecast_delay_days": 5
+        },
+        {
+          "event_reference": "SYN-EVT-002",
+          "event_type": "test_slot_missed",
+          "description": "Synthetic load-bank test slot moved by the supplier.",
+          "occurred_at": "2026-04-12T10:00:00Z",
+          "alert_generated_at": "2026-04-12T10:20:00Z",
+          "forecast_delay_days": 12
+        }
       ],
       "alternatives": [
-        {"name": "Regional certified load-bank facility", "option_type": "supplier", "recovery_days": 7, "assumptions": ["Synthetic alternate facility has an open slot.", "Witness approval is granted before dispatch."]}
+        {
+          "name": "Regional certified load-bank facility",
+          "option_type": "supplier",
+          "recovery_days": 7,
+          "assumptions": [
+            "Synthetic alternate facility has an open slot.",
+            "Witness approval is granted before dispatch."
+          ]
+        }
       ]
     },
     {
@@ -120,20 +280,58 @@
       "planned_arrival": "2026-05-15",
       "forecast_arrival": "2026-05-18",
       "supplier_tiers": [
-        {"tier": 1, "supplier": "ThermalFlow Synthetic", "location": "Ahmedabad, India"},
-        {"tier": 2, "supplier": "BladeWorks Synthetic", "location": "Vadodara, India"},
-        {"tier": 3, "supplier": "PolymerFill Synthetic", "location": "Surat, India"}
+        {
+          "tier": 1,
+          "supplier": "ThermalFlow Synthetic",
+          "location": "Ahmedabad, India"
+        },
+        {
+          "tier": 2,
+          "supplier": "BladeWorks Synthetic",
+          "location": "Vadodara, India"
+        },
+        {
+          "tier": 3,
+          "supplier": "PolymerFill Synthetic",
+          "location": "Surat, India"
+        }
       ],
       "milestones": [
-        {"name": "Dispatch", "planned_date": "2026-05-10", "forecast_date": "2026-05-13", "status": "simulated_delay"},
-        {"name": "Site delivery", "planned_date": "2026-05-15", "forecast_date": "2026-05-18", "status": "simulated_delay"}
+        {
+          "name": "Dispatch",
+          "planned_date": "2026-05-10",
+          "forecast_date": "2026-05-13",
+          "status": "simulated_delay"
+        },
+        {
+          "name": "Site delivery",
+          "planned_date": "2026-05-15",
+          "forecast_date": "2026-05-18",
+          "status": "simulated_delay"
+        }
       ],
       "schedule_task_id": "T-180",
       "schedule_float_days": 0,
       "critical_path": true,
-      "risk_events": [],
+      "risk_events": [
+        {
+          "event_reference": "SYN-EVT-013",
+          "event_type": "tier3_quality_failure",
+          "description": "Tier-3 supplier PolymerFill Synthetic failed a fill-media batch on incoming inspection, which is the cause of the simulated dispatch slip.",
+          "occurred_at": "2026-04-28T08:00:00Z",
+          "alert_generated_at": "2026-04-28T08:25:00Z",
+          "forecast_delay_days": 3
+        }
+      ],
       "alternatives": [
-        {"name": "Direct synthetic road route", "option_type": "route", "recovery_days": 3, "assumptions": ["Synthetic road permits are available."]}
+        {
+          "name": "Direct synthetic road route",
+          "option_type": "route",
+          "recovery_days": 3,
+          "assumptions": [
+            "Synthetic road permits are available."
+          ]
+        }
       ]
     }
   ]

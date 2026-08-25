@@ -5,13 +5,13 @@ import pytest
 
 from app.config import Settings
 from app.ingestion import IngestionError
-from app.workflow import ConversationMessage, GeminiQueryPlanner, KnowledgeService
+from app.workflow import ConversationMessage, LLMQueryPlanner, KnowledgeService
 
 
 @pytest.mark.asyncio
 async def test_standalone_question_preserves_original_query() -> None:
     project_id = uuid.uuid4()
-    plan = await GeminiQueryPlanner(Settings()).plan(project_id, "What is the UPS-A battery autonomy?", [])
+    plan = await LLMQueryPlanner(Settings()).plan(project_id, "What is the UPS-A battery autonomy?", [])
 
     assert plan.original_query == "What is the UPS-A battery autonomy?"
     assert plan.standalone_query == plan.original_query
@@ -21,7 +21,7 @@ async def test_standalone_question_preserves_original_query() -> None:
 
 @pytest.mark.asyncio
 async def test_follow_up_uses_recent_conversation_context() -> None:
-    plan = await GeminiQueryPlanner(Settings()).plan(
+    plan = await LLMQueryPlanner(Settings()).plan(
         uuid.uuid4(),
         "What about its voltage?",
         [ConversationMessage(role="user", content="What are the UPS-A battery requirements?")],
@@ -33,7 +33,7 @@ async def test_follow_up_uses_recent_conversation_context() -> None:
 
 @pytest.mark.asyncio
 async def test_subqueries_are_limited_to_genuinely_multi_part_questions() -> None:
-    planner, project_id = GeminiQueryPlanner(Settings()), uuid.uuid4()
+    planner, project_id = LLMQueryPlanner(Settings()), uuid.uuid4()
 
     single = await planner.plan(project_id, "What is UPS-A battery autonomy?", [])
     multi = await planner.plan(
@@ -48,28 +48,12 @@ async def test_subqueries_are_limited_to_genuinely_multi_part_questions() -> Non
 
 @pytest.mark.asyncio
 async def test_ambiguous_filters_are_left_empty() -> None:
-    plan = await GeminiQueryPlanner(Settings()).plan(uuid.uuid4(), "Show vendor documents.", [])
+    plan = await LLMQueryPlanner(Settings()).plan(uuid.uuid4(), "Show vendor documents.", [])
 
     assert plan.document_types == []
     assert plan.document_ids == []
     assert plan.vendor_ids == []
     assert plan.revision_status is None
-
-
-@pytest.mark.asyncio
-async def test_planner_falls_back_when_gemini_is_unavailable() -> None:
-    class UnavailableGateway:
-        client = object()
-
-        async def generate(self, *_args, **_kwargs) -> str:
-            raise IngestionError("model_gateway_error", "AI provider request failed", 502)
-
-    plan = await GeminiQueryPlanner(Settings(), UnavailableGateway()).plan(
-        uuid.uuid4(), "What is UPS-A battery autonomy?", []
-    )
-
-    assert plan.standalone_query == "What is UPS-A battery autonomy?"
-    assert plan.equipment_ids == ["UPS-A"]
 
 
 class FakeGateway:
@@ -96,7 +80,7 @@ class FakeGateway:
 @pytest.mark.asyncio
 async def test_planner_enforces_project_isolation_and_supported_ids() -> None:
     project_id = uuid.uuid4()
-    plan = await GeminiQueryPlanner(Settings(), FakeGateway()).plan(project_id, "Find UPS-A information.", [])
+    plan = await LLMQueryPlanner(Settings(), FakeGateway()).plan(project_id, "Find UPS-A information.", [])
 
     assert plan.project_id == project_id
     assert plan.original_query == "Find UPS-A information."
@@ -115,3 +99,28 @@ async def test_schedule_query_routes_to_existing_schedule_service() -> None:
     assert route.plan.intent == "schedule_query"
     assert route.service == "schedule"
     assert route.endpoint == f"/projects/{project_id}/schedule/analysis"
+
+
+@pytest.mark.asyncio
+async def test_provider_outage_falls_back_to_the_deterministic_plan() -> None:
+    """
+    A rate limit or outage must not take retrieval down. Planning is the only
+    LLM step in the retrieval path and the local plan is a full substitute, so
+    the request continues instead of returning 502.
+    """
+
+    class OutageGateway:
+        client = object()
+
+        async def generate(self, *_args, **_kwargs):
+            raise IngestionError("model_gateway_error", "AI provider request failed", 502)
+
+    project_id = uuid.uuid4()
+    plan = await LLMQueryPlanner(Settings(), OutageGateway()).plan(
+        project_id, "What is the minimum UPS-A battery autonomy?", []
+    )
+
+    assert plan.project_id == project_id
+    assert plan.standalone_query == "What is the minimum UPS-A battery autonomy?"
+    assert plan.equipment_ids == ["UPS-A"]
+    assert plan.intent == "knowledge_query"

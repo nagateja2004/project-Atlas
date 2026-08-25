@@ -6,7 +6,7 @@ import pytest
 from app.config import Settings
 from app.context import ContextBundle, ContextChunk, EvidenceSpan, RevisionConflict
 from app.ingestion import Citation, IngestionError
-from app.workflow import GeminiResponder
+from app.workflow import LLMResponder
 
 
 class FakeGateway:
@@ -69,7 +69,7 @@ def generated(value: str = "15", citation_id: str = "C1") -> dict:
 @pytest.mark.asyncio
 async def test_generates_mapped_citations_from_selected_context_only() -> None:
     gateway = FakeGateway(generated())
-    result = await GeminiResponder(Settings(), gateway).answer("What is the UPS autonomy?", context())
+    result = await LLMResponder(Settings(), gateway).answer("What is the UPS autonomy?", context())
 
     assert result.status == "ANSWERED"
     assert result.citations[0].citation_id == "C1"
@@ -85,7 +85,7 @@ async def test_generates_mapped_citations_from_selected_context_only() -> None:
 @pytest.mark.asyncio
 async def test_rejects_invented_factual_value() -> None:
     gateway = FakeGateway(generated("20"))
-    result = await GeminiResponder(Settings(), gateway).answer("What is the UPS autonomy?", context())
+    result = await LLMResponder(Settings(), gateway).answer("What is the UPS autonomy?", context())
 
     assert result.status == "INSUFFICIENT_EVIDENCE"
     assert result.claims == []
@@ -98,7 +98,7 @@ async def test_rejects_invented_unit_for_real_numeric_value() -> None:
     response["answer"] = "UPS-A battery autonomy is 15 hours. [C1]"
     response["claims"][0]["text"] = "UPS-A battery autonomy is 15 hours."
 
-    result = await GeminiResponder(Settings(), FakeGateway(response)).answer("What is the UPS autonomy?", context())
+    result = await LLMResponder(Settings(), FakeGateway(response)).answer("What is the UPS autonomy?", context())
 
     assert result.status == "INSUFFICIENT_EVIDENCE"
 
@@ -106,7 +106,7 @@ async def test_rejects_invented_unit_for_real_numeric_value() -> None:
 @pytest.mark.asyncio
 async def test_rejects_invalid_citation_id() -> None:
     with pytest.raises(IngestionError, match="unknown citation") as error:
-        await GeminiResponder(Settings(), FakeGateway(generated(citation_id="C9"))).answer(
+        await LLMResponder(Settings(), FakeGateway(generated(citation_id="C9"))).answer(
             "What is the UPS autonomy?", context()
         )
 
@@ -119,7 +119,7 @@ async def test_returns_insufficient_without_calling_model_for_empty_context() ->
     bundle.chunks = []
     gateway = FakeGateway(generated())
 
-    result = await GeminiResponder(Settings(), gateway).answer("Unknown value?", bundle)
+    result = await LLMResponder(Settings(), gateway).answer("Unknown value?", bundle)
 
     assert result.status == "INSUFFICIENT_EVIDENCE"
     assert result.citations == []
@@ -138,7 +138,7 @@ async def test_reports_context_revision_conflict() -> None:
         )
     ]
 
-    result = await GeminiResponder(Settings(), FakeGateway(generated())).answer(bundle.query, bundle)
+    result = await LLMResponder(Settings(), FakeGateway(generated())).answer(bundle.query, bundle)
 
     assert result.status == "CONFLICTING_EVIDENCE"
     assert result.answer.startswith("Conflicting revisions")
@@ -156,7 +156,7 @@ async def test_uses_one_semantic_call_only_for_uncertain_claim() -> None:
         [response, {"decisions": [{"claim_index": 0, "status": "SUPPORTED"}]}]
     )
 
-    result = await GeminiResponder(Settings(), gateway).answer("Is battery performance adequate?", context())
+    result = await LLMResponder(Settings(), gateway).answer("Is battery performance adequate?", context())
 
     assert result.status == "ANSWERED"
     assert result.claims[0].support_status == "SUPPORTED"

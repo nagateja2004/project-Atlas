@@ -1,0 +1,1862 @@
+<title>Project Atlas Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+/* ============================================================
+   PROJECT ATLAS — pitch deck
+   Direction: "the drawing sheet". Each slide is a drafting sheet
+   with a hairline grid, a border frame and a real title block.
+   Palette and type are lifted from the product itself
+   (frontend/tailwind.config.ts + app/layout.tsx) so the deck and
+   the dashboard read as one object.
+   ============================================================ */
+
+:root {
+  /* Light — the product's drafting-paper ground */
+  --paper:      #eceff4;
+  --sheet:      #ffffff;
+  --sheet-2:    #f7f9fb;
+  --ink:        #172235;
+  --ink-2:      #5a6879;
+  --ink-3:      #8a95a4;
+  --navy:       #0b1f36;
+  --rule:       rgba(11, 31, 54, .14);
+  --rule-soft:  rgba(11, 31, 54, .08);
+  --grid:       rgba(11, 31, 54, .045);
+  --signal:     #1f8a70;
+  --signal-ink: #14614e;
+  --signal-soft:#e7f2ef;
+  --alert:      #b3261e;
+  --alert-soft: #fbeceb;
+  --warn:       #a05a06;
+  --warn-soft:  #fdf3e4;
+  --cat-1:      #1f8a70;
+  --cat-2:      #2f5d9e;
+  --cat-3:      #b06a12;
+  --shadow:     0 1px 2px rgba(11,31,54,.06), 0 12px 34px rgba(11,31,54,.10);
+  --chrome:     rgba(255,255,255,.82);
+}
+
+/* System-dark (no data-theme stamp) — must not fire when the viewer
+   explicitly chose light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #0a1522;
+    --sheet:      #122032;
+    --sheet-2:    #16283c;
+    --ink:        #e6edf5;
+    --ink-2:      #9dadbf;
+    --ink-3:      #74849a;
+    --navy:       #060f1b;
+    --rule:       rgba(230, 237, 245, .18);
+    --rule-soft:  rgba(230, 237, 245, .10);
+    --grid:       rgba(230, 237, 245, .05);
+    --signal:     #34b899;
+    --signal-ink: #7fd8c2;
+    --signal-soft:rgba(52, 184, 153, .14);
+    --alert:      #f2837a;
+    --alert-soft: rgba(242, 131, 122, .13);
+    --warn:       #d9a13d;
+    --warn-soft:  rgba(217, 161, 61, .13);
+    --cat-1:      #22a884;
+    --cat-2:      #4a86d8;
+    --cat-3:      #c08424;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 14px 40px rgba(0,0,0,.45);
+    --chrome:     rgba(10, 21, 34, .82);
+  }
+}
+/* Explicit dark choice wins in the other direction too. */
+:root[data-theme="dark"] {
+  --paper:      #0a1522;
+  --sheet:      #122032;
+  --sheet-2:    #16283c;
+  --ink:        #e6edf5;
+  --ink-2:      #9dadbf;
+  --ink-3:      #74849a;
+  --navy:       #060f1b;
+  --rule:       rgba(230, 237, 245, .18);
+  --rule-soft:  rgba(230, 237, 245, .10);
+  --grid:       rgba(230, 237, 245, .05);
+  --signal:     #34b899;
+  --signal-ink: #7fd8c2;
+  --signal-soft:rgba(52, 184, 153, .14);
+  --alert:      #f2837a;
+  --alert-soft: rgba(242, 131, 122, .13);
+  --warn:       #d9a13d;
+  --warn-soft:  rgba(217, 161, 61, .13);
+  --cat-1:      #22a884;
+  --cat-2:      #4a86d8;
+  --cat-3:      #c08424;
+  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 14px 40px rgba(0,0,0,.45);
+  --chrome:     rgba(10, 21, 34, .82);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 3px; }
+
+/* ---------- stage ---------- */
+
+.stage {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 0;
+}
+
+.sheet-wrap {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(10px, 1.6vh, 22px);
+}
+
+/* One definite dimension only — width — so aspect-ratio always holds and the
+   sheet can never be squashed by a competing max-height. The reserve covers
+   the chrome bar plus the wrapper's padding. */
+.sheet {
+  position: relative;
+  width: min(100%, (100vh - 116px) * 16 / 9);
+  aspect-ratio: 16 / 9;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow);
+  container-type: size;
+  container-name: sheet;
+  overflow: hidden;
+  display: none;
+}
+.sheet.is-active { display: block; }
+
+/* the drafting grid + inner border frame */
+.sheet::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right,  var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 3.2cqh 3.2cqh;
+  pointer-events: none;
+}
+.sheet::after {
+  content: "";
+  position: absolute; inset: 1.6cqh;
+  border: 1px solid var(--rule-soft);
+  pointer-events: none;
+}
+
+/* inverted sheets — used for the cover and the close */
+.sheet.invert {
+  background: var(--navy);
+  --ink: #eef3f9;
+  --ink-2: #9fb0c4;
+  --ink-3: #6f819a;
+  --sheet: #0f2740;
+  --sheet-2: #12304e;
+  --rule: rgba(238,243,249,.20);
+  --rule-soft: rgba(238,243,249,.11);
+  --grid: rgba(238,243,249,.05);
+  --signal: #45c6a5;
+  --signal-ink: #8fdec9;
+  --signal-soft: rgba(69,198,165,.15);
+  color: var(--ink);
+}
+
+/* ---------- sheet interior ---------- */
+
+.body {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 5.4cqh 5.2cqh 12.2cqh;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2cqh;
+}
+
+/* ---------- title block (bottom strip of every sheet) ---------- */
+
+.titleblock {
+  position: absolute;
+  left: 1.6cqh; right: 1.6cqh; bottom: 1.6cqh;
+  height: 7.4cqh;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr .9fr;
+  align-items: center;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 1.62cqh;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  z-index: 2;
+}
+.titleblock > * {
+  padding: 0 1.6cqh;
+  border-left: 1px solid var(--rule-soft);
+  display: flex; flex-direction: column; gap: .35cqh;
+  min-width: 0;
+}
+.titleblock > *:first-child { border-left: 0; }
+.tb-k { font-size: 1.32cqh; color: var(--ink-3); opacity: .72; }
+.tb-v { color: var(--ink-2); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-v.accent { color: var(--signal); }
+
+/* ---------- type ---------- */
+
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 1.62cqh;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--signal);
+  display: flex; align-items: center; gap: 1.1cqh;
+  flex-wrap: wrap;
+}
+.eyebrow .dim { color: var(--ink-3); }
+.eyebrow::before {
+  content: ""; width: 3.4cqh; height: 1px; background: var(--signal); flex: none;
+}
+
+h1, h2, h3 { margin: 0; text-wrap: balance; font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif; }
+
+.h-hero { font-size: 9.4cqh; font-weight: 700; line-height: .96; letter-spacing: -.015em; }
+.h-1    { font-size: 5.3cqh; font-weight: 600; line-height: 1.06; letter-spacing: -.012em; }
+.h-2    { font-size: 3.5cqh; font-weight: 600; line-height: 1.12; }
+.h-3    { font-size: 2.32cqh; font-weight: 600; line-height: 1.2; font-family: "IBM Plex Sans", sans-serif; }
+
+.lede { font-size: 2.42cqh; line-height: 1.42; color: var(--ink-2); max-width: 62ch; }
+.body-t { font-size: 1.98cqh; line-height: 1.48; color: var(--ink-2); }
+.small { font-size: 1.72cqh; line-height: 1.42; color: var(--ink-2); }
+
+.label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 1.42cqh; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+}
+.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.num  { font-family: "IBM Plex Sans Condensed", sans-serif; font-variant-numeric: tabular-nums; font-weight: 600; }
+.accent { color: var(--signal); }
+.strike { color: var(--alert); }
+
+/* ---------- primitives ---------- */
+
+.card {
+  background: var(--sheet-2);
+  border: 1px solid var(--rule-soft);
+  border-radius: .4cqh;
+  padding: 2.1cqh;
+  display: flex; flex-direction: column; gap: .9cqh;
+  min-width: 0;
+}
+.card.plain { background: transparent; }
+.card.lift  { background: var(--sheet); box-shadow: 0 1px 2px rgba(11,31,54,.05); }
+
+.stat { display: flex; flex-direction: column; gap: .5cqh; min-width: 0; }
+.stat-v { font-family: "IBM Plex Sans Condensed", sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 5.4cqh; line-height: 1; letter-spacing: -.01em; }
+.stat-v.sm { font-size: 4.1cqh; }
+.stat-k { font-size: 1.78cqh; line-height: 1.32; color: var(--ink-2); }
+.stat-n { font-family: "IBM Plex Mono", monospace; font-size: 1.38cqh; color: var(--ink-3); letter-spacing: .03em; }
+
+.tag {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.42cqh; letter-spacing: .04em;
+  padding: .45cqh 1cqh; border-radius: 99px;
+  border: 1px solid var(--rule); color: var(--ink-2);
+  white-space: nowrap;
+}
+.tag.on   { border-color: color-mix(in srgb, var(--signal) 45%, transparent); background: var(--signal-soft); color: var(--signal-ink); font-weight: 500; }
+.tag.bad  { border-color: color-mix(in srgb, var(--alert) 45%, transparent); background: var(--alert-soft); color: var(--alert); font-weight: 500; }
+.tag.warn { border-color: color-mix(in srgb, var(--warn) 45%, transparent); background: var(--warn-soft); color: var(--warn); font-weight: 500; }
+
+.tags { display: flex; flex-wrap: wrap; gap: .8cqh; }
+
+.src {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.3cqh; color: var(--ink-3); letter-spacing: .02em;
+}
+
+.grid { display: grid; gap: 1.7cqh; min-height: 0; }
+.g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.fill { flex: 1; min-height: 0; }
+.row { display: flex; gap: 1.7cqh; min-width: 0; }
+.col { display: flex; flex-direction: column; gap: 1.2cqh; min-width: 0; }
+.between { justify-content: space-between; }
+.center { align-items: center; }
+.wrap { flex-wrap: wrap; }
+
+ul.ticks { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 1.05cqh; }
+ul.ticks li {
+  font-size: 1.86cqh; line-height: 1.36; color: var(--ink-2);
+  padding-left: 2.6cqh; position: relative;
+}
+ul.ticks li::before {
+  content: ""; position: absolute; left: 0; top: .78cqh;
+  width: 1.2cqh; height: 1px; background: var(--signal);
+}
+ul.ticks.neg li::before { background: var(--alert); }
+ul.ticks li b { color: var(--ink); font-weight: 600; }
+
+.hairline { height: 1px; background: var(--rule-soft); }
+
+/* ---------- chain diagram (cover + solution) ---------- */
+
+.chain { display: flex; align-items: center; gap: 1.1cqh; flex-wrap: wrap; }
+.chain .node {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.5cqh; letter-spacing: .1em; text-transform: uppercase;
+  padding: .8cqh 1.4cqh; border: 1px solid var(--rule); border-radius: .3cqh;
+  color: var(--ink-2);
+}
+.chain .arw { color: var(--signal); font-size: 1.8cqh; }
+
+/* ---------- the interactive Impact Chain (sheet 06) ---------- */
+
+.ic { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 1.2cqh; }
+.ic-stage {
+  position: relative;
+  border: 1px solid var(--rule-soft);
+  border-radius: .4cqh;
+  background: var(--sheet-2);
+  padding: 1.3cqh;
+  display: flex; flex-direction: column; gap: .7cqh;
+  opacity: .28;
+  transform: translateY(.9cqh);
+  transition: opacity .38s ease, transform .38s ease, border-color .38s ease, background .38s ease;
+}
+.ic-stage.on {
+  opacity: 1; transform: none;
+  border-color: color-mix(in srgb, var(--signal) 38%, transparent);
+  background: var(--sheet);
+  box-shadow: 0 1px 2px rgba(11,31,54,.05);
+}
+.ic-stage.on.flag { border-color: color-mix(in srgb, var(--alert) 40%, transparent); }
+.ic-stage::after {
+  content: "";
+  position: absolute; right: -1.2cqh; top: 50%; width: 1.2cqh; height: 1px;
+  background: var(--rule); transform: scaleX(0); transform-origin: left;
+  transition: transform .3s ease .1s, background .3s ease;
+}
+.ic-stage:last-child::after { display: none; }
+.ic-stage.on::after { transform: scaleX(1); background: var(--signal); }
+.ic-n {
+  font-family: "IBM Plex Mono", monospace; font-size: 1.3cqh; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-3);
+  display: flex; align-items: center; gap: .7cqh;
+}
+.ic-n i { font-style: normal; color: var(--signal); font-weight: 600; }
+.ic-h { font-family: "IBM Plex Sans", sans-serif; font-size: 1.92cqh; font-weight: 600; line-height: 1.2; }
+.ic-m { font-family: "IBM Plex Sans Condensed", sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 3.3cqh; line-height: 1; }
+.ic-d { font-size: 1.44cqh; line-height: 1.32; color: var(--ink-2); }
+
+.scen { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1.2cqh; }
+.scen-c {
+  text-align: left; font: inherit; cursor: pointer;
+  background: var(--sheet-2); border: 1px solid var(--rule-soft); border-radius: .4cqh;
+  padding: 1.4cqh; display: flex; flex-direction: column; gap: .7cqh;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+  color: inherit;
+}
+.scen-c:hover { border-color: var(--rule); transform: translateY(-.25cqh); }
+.scen-c[aria-pressed="true"] {
+  border-color: var(--signal); background: var(--signal-soft);
+}
+.scen-t { font-size: 1.8cqh; font-weight: 600; line-height: 1.22; }
+.scen-r { display: flex; gap: 1.4cqh; }
+.scen-r div { display: flex; flex-direction: column; gap: .2cqh; }
+.scen-r b { font-family: "IBM Plex Sans Condensed", sans-serif; font-variant-numeric: tabular-nums; font-size: 2.4cqh; font-weight: 700; }
+
+.btn {
+  font: inherit; cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 1.76cqh; font-weight: 500;
+  padding: 1cqh 2cqh; border-radius: .35cqh;
+  background: var(--navy); color: #fff; border: 1px solid transparent;
+  display: inline-flex; align-items: center; gap: .8cqh;
+  transition: filter .18s ease, transform .18s ease;
+}
+.sheet.invert .btn { background: var(--signal); color: #06211a; }
+.btn:hover { filter: brightness(1.14); transform: translateY(-.2cqh); }
+.btn.ghost { background: transparent; color: var(--ink-2); border-color: var(--rule); }
+.btn.ghost:hover { color: var(--ink); border-color: var(--signal); }
+
+/* ---------- chat / evidence cards (sheet 07) ---------- */
+
+.msg { border-radius: .45cqh; padding: 1.6cqh; display: flex; flex-direction: column; gap: 1cqh; }
+.msg.ask { background: var(--sheet-2); border: 1px solid var(--rule-soft); }
+.msg.ans { background: var(--signal-soft); border: 1px solid color-mix(in srgb, var(--signal) 30%, transparent); }
+.msg.ref { background: var(--warn-soft); border: 1px solid color-mix(in srgb, var(--warn) 34%, transparent); }
+.msg p { margin: 0; font-size: 1.84cqh; line-height: 1.42; }
+.cite {
+  display: inline-flex; align-items: center; gap: .6cqh;
+  font-family: "IBM Plex Mono", monospace; font-size: 1.34cqh;
+  border: 1px solid var(--rule); border-radius: .25cqh;
+  padding: .4cqh .8cqh; color: var(--ink-2); background: var(--sheet);
+}
+
+/* ---------- charts ---------- */
+
+.chart { width: 100%; height: 100%; display: block; overflow: visible; }
+.chart text { font-family: "IBM Plex Mono", monospace; fill: var(--ink-3); font-size: 10px; letter-spacing: .04em; }
+.chart .v { font-family: "IBM Plex Sans Condensed", sans-serif; fill: var(--ink); font-weight: 700; font-size: 13px; }
+.chart .axis { stroke: var(--rule-soft); stroke-width: 1; }
+.chart .bar { transition: opacity .18s ease; }
+.chart g[data-tip]:hover .bar { opacity: .82; }
+.chart g[data-tip] { cursor: default; }
+
+#tip {
+  position: fixed; z-index: 60; pointer-events: none; opacity: 0;
+  transform: translate(-50%, -130%);
+  background: var(--navy); color: #eef3f9;
+  font-family: "IBM Plex Mono", monospace; font-size: 12px; line-height: 1.5;
+  padding: 7px 10px; border-radius: 4px; white-space: pre; transition: opacity .12s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+}
+#tip.on { opacity: 1; }
+
+/* competitor plot */
+.plot-dot { cursor: default; }
+.plot-dot circle { transition: r .18s ease; }
+.plot-dot:hover circle { r: 9; }
+
+/* ---------- roadmap ---------- */
+
+.gates { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; border-top: 1px solid var(--rule); }
+.gate { padding: 1.9cqh 1.7cqh 0 0; border-left: 1px solid var(--rule-soft); padding-left: 1.7cqh; display: flex; flex-direction: column; gap: .9cqh; position: relative; }
+.gate:first-child { border-left: 0; padding-left: 0; }
+.gate::before {
+  content: ""; position: absolute; top: -1px; left: 0; width: 42%; height: 2px; background: var(--signal);
+}
+.gate:first-child::before { background: var(--ink); }
+
+/* ---------- chrome ---------- */
+
+.chrome {
+  display: flex; align-items: center; gap: 1.1rem;
+  padding: .55rem clamp(12px, 2.2vw, 28px) .7rem;
+  border-top: 1px solid var(--rule-soft);
+  background: var(--chrome);
+  backdrop-filter: blur(8px);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.chrome button {
+  font: inherit; letter-spacing: .07em; text-transform: uppercase;
+  background: transparent; border: 1px solid var(--rule); color: var(--ink-2);
+  border-radius: 3px; padding: .34rem .62rem; cursor: pointer;
+  transition: border-color .16s ease, color .16s ease;
+}
+.chrome button:hover { color: var(--ink); border-color: var(--signal); }
+.chrome button.hot { border-color: var(--signal); color: var(--signal); }
+.spacer { flex: 1; }
+
+.rail { display: flex; gap: 3px; align-items: center; }
+.rail span {
+  width: 15px; height: 3px; background: var(--rule); border-radius: 2px; cursor: pointer;
+  transition: background .16s ease, width .16s ease;
+}
+.rail span:hover { background: var(--ink-3); }
+.rail span.done { background: var(--ink-3); }
+.rail span.now { background: var(--signal); width: 30px; }
+.rail span.apx { opacity: .45; }
+
+#clock { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink); letter-spacing: .04em; }
+#pace {
+  font-variant-numeric: tabular-nums; padding: .22rem .5rem; border-radius: 3px;
+  border: 1px solid var(--rule); color: var(--ink-3);
+}
+#pace.ok    { color: var(--signal); border-color: color-mix(in srgb, var(--signal) 45%, transparent); background: var(--signal-soft); }
+#pace.warnx { color: var(--warn);   border-color: color-mix(in srgb, var(--warn) 45%, transparent);   background: var(--warn-soft); }
+#pace.late  { color: var(--alert);  border-color: color-mix(in srgb, var(--alert) 45%, transparent);  background: var(--alert-soft); }
+
+/* ---------- overlays ---------- */
+
+.overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  backdrop-filter: blur(10px);
+  display: none;
+  padding: clamp(18px, 4vh, 46px);
+  overflow: auto;
+}
+.overlay.on { display: block; }
+.overlay h2 {
+  font-size: clamp(19px, 2.4vw, 27px); margin-bottom: .35rem;
+}
+.overlay .label { font-size: 11px; margin-bottom: 1.4rem; display: block; }
+
+.register { width: 100%; border-collapse: collapse; font-size: clamp(12px, 1.15vw, 14px); }
+.register th {
+  text-align: left; font-family: "IBM Plex Mono", monospace; font-size: 10.5px;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3);
+  padding: .5rem .7rem; border-bottom: 1px solid var(--rule);
+}
+.register td { padding: .55rem .7rem; border-bottom: 1px solid var(--rule-soft); color: var(--ink-2); }
+.register tr { cursor: pointer; }
+.register tr:hover td { background: var(--sheet-2); color: var(--ink); }
+.register tr.now td { background: var(--signal-soft); color: var(--ink); }
+.register td.n { font-family: "IBM Plex Mono", monospace; color: var(--ink-3); width: 4.5rem; }
+.register td.t { font-weight: 600; color: var(--ink); }
+.register td.s { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; width: 8rem; }
+.register td.k { font-family: "IBM Plex Mono", monospace; text-align: right; width: 5rem; }
+
+#notes {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+  max-height: 46vh; overflow: auto;
+  background: var(--navy); color: #dfe8f2;
+  padding: 1.1rem clamp(14px, 3vw, 34px) 1.4rem;
+  border-top: 2px solid var(--signal);
+  display: none;
+  box-shadow: 0 -14px 40px rgba(0,0,0,.28);
+}
+#notes.on { display: block; }
+#notes .label { color: #7fd8c2; }
+#notes p { margin: .55rem 0 0; font-size: clamp(13px, 1.35vw, 16px); line-height: 1.55; max-width: 92ch; }
+#notes p b { color: #fff; }
+#notes .say { border-left: 2px solid rgba(127,216,194,.5); padding-left: .9rem; font-style: italic; }
+
+/* ---------- print → a clean 16:9 PDF deck ---------- */
+
+@page { size: 297mm 167mm; margin: 0; }
+
+@media print {
+  body { overflow: visible; background: #fff; }
+  .chrome, .overlay, #notes, #tip { display: none !important; }
+  .stage { display: block; height: auto; }
+  .sheet-wrap { display: block; padding: 0; }
+  .sheet {
+    display: block !important;
+    width: 297mm; height: 167mm; max-height: none; aspect-ratio: auto;
+    box-shadow: none; border: 0;
+    break-after: page; page-break-after: always;
+  }
+  .sheet:last-child { break-after: auto; page-break-after: auto; }
+  .ic-stage { opacity: 1 !important; transform: none !important; }
+  .ic-stage::after { transform: scaleX(1) !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+
+<div class="stage">
+  <div class="sheet-wrap">
+
+    <!-- ══════════ 00 · COVER ══════════ -->
+    <section class="sheet invert is-active" data-sec="Cover" data-t="0" data-rev="A">
+      <div class="body" style="justify-content:center; gap:3.2cqh;">
+        <div class="eyebrow">ET AI Hackathon 2026 <span class="dim">/ Problem Statement 04 / Final round</span></div>
+        <div>
+          <h1 class="h-hero">Project Atlas</h1>
+          <p class="lede" style="margin:1.6cqh 0 0; font-size:2.9cqh; color:var(--ink-2); max-width:52ch;">
+            Evidence-led delivery intelligence for data-centre EPC.
+          </p>
+        </div>
+        <div class="hairline" style="max-width:64cqh;"></div>
+        <div class="chain">
+          <span class="node">Specification</span><span class="arw">→</span>
+          <span class="node">Procurement</span><span class="arw">→</span>
+          <span class="node">Schedule</span><span class="arw">→</span>
+          <span class="node">Commissioning</span><span class="arw">→</span>
+          <span class="node" style="border-color:var(--signal); color:var(--signal);">Human decision</span>
+        </div>
+        <p class="body-t" style="max-width:66ch; font-size:2.1cqh;">
+          Every answer cites its source. Every number is deterministic.
+          Every decision stays with an engineer.
+        </p>
+        <p class="src" style="margin-top:1cqh;">
+          → advance · <b>T</b> start the 8-minute clock · <b>N</b> speaker notes · <b>O</b> sheet register
+        </p>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 01 · PROBLEM A ══════════ -->
+    <section class="sheet" data-sec="Problem" data-t="30" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Problem <span class="dim">/ the build-out</span></div>
+        <h2 class="h-1" style="max-width:26ch;">India is building the compute faster than it can control the build.</h2>
+
+        <div class="row fill" style="gap:2.6cqh;">
+          <div class="col" style="flex:1.05;">
+            <div class="grid g-3" style="gap:1.4cqh;">
+              <div class="stat">
+                <div class="stat-v">2,073<span style="font-size:.5em; color:var(--ink-3);"> MW</span></div>
+                <div class="stat-k">India data-centre IT load by end-2027, up 85% from 1,123&nbsp;MW in H1&nbsp;2025</div>
+                <div class="stat-n">JLL</div>
+              </div>
+              <div class="stat">
+                <div class="stat-v">8.33<span style="font-size:.5em; color:var(--ink-3);"> GW</span></div>
+                <div class="stat-k">India's total development pipeline — 3.24&nbsp;GW of it already committed or under construction</div>
+                <div class="stat-n">Knight Frank India, 2026</div>
+              </div>
+              <div class="stat">
+                <div class="stat-v">$383<span style="font-size:.5em; color:var(--ink-3);"> B</span></div>
+                <div class="stat-k">Global data-centre construction spend in 2030, from $261&nbsp;B in 2025</div>
+                <div class="stat-n">Grand View / TBRC</div>
+              </div>
+            </div>
+            <div class="hairline" style="margin:.6cqh 0;"></div>
+            <div class="card plain" style="padding:0; gap:1.2cqh;">
+              <div class="label">What one hyperscale project actually contains</div>
+              <div class="tags">
+                <span class="tag">15,000–40,000 equipment line items</span>
+                <span class="tag">up to 200 concurrent trade contractors</span>
+                <span class="tag">thousands of individual test procedures</span>
+                <span class="tag">zero tolerance on the uptime SLA</span>
+              </div>
+              <div class="hairline"></div>
+              <p class="small" style="color:var(--ink);">
+                And <b>80% of data-centre clients report delays to the manufacture or delivery of
+                critical equipment.</b> The supply chain is already the binding constraint.
+              </p>
+              <div class="src">Complexity figures: ET AI Hackathon 2026 PS-04 · Delay figure: Turner &amp; Townsend, Data Centre Cost Index 2024</div>
+            </div>
+          </div>
+
+          <div class="card" style="flex:.95; padding:2.2cqh 2.2cqh 1.4cqh;">
+            <div class="label">India data-centre IT-load capacity · MW</div>
+            <div style="flex:1; min-height:0;">
+              <svg class="chart" viewBox="0 0 380 200" aria-label="India data centre capacity growing from 375 MW in 2020 to a projected 4,500 MW in 2030">
+                <line class="axis" x1="0" y1="176" x2="380" y2="176"></line>
+                <g data-tip="2020&#10;375 MW operational">
+                  <rect class="bar" x="14"  y="164" width="62" height="12"  rx="4" fill="var(--cat-1)" opacity=".38"></rect>
+                  <text class="v" x="45"  y="156" text-anchor="middle">375</text>
+                  <text x="45"  y="192" text-anchor="middle">2020</text>
+                </g>
+                <g data-tip="April 2025&#10;1,263 MW operational">
+                  <rect class="bar" x="102" y="134" width="62" height="42"  rx="4" fill="var(--cat-1)" opacity=".58"></rect>
+                  <text class="v" x="133" y="126" text-anchor="middle">1,263</text>
+                  <text x="133" y="192" text-anchor="middle">2025</text>
+                </g>
+                <g data-tip="End-2027 · JLL projection&#10;2,073 MW (+85%)">
+                  <rect class="bar" x="190" y="107" width="62" height="69"  rx="4" fill="var(--cat-1)" opacity=".78"></rect>
+                  <text class="v" x="221" y="99"  text-anchor="middle">2,073</text>
+                  <text x="221" y="192" text-anchor="middle">2027</text>
+                </g>
+                <g data-tip="2030 projection&#10;4,500+ MW on $20–25 B capex">
+                  <rect class="bar" x="278" y="27"  width="62" height="149" rx="4" fill="var(--cat-1)"></rect>
+                  <text class="v" x="309" y="19"  text-anchor="middle">4,500</text>
+                  <text x="309" y="192" text-anchor="middle">2030</text>
+                </g>
+              </svg>
+            </div>
+            <div class="src">Operational / projected IT load. JLL H1-2025 · Arizton · operator disclosures.</div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 02 · PROBLEM B ══════════ -->
+    <section class="sheet" data-sec="Problem" data-t="60" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Problem <span class="dim">/ the fracture</span></div>
+        <h2 class="h-1" style="max-width:30ch;">The specification and the site stop agreeing — and nobody finds out until commissioning.</h2>
+
+        <div class="row fill" style="gap:2.4cqh;">
+          <div class="col" style="flex:.82;">
+            <div class="label">How a deviation is caught today</div>
+            <ul class="ticks neg" style="gap:.85cqh;">
+              <li>Specifications sit in <b>PDFs on a shared drive</b></li>
+              <li>Vendor submittals arrive <b>as email attachments</b></li>
+              <li>RFIs live in <b>a spreadsheet</b>, answered from memory</li>
+              <li>Primavera P6 runs in <b>its own silo</b>, updated weekly</li>
+              <li>Commissioning is executed <b>on a clipboard</b></li>
+              <li>The connection between them is <b>a senior engineer who remembers</b></li>
+            </ul>
+            <div class="hairline"></div>
+            <p class="small" style="color:var(--ink-2);">
+              The information exists. The intelligence that connects it never gets built —
+              so a 50&nbsp;kAIC shortfall in a submittal becomes an energisation date nobody
+              re-planned.
+            </p>
+          </div>
+
+          <div class="col" style="flex:1.18;">
+            <div class="grid g-2" style="gap:1.3cqh;">
+              <div class="card">
+                <div class="stat-v sm">764<span style="font-size:.45em;color:var(--ink-3);"> / 1,902</span></div>
+                <div class="stat-k">Monitored Indian infrastructure projects running late. ₹5.42&nbsp;lakh&nbsp;crore of cumulative cost overrun across 1,392 projects.</div>
+                <div class="src">MoSPI, Feb 2024 · Dec 2025</div>
+              </div>
+              <div class="card">
+                <div class="stat-v sm">$88.7<span style="font-size:.45em;color:var(--ink-3);"> B</span></div>
+                <div class="stat-k">Global rework caused by bad data in a single year — 14% of all rework performed.</div>
+                <div class="src">FMI + Autodesk, 3,900 respondents</div>
+              </div>
+              <div class="card">
+                <div class="stat-v sm">~$860<span style="font-size:.45em;color:var(--ink-3);"> K</span></div>
+                <div class="stat-k">RFI response cost on a typical project — $1,080 each, 9.9 RFIs per $1&nbsp;M of construction value.</div>
+                <div class="src">Navigant (1,362 projects) · Autodesk</div>
+              </div>
+              <div class="card">
+                <div class="stat-v sm">9 <span style="font-size:.45em;color:var(--ink-3);">in</span> 10</div>
+                <div class="stat-k">Large infrastructure projects overrun their schedule. In data centres, 25%+ of 2025 capacity missed its completion date; 30–50% of 2026's is expected late.</div>
+                <div class="src">Oxford megaprojects research · Currence, 2026</div>
+              </div>
+            </div>
+
+            <div class="card lift" style="border-color:color-mix(in srgb, var(--alert) 32%, transparent); background:var(--alert-soft); gap:1.2cqh;">
+              <div class="row between center">
+                <div style="min-width:0;">
+                  <div class="h-3" style="color:var(--alert);">Every month a 60&nbsp;MW facility is late costs $14.2&nbsp;M</div>
+                  <div class="src" style="margin-top:.5cqh;">Project IRR falls 17.1% → 12.6% at three months, → 8.8% at six. Ansar (Oxford megaprojects), citing STL Partners and Foresight, 2026.</div>
+                </div>
+                <div style="flex:none; width:42%; height:11cqh;">
+                  <svg class="chart" viewBox="0 0 300 62" aria-label="Breakdown of a three-month delay: stranded capital 15 to 40 million, lost revenue 10 to 60 million, penalties 5 to 30 million">
+                    <g data-tip="Stranded capital&#10;$15–40 M financing on an idle build">
+                      <rect class="bar" x="0"   y="6" width="86"  height="18" rx="4" fill="var(--cat-1)"></rect>
+                      <text class="v" x="4" y="43" style="font-size:11px;">$15–40M</text>
+                      <text x="4" y="56" style="font-size:8.5px;">STRANDED CAPITAL</text>
+                    </g>
+                    <g data-tip="Lost revenue&#10;$10–60 M deferred colocation / cloud capacity">
+                      <rect class="bar" x="90"  y="6" width="118" height="18" rx="4" fill="var(--cat-2)"></rect>
+                      <text class="v" x="94" y="43" style="font-size:11px;">$10–60M</text>
+                      <text x="94" y="56" style="font-size:8.5px;">LOST REVENUE</text>
+                    </g>
+                    <g data-tip="Contractual penalties&#10;$5–30 M liquidated damages, tenant compensation">
+                      <rect class="bar" x="212" y="6" width="88"  height="18" rx="4" fill="var(--cat-3)"></rect>
+                      <text class="v" x="216" y="43" style="font-size:11px;">$5–30M</text>
+                      <text x="216" y="56" style="font-size:8.5px;">PENALTIES</text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 03 · SOLUTION ══════════ -->
+    <section class="sheet" data-sec="Solution" data-t="85" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Solution <span class="dim">/ what Atlas is</span></div>
+        <h2 class="h-1" style="max-width:28ch;">Atlas is the evidence layer between the documents and the decision.</h2>
+        <p class="lede">
+          It ingests the project's own specifications, submittals, RFIs, schedules and commissioning
+          procedures, and keeps one connected, cited line from a requirement to the person who signs off on it.
+        </p>
+
+        <div class="grid g-3 fill" style="gap:1.7cqh;">
+          <div class="card lift">
+            <div class="label">01 · The spine</div>
+            <div class="h-3">Equipment Digital Thread</div>
+            <p class="small">
+              For any tag — <span class="mono">SWGR-A</span>, <span class="mono">UPS-A</span> — the current
+              specification, the vendor submittal, every compliance finding, the shipment, the schedule
+              tasks, commissioning status, open NCRs and the evidence links, in one project-scoped view.
+            </p>
+            <div class="tags" style="margin-top:auto;"><span class="tag on">Implemented</span></div>
+          </div>
+          <div class="card lift">
+            <div class="label">02 · The propagation</div>
+            <div class="h-3">Evidence-backed Impact Chain</div>
+            <p class="small">
+              A verified deviation propagates deterministically: specification&nbsp;→ vendor
+              resubmission&nbsp;→ delivery risk&nbsp;→ schedule impact&nbsp;→ commissioning readiness&nbsp;→
+              human decision. Each hop carries the document, page and span it came from.
+            </p>
+            <div class="tags" style="margin-top:auto;"><span class="tag on">Implemented</span></div>
+          </div>
+          <div class="card lift">
+            <div class="label">03 · The guardrail</div>
+            <div class="h-3">The evidence gate</div>
+            <p class="small">
+              If the project's own documents don't support an answer, Atlas returns
+              <span class="mono">INSUFFICIENT_EVIDENCE</span> instead of completing the gap from model
+              knowledge. Refusal is a designed behaviour, not a failure mode.
+            </p>
+            <div class="tags" style="margin-top:auto;"><span class="tag on">Implemented</span></div>
+          </div>
+        </div>
+
+        <div class="card plain" style="padding:1.5cqh 0 0; border-top:1px solid var(--rule); gap:.6cqh;">
+          <p class="body-t" style="font-size:2.16cqh; color:var(--ink);">
+            Instead of opening five tools and reconciling by hand, an engineer asks once —
+            and gets the chain, with the page number.
+          </p>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 04 · HOW IT WORKS ══════════ -->
+    <section class="sheet" data-sec="Solution" data-t="105" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Solution <span class="dim">/ how it works</span></div>
+        <h2 class="h-1" style="max-width:22ch;">The model explains. It never decides.</h2>
+
+        <div class="row fill" style="gap:2.4cqh;">
+          <div class="col" style="flex:1.25;">
+            <div class="label">Request path</div>
+            <div class="col" style="gap:1.05cqh;">
+              <div class="card" style="padding:1.35cqh 1.6cqh; gap:.35cqh;">
+                <div class="row between center"><b class="h-3">Ingest</b><span class="tag">PyMuPDF · OCR fallback · CSV</span></div>
+                <p class="small">Pages, sections, contextual chunks, content hash, project-scoped Qdrant vectors.</p>
+              </div>
+              <div class="card" style="padding:1.35cqh 1.6cqh; gap:.35cqh;">
+                <div class="row between center"><b class="h-3">Retrieve</b><span class="tag">dense + BM25 → RRF → rerank</span></div>
+                <p class="small">Query rewrite, intent and metadata filters, project-filtered hybrid search, cross-encoder rerank, parent expansion. No LLM in the ranking.</p>
+              </div>
+              <div class="card" style="padding:1.35cqh 1.6cqh; gap:.35cqh; border-color:color-mix(in srgb, var(--warn) 34%, transparent); background:var(--warn-soft);">
+                <div class="row between center"><b class="h-3">Gate</b><span class="tag warn">sufficient, or refuse</span></div>
+                <p class="small">Evidence sufficiency check, then claim/citation verification on the way out.</p>
+              </div>
+              <div class="card" style="padding:1.35cqh 1.6cqh; gap:.35cqh; border-color:color-mix(in srgb, var(--signal) 34%, transparent); background:var(--signal-soft);">
+                <div class="row between center"><b class="h-3">Compute</b><span class="tag on">deterministic Python</span></div>
+                <p class="small">Unit-normalised compliance comparison, CPM float and delay propagation, weighted readiness, mitigation arithmetic.</p>
+              </div>
+              <div class="card" style="padding:1.35cqh 1.6cqh; gap:.35cqh;">
+                <div class="row between center"><b class="h-3">Decide &amp; record</b><span class="tag">human action</span></div>
+                <p class="small">Approve / reject / request review, persisted with the evidence it was taken on.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col" style="flex:.85;">
+            <div class="card" style="flex:1;">
+              <div class="label">The division of labour</div>
+              <div class="row" style="gap:1.6cqh; flex:1;">
+                <div class="col" style="flex:1; gap:.75cqh;">
+                  <div class="tag on" style="align-self:flex-start;">Language model</div>
+                  <ul class="ticks" style="gap:.7cqh;">
+                    <li>Rewrites the query</li>
+                    <li>Extracts structured values</li>
+                    <li>Explains a verified calculation</li>
+                    <li>Writes the cited answer</li>
+                  </ul>
+                </div>
+                <div style="width:1px; background:var(--rule-soft);"></div>
+                <div class="col" style="flex:1; gap:.75cqh;">
+                  <div class="tag" style="align-self:flex-start;">Never the model</div>
+                  <ul class="ticks neg" style="gap:.7cqh;">
+                    <li>Pass / fail on a criterion</li>
+                    <li>Delay days and float</li>
+                    <li>Readiness score</li>
+                    <li>Approving anything</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card plain" style="padding:0; gap:.9cqh;">
+              <div class="label">Stack</div>
+              <div class="tags">
+                <span class="tag">Next.js</span><span class="tag">FastAPI</span><span class="tag">LangGraph</span>
+                <span class="tag">PostgreSQL</span><span class="tag">Qdrant</span>
+                <span class="tag">all-MiniLM-L6-v2</span><span class="tag">ms-marco reranker</span>
+                <span class="tag">multi-provider LLM gateway, failover</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 05 · DEMO — BEFORE ══════════ -->
+    <section class="sheet" data-sec="Demo" data-t="125" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Demo <span class="dim">/ the situation</span></div>
+        <h2 class="h-1" style="max-width:24ch;">A submittal lands on a Tuesday. The energisation date is in June.</h2>
+
+        <div class="row fill" style="gap:2.6cqh;">
+          <div class="col" style="flex:1;">
+            <div class="card lift" style="flex:1; justify-content:center; gap:1.5cqh;">
+              <div class="label">The person</div>
+              <p class="body-t" style="font-size:2.24cqh; color:var(--ink);">
+                A delivery manager on a <b>48&nbsp;MW campus</b>. ArcLine has just submitted
+                switchgear <span class="mono accent">SWGR-A</span> for approval.
+              </p>
+              <div class="hairline"></div>
+              <div class="label">The question they cannot answer today</div>
+              <p class="body-t" style="font-size:2.24cqh; color:var(--ink); font-style:italic;">
+                “Does this offer meet clause 2.2.3 — and if it doesn't, what does it do
+                to my energisation date?”
+              </p>
+            </div>
+          </div>
+
+          <div class="col" style="flex:1.05;">
+            <div class="label">To answer it, they open</div>
+            <div class="grid g-2" style="gap:1.1cqh;">
+              <div class="card" style="padding:1.3cqh 1.5cqh; gap:.3cqh;"><b class="small" style="color:var(--ink);">Switchgear_Specification.pdf</b><span class="src">to find clause 2.2.3</span></div>
+              <div class="card" style="padding:1.3cqh 1.5cqh; gap:.3cqh;"><b class="small" style="color:var(--ink);">The ArcLine submittal</b><span class="src">to read the rating table</span></div>
+              <div class="card" style="padding:1.3cqh 1.5cqh; gap:.3cqh;"><b class="small" style="color:var(--ink);">The RFI log</b><span class="src">in case this was asked before</span></div>
+              <div class="card" style="padding:1.3cqh 1.5cqh; gap:.3cqh;"><b class="small" style="color:var(--ink);">The shipment tracker</b><span class="src">to find the ETA</span></div>
+              <div class="card" style="padding:1.3cqh 1.5cqh; gap:.3cqh;"><b class="small" style="color:var(--ink);">Primavera P6</b><span class="src">to find the float on T-140</span></div>
+              <div class="card" style="padding:1.3cqh 1.5cqh; gap:.3cqh;"><b class="small" style="color:var(--ink);">The Cx checklist</b><span class="src">to see what it blocks</span></div>
+            </div>
+            <div class="card lift" style="border-color:color-mix(in srgb, var(--alert) 30%, transparent); background:var(--alert-soft);">
+              <div class="row between center wrap" style="gap:1.2cqh;">
+                <div class="stat" style="flex:none;"><div class="stat-v sm" style="color:var(--alert);">2–3 days</div><div class="stat-k">four people, six tools</div></div>
+                <div class="hairline" style="width:1px; height:5cqh; background:var(--rule);"></div>
+                <p class="small" style="flex:1; min-width:20ch; color:var(--ink);">
+                  …and the answer still isn't written down anywhere an auditor could follow.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 06 · DEMO — IMPACT CHAIN (interactive) ══════════ -->
+    <section class="sheet" data-sec="Demo" data-t="200" data-rev="A" id="s-chain">
+      <div class="body" style="gap:1.6cqh;">
+        <div class="row between center">
+          <div class="eyebrow">Demo <span class="dim">/ the Impact Chain, run live</span></div>
+          <div class="tags">
+            <span class="tag warn">Synthetic corpus</span>
+            <span class="tag">Seeded SWGR-A scenario</span>
+            <button class="btn" id="ic-run" style="padding:.75cqh 1.5cqh; font-size:1.6cqh;">Run connected flow</button>
+          </div>
+        </div>
+
+        <h2 class="h-2" style="max-width:44ch;">One question. Five deterministic hops. Every number traceable to a page.</h2>
+
+        <div class="ic">
+          <div class="ic-stage flag" data-stage="1">
+            <div class="ic-n"><i>01</i> Specification</div>
+            <div class="ic-h">Rating deviation</div>
+            <div class="ic-m" style="color:var(--alert);">50<span style="font-size:.5em;"> kAIC</span></div>
+            <div class="ic-d">Offered against a required minimum of <b>65 kAIC at 480 V</b>.</div>
+            <div class="tags"><span class="tag bad">NON_COMPLIANT</span></div>
+            <div class="src">Switchgear_Specification p.2 §2.2.3<br>SWGR-002_ArcLine p.1</div>
+          </div>
+          <div class="ic-stage" data-stage="2">
+            <div class="ic-n"><i>02</i> Procurement</div>
+            <div class="ic-h">Vendor resubmission</div>
+            <div class="ic-m">+35<span style="font-size:.5em;"> d</span></div>
+            <div class="ic-d">ETA variance on shipment <span class="mono">SYN-SHP-001</span> once the offer is rejected.</div>
+            <div class="tags"><span class="tag warn">DELIVERY_RISK</span></div>
+            <div class="src">Synthetic milestone data — no live AIS</div>
+          </div>
+          <div class="ic-stage" data-stage="3">
+            <div class="ic-n"><i>03</i> Schedule</div>
+            <div class="ic-h">Critical-path exposure</div>
+            <div class="ic-m" style="color:var(--alert);">28<span style="font-size:.5em;"> d</span></div>
+            <div class="ic-d">35 d predicted delay against <b>7 d</b> available float on <span class="mono">T-140</span>.</div>
+            <div class="tags"><span class="tag">T-140 → T-160 → T-170 → T-180</span></div>
+            <div class="src">Deterministic CPM propagation</div>
+          </div>
+          <div class="ic-stage" data-stage="4">
+            <div class="ic-n"><i>04</i> Commissioning</div>
+            <div class="ic-h">Readiness recalculated</div>
+            <div class="ic-m">65 <span style="color:var(--ink-3);">→</span> <span style="color:var(--alert);">45</span></div>
+            <div class="ic-d">Weighted, visible rules. Energisation <span class="mono">T-170</span> is no longer supportable.</div>
+            <div class="tags"><span class="tag warn">AT RISK</span></div>
+            <div class="src">No model input to the score</div>
+          </div>
+          <div class="ic-stage" data-stage="5">
+            <div class="ic-n"><i>05</i> Decision</div>
+            <div class="ic-h">Three costed options</div>
+            <div class="ic-m accent">3</div>
+            <div class="ic-d">Deterministic mitigations, each with its evidence chain. Nothing is applied until a human approves.</div>
+            <div class="tags"><span class="tag on">AWAITING_HUMAN_DECISION</span></div>
+            <div class="src">Persisted to the audit trail</div>
+          </div>
+        </div>
+
+        <div id="ic-scen" style="opacity:0; transition:opacity .4s ease; display:flex; flex-direction:column; gap:1.2cqh;">
+          <div class="row between center">
+            <div class="label">Select a mitigation — the counterfactual chain recalculates</div>
+            <div class="small mono" id="ic-out" style="color:var(--ink-3);">No scenario selected · residual exposure 28 d</div>
+          </div>
+          <div class="scen">
+            <button class="scen-c" aria-pressed="false" data-rec="18" data-rem="17" data-res="10">
+              <div class="scen-t">Expedite compliant replacement</div>
+              <div class="scen-r">
+                <div><b class="accent">18 d</b><span class="src">recovered</span></div>
+                <div><b>17 d</b><span class="src">remaining</span></div>
+                <div><b>+20%</b><span class="src">cost premium</span></div>
+                <div><b>98%</b><span class="src">confidence</span></div>
+              </div>
+            </button>
+            <button class="scen-c" aria-pressed="false" data-rec="35" data-rem="0" data-res="0">
+              <div class="scen-t">Install approved temporary package</div>
+              <div class="scen-r">
+                <div><b class="accent">35 d</b><span class="src">recovered</span></div>
+                <div><b>0 d</b><span class="src">remaining</span></div>
+                <div><b>+35%</b><span class="src">cost premium</span></div>
+                <div><b>92%</b><span class="src">confidence</span></div>
+              </div>
+            </button>
+            <button class="scen-c" aria-pressed="false" data-rec="10" data-rem="25" data-res="18">
+              <div class="scen-t">Resequence off-site testing</div>
+              <div class="scen-r">
+                <div><b class="accent">10 d</b><span class="src">recovered</span></div>
+                <div><b>25 d</b><span class="src">remaining</span></div>
+                <div><b>+10%</b><span class="src">cost premium</span></div>
+                <div><b>88%</b><span class="src">confidence</span></div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="src" style="margin-top:auto;">
+          Live product runs here. This sheet is the labelled backup required by our own demo protocol —
+          values are the seeded synthetic SWGR-A scenario, not a production forecast.
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 07 · DEMO — CITED OR SILENT ══════════ -->
+    <section class="sheet" data-sec="Demo" data-t="255" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Demo <span class="dim">/ cited, or silent</span></div>
+        <h2 class="h-1" style="max-width:30ch;">In EPC, a confident wrong answer is worse than no answer.</h2>
+
+        <div class="grid g-2 fill" style="gap:2.2cqh;">
+          <div class="col">
+            <div class="label">Supported by project evidence</div>
+            <div class="msg ask">
+              <div class="label">Engineer query</div>
+              <p>What is the minimum UPS-A battery autonomy?</p>
+            </div>
+            <div class="msg ans" style="flex:1;">
+              <div class="row between center">
+                <div class="label" style="color:var(--signal-ink);">AI evidence response</div>
+                <span class="tag on">Suggestion · not approved</span>
+              </div>
+              <p>Answered only from the selected project evidence, with a citation carried on the claim itself.</p>
+              <div class="tags" style="margin-top:auto;">
+                <span class="cite">UPS_Specification.md · p.1 · §2.1</span>
+                <span class="cite">RFI-003 · resolved</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="label">Not supported — and it says so</div>
+            <div class="msg ask">
+              <div class="label">Engineer query</div>
+              <p>What is the seismic qualification for the chillers?</p>
+            </div>
+            <div class="msg ref" style="flex:1;">
+              <div class="row between center">
+                <div class="label" style="color:var(--warn);">No supporting evidence</div>
+                <span class="tag warn">INSUFFICIENT_EVIDENCE</span>
+              </div>
+              <p><b>Refused on purpose.</b> Nothing in this project's documents supports an answer,
+                 so Atlas declined rather than guessing.</p>
+              <p class="src" style="margin-top:auto;">Retrieval, fusion and the sufficiency check run without an LLM. The gate is code, not a prompt instruction.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card plain" style="padding:1.4cqh 0 0; border-top:1px solid var(--rule);">
+          <div class="row between center wrap" style="gap:1.4cqh;">
+            <div class="chain" style="gap:.8cqh;">
+              <span class="node">AI assessment</span><span class="arw">→</span>
+              <span class="node">Reviewer approves</span><span class="arw">→</span>
+              <span class="node">Action persisted</span><span class="arw">→</span>
+              <span class="node" style="border-color:var(--signal); color:var(--signal);">Evidence register</span>
+            </div>
+            <p class="small" style="flex:1; min-width:26ch; text-align:right; color:var(--ink);">
+              This is the only behaviour a QA manager can sign a Tier&nbsp;III handover against.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 08 · WHO NEEDS IT ══════════ -->
+    <section class="sheet" data-sec="Market" data-t="300" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Market <span class="dim">/ who needs it first</span></div>
+        <h2 class="h-1" style="max-width:30ch;">Start where a single day of schedule is worth the most money.</h2>
+
+        <div class="row fill" style="gap:2.4cqh;">
+          <div class="col" style="flex:1.02;">
+            <div class="card" style="gap:1.2cqh;">
+              <div class="label">Beachhead · India data-centre EPC</div>
+              <div class="col" style="gap:.9cqh;">
+                <div>
+                  <div class="small" style="color:var(--ink); font-weight:600; margin-bottom:.5cqh;">Delivery contractors — the buyer</div>
+                  <div class="tags">
+                    <span class="tag">L&amp;T Construction</span><span class="tag">Tata Projects</span>
+                    <span class="tag">Sterling &amp; Wilson DC</span>
+                  </div>
+                  <div class="src" style="margin-top:.5cqh;">Sterling &amp; Wilson alone: 28 data-centre projects across India, Africa and the Middle East since 2015.</div>
+                </div>
+                <div class="hairline"></div>
+                <div>
+                  <div class="small" style="color:var(--ink); font-weight:600; margin-bottom:.5cqh;">Owner &amp; PMC teams — the co-signer</div>
+                  <div class="tags">
+                    <span class="tag">NTT GDC · 20%</span><span class="tag">STT GDC · 19%</span>
+                    <span class="tag">Sify · 19%</span><span class="tag">CtrlS · 15%</span>
+                    <span class="tag">Yotta</span><span class="tag">AdaniConneX</span><span class="tag">Nxtra</span>
+                  </div>
+                  <div class="src" style="margin-top:.5cqh;">~30 large projects announced Mar 2025 – Apr 2026, adding ~3.5 GW of planned capacity.</div>
+                </div>
+              </div>
+            </div>
+            <div class="card plain" style="padding:0; gap:.8cqh;">
+              <div class="label">Then the same shape, elsewhere</div>
+              <div class="tags">
+                <span class="tag">Semiconductor fabs</span><span class="tag">Pharma &amp; biotech</span>
+                <span class="tag">Metro rail</span><span class="tag">Refineries &amp; petrochem</span>
+              </div>
+              <p class="small">Specification → submittal → schedule → commissioning, with an audit trail. Identical problem, different equipment tags.</p>
+              <div class="src">Tailwind: India's Draft National Data Centre Policy 2025 proposes up to 20 years of tax exemption, 100% electricity-duty exemption and single-window clearance.</div>
+            </div>
+          </div>
+
+          <div class="col" style="flex:1;">
+            <div class="label">Sizing — the arithmetic, not a hockey stick</div>
+            <div class="card" style="gap:1.15cqh; flex:1; justify-content:center;">
+              <div class="row center" style="gap:1.4cqh;">
+                <div style="width:1.1cqh; height:5.2cqh; background:var(--cat-1); opacity:.28; border-radius:2px; flex:none;"></div>
+                <div class="stat" style="flex:1;">
+                  <div class="row center wrap" style="gap:1cqh;"><span class="stat-v sm">$10.8 B</span><span class="tag">TAM</span></div>
+                  <div class="stat-k">Global construction-management software, 2025 → $17.8 B by 2031.</div>
+                </div>
+              </div>
+              <div class="hairline"></div>
+              <div class="row center" style="gap:1.4cqh;">
+                <div style="width:1.1cqh; height:5.2cqh; background:var(--cat-1); opacity:.6; border-radius:2px; flex:none;"></div>
+                <div class="stat" style="flex:1;">
+                  <div class="row center wrap" style="gap:1cqh;"><span class="stat-v sm">~$390 M<span style="font-size:.5em;color:var(--ink-3);"> /yr</span></span><span class="tag">SAM</span></div>
+                  <div class="stat-k">Data-centre construction software: $261 B global build spend × 0.15% software intensity.</div>
+                </div>
+              </div>
+              <div class="hairline"></div>
+              <div class="row center" style="gap:1.4cqh;">
+                <div style="width:1.1cqh; height:5.2cqh; background:var(--cat-1); border-radius:2px; flex:none;"></div>
+                <div class="stat" style="flex:1;">
+                  <div class="row center wrap" style="gap:1cqh;"><span class="stat-v sm">~$29 M</span><span class="tag on">SOM · India DC pipeline</span></div>
+                  <div class="stat-k">8.33 GW pipeline × ~$7 M/MW India build cost = <b>~$58 B of construction spend</b> × 0.05% Atlas rate. <b>~$11 M</b> of it is already committed or under construction.</div>
+                </div>
+              </div>
+              <div class="src" style="margin-top:.6cqh;">Pipeline: Knight Frank India 2026. Build cost: India Tier III turnkey $6–8 M/MW — among the lowest in the world. Software intensity benchmarked to Procore's reported 0.1–0.2% of hard cost.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 09 · BUSINESS MODEL ══════════ -->
+    <section class="sheet" data-sec="Model" data-t="340" data-rev="A">
+      <div class="body">
+        <div class="row between center wrap" style="gap:1.2cqh;">
+          <div class="eyebrow">Business model <span class="dim">/ how it makes money</span></div>
+          <span class="tag warn">Hackathon prototype · no revenue, no pilots, no LOIs yet</span>
+        </div>
+        <h2 class="h-1" style="max-width:26ch;">Priced against the delay it prevents, not the seats it fills.</h2>
+
+        <div class="row fill" style="gap:2.2cqh;">
+          <div class="col" style="flex:1.1;">
+            <div class="grid g-3" style="gap:1.2cqh;">
+              <div class="card lift">
+                <div class="label">01 · Land</div>
+                <div class="h-3">Project licence</div>
+                <div class="stat-v sm">₹50 L–1.25 cr</div>
+                <div class="src">$60–150 K per active project-year · 0.03–0.06% of hard cost</div>
+                <p class="small" style="margin-top:auto;">Sold to the EPC delivery team on one campus.</p>
+              </div>
+              <div class="card lift">
+                <div class="label">02 · Expand</div>
+                <div class="h-3">Enterprise portfolio</div>
+                <div class="stat-v sm">₹3.3 cr+</div>
+                <div class="src">$400 K+ per year · multi-project, RBAC, audit pack</div>
+                <p class="small" style="margin-top:auto;">Sold to the owner or the contractor's head office.</p>
+              </div>
+              <div class="card lift">
+                <div class="label">03 · Attach</div>
+                <div class="h-3">Commissioning module</div>
+                <div class="stat-v sm">per MW</div>
+                <div class="src">sold alongside the Cx agent</div>
+                <p class="small" style="margin-top:auto;">The wedge into the owner's handover process.</p>
+              </div>
+            </div>
+
+            <div class="card" style="gap:1cqh;">
+              <div class="label">Where that sits against what teams already pay</div>
+              <ul class="ticks" style="gap:.65cqh;">
+                <li><b>Procore</b> — 0.1–0.2% of hard cost; $15–80 K/yr plus $50–150 K implementation, 10–15% renewal uplift</li>
+                <li><b>CxPlanner / CxAlloy / Facility Grid</b> — commissioning only, from $65–430 per month</li>
+                <li><b>Atlas</b> — a third of a system-of-record's rate, because it sits <i>beside</i> one rather than replacing it</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card lift" style="flex:.9; border-color:color-mix(in srgb, var(--signal) 34%, transparent); background:var(--signal-soft); justify-content:center; gap:1.15cqh;">
+            <div class="label" style="color:var(--signal-ink);">Worked example · Indian economics</div>
+            <div class="h-3" style="font-size:2.4cqh;">A 50 MW Tier III campus in Chennai<br>~$350 M / ₹2,900 crore · 24-month build</div>
+            <div class="hairline" style="background:color-mix(in srgb, var(--signal) 28%, transparent);"></div>
+            <div class="row between center">
+              <div class="stat"><div class="stat-k">Atlas, whole build</div><div class="stat-v sm" style="color:var(--signal-ink);">₹1.5–2 cr</div><div class="src">$175–250 K</div></div>
+              <div class="stat" style="text-align:right;"><div class="stat-k">Stranded capital alone,<br>on a 3-month slip</div><div class="stat-v sm" style="color:var(--alert);">₹72 cr</div><div class="src">$8.7 M · ₹2,900 cr × 10% × ¼ yr</div></div>
+            </div>
+            <div class="hairline" style="background:color-mix(in srgb, var(--signal) 28%, transparent);"></div>
+            <p class="body-t" style="font-size:2.1cqh; color:var(--ink);">
+              The licence costs <b>2–3% of the financing charge alone</b> — before lost revenue
+              or liquidated damages. That is the entire sales conversation.
+            </p>
+            <div class="src">India capex $5.4–8 M/MW, among the world's lowest. The equivalent global benchmark for a full three-month slip on a 50 MW campus is $30–150 M (Exto). Licence figures are our proposed pricing, not a quotation.</div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 10 · WHY BETTER ══════════ -->
+    <section class="sheet" data-sec="Edge" data-t="390" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Edge <span class="dim">/ why this and not that</span></div>
+        <h2 class="h-1" style="max-width:36ch;">A dozen tools now read the submittal. None of them tell you what it does to your energisation date.</h2>
+
+        <div class="row fill" style="gap:2.4cqh;">
+          <div class="card" style="flex:1.1; padding:2cqh 2cqh 1.2cqh;">
+            <div style="flex:1; min-height:0;">
+              <svg class="chart" viewBox="0 0 400 250" aria-label="Positioning: domain depth against lifecycle connectedness. Atlas sits alone in the deep-domain, fully-connected quadrant.">
+                <line class="axis" x1="34" y1="216" x2="386" y2="216"></line>
+                <line class="axis" x1="34" y1="14"  x2="34"  y2="216"></line>
+                <line x1="210" y1="14" x2="210" y2="216" stroke="var(--rule-soft)" stroke-dasharray="3 4"></line>
+                <line x1="34" y1="115" x2="386" y2="115" stroke="var(--rule-soft)" stroke-dasharray="3 4"></line>
+
+                <text x="34"  y="236" style="font-size:9px;">GENERIC CONSTRUCTION</text>
+                <text x="386" y="236" text-anchor="end" style="font-size:9px;">DATA-CENTRE DEPTH</text>
+                <text x="24"  y="216" text-anchor="start" transform="rotate(-90 24 216)" style="font-size:9px;">SINGLE FUNCTION</text>
+                <text x="24"  y="14"  text-anchor="end"   transform="rotate(-90 24 14)"  style="font-size:9px;">CONNECTED CHAIN</text>
+
+                <g class="plot-dot" data-tip="Procore · Autodesk Forma&#10;System of record, with a data-centre go-to-market page&#10;Horizontal product — no kAIC, no Tier commissioning logic">
+                  <circle cx="150" cy="62" r="6" fill="var(--ink-3)"></circle>
+                  <text x="162" y="59" style="font-size:9.5px; fill:var(--ink-2);">Procore · Autodesk Forma</text>
+                  <text x="162" y="71" style="font-size:8px;">system of record, horizontal</text>
+                </g>
+                <g class="plot-dot" data-tip="Oracle Aconex + Primavera P6&#10;Document control and CPM — in two separate products">
+                  <circle cx="78" cy="118" r="6" fill="var(--ink-3)"></circle>
+                  <text x="90" y="115" style="font-size:9.5px; fill:var(--ink-2);">Aconex + P6</text>
+                  <text x="90" y="127" style="font-size:8px;">docs and CPM, unconnected</text>
+                </g>
+                <g class="plot-dot" data-tip="Document Crunch — contract clause review&#10;Acquired by Trimble, 2025">
+                  <circle cx="58" cy="158" r="6" fill="var(--ink-3)"></circle>
+                  <text x="70" y="155" style="font-size:9.5px; fill:var(--ink-2);">Document Crunch</text>
+                  <text x="70" y="167" style="font-size:8px;">contracts only</text>
+                </g>
+                <g class="plot-dot" data-tip="nPlan — schedule risk learned from historical schedules&#10;Needs a schedule history you may not have">
+                  <circle cx="66" cy="196" r="6" fill="var(--ink-3)"></circle>
+                  <text x="78" y="193" style="font-size:9.5px; fill:var(--ink-2);">nPlan</text>
+                  <text x="78" y="205" style="font-size:8px;">schedule risk only</text>
+                </g>
+                <g class="plot-dot" data-tip="ALICE Technologies — schedule optimisation&#10;$61.1 M raised">
+                  <circle cx="130" cy="204" r="6" fill="var(--ink-3)"></circle>
+                  <text x="142" y="201" style="font-size:9.5px; fill:var(--ink-2);">ALICE</text>
+                  <text x="142" y="212" style="font-size:8px;">schedule optimisation</text>
+                </g>
+                <g class="plot-dot" data-tip="BuildSync · Part3 · Remy · SpecLens · iFieldSmart&#10;The 2026 AI submittal-review category&#10;Answers 'is it compliant?' — and stops there">
+                  <circle cx="196" cy="182" r="7" fill="var(--cat-2)"></circle>
+                  <text x="186" y="158" text-anchor="middle" style="font-size:9.5px; fill:var(--ink-2);">BuildSync · Part3 · Remy</text>
+                  <text x="186" y="169" text-anchor="middle" style="font-size:8px;">AI submittal review — stops at the submittal</text>
+                </g>
+                <g class="plot-dot" data-tip="OpenSpace — reality capture and progress tracking&#10;Has a data-centre offering; does not read specifications">
+                  <circle cx="246" cy="130" r="6" fill="var(--ink-3)"></circle>
+                  <text x="258" y="127" style="font-size:9.5px; fill:var(--ink-2);">OpenSpace</text>
+                  <text x="258" y="139" style="font-size:8px;">progress capture</text>
+                </g>
+                <g class="plot-dot" data-tip="CxAlloy · Facility Grid · CxPlanner · Bluerithm&#10;Deep data-centre commissioning — and nothing upstream of it">
+                  <circle cx="322" cy="192" r="7" fill="var(--cat-3)"></circle>
+                  <text x="318" y="170" text-anchor="middle" style="font-size:9.5px; fill:var(--ink-2);">CxAlloy · Facility Grid</text>
+                  <text x="318" y="181" text-anchor="middle" style="font-size:8px;">commissioning only</text>
+                </g>
+                <g class="plot-dot" data-tip="Project Atlas&#10;Data-centre depth, one connected evidence chain&#10;Specification → procurement → schedule → commissioning → decision">
+                  <circle cx="336" cy="46" r="13" fill="var(--signal)" opacity=".16"></circle>
+                  <circle cx="336" cy="46" r="7" fill="var(--signal)"></circle>
+                  <text x="336" y="28" text-anchor="middle" class="v" style="fill:var(--signal); font-size:13px;">ATLAS</text>
+                </g>
+              </svg>
+            </div>
+            <div class="src">Positions are our assessment of published product scope as of Aug 2026, not a vendor benchmark. Also in the field: Trimble (acquired Document Crunch, 2025), Powerplay and the Indian construction-SaaS cohort ($15.6 M raised) at the SME site-management end.</div>
+          </div>
+
+          <div class="col" style="flex:.86;">
+            <div class="label">Four things they don't do</div>
+            <div class="col" style="gap:1cqh; flex:1;">
+              <div class="card" style="padding:1.4cqh 1.6cqh; gap:.35cqh; border-color:color-mix(in srgb, var(--signal) 34%, transparent); background:var(--signal-soft);">
+                <b class="h-3">We don't stop at the submittal</b>
+                <p class="small">The 2026 submittal-AI cohort answers <i>“is this compliant?”</i>. Atlas answers <i>“…and what does that do to my energisation date?”</i> — the deviation keeps propagating into procurement, CPM and readiness.</p>
+              </div>
+              <div class="card" style="padding:1.4cqh 1.6cqh; gap:.35cqh;">
+                <b class="h-3">Cited, or silent</b>
+                <p class="small">No unsupported engineering answer, ever. Generic copilots summarise; ours refuses.</p>
+              </div>
+              <div class="card" style="padding:1.4cqh 1.6cqh; gap:.35cqh;">
+                <b class="h-3">The maths isn't a prompt</b>
+                <p class="small">CPM float, unit normalisation and readiness weights are Python. The model only explains what the code computed.</p>
+              </div>
+              <div class="card" style="padding:1.4cqh 1.6cqh; gap:.35cqh;">
+                <b class="h-3">Built for this cost base</b>
+                <p class="small">Designed around Indian delivery at $5.4–8 M/MW and priced for it — not a US general-contracting product retrofitted.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 11 · FUTURE PLAN ══════════ -->
+    <section class="sheet" data-sec="Roadmap" data-t="435" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Roadmap <span class="dim">/ what happens next</span></div>
+        <h2 class="h-1" style="max-width:32ch;">The next number we ship is the one we currently refuse to claim.</h2>
+
+        <div class="gates fill">
+          <div class="gate">
+            <div class="label" style="color:var(--ink);">Now</div>
+            <div class="h-3">Working prototype</div>
+            <ul class="ticks" style="gap:.6cqh;">
+              <li>Ingestion, cited retrieval, compliance, CPM, commissioning, Impact Chain — all implemented</li>
+              <li>135 backend tests, 9 frontend tests, green</li>
+              <li>Measured on a labelled synthetic corpus</li>
+            </ul>
+            <div class="tags" style="margin-top:auto;"><span class="tag bad">manual_hours: NOT_MEASURED</span></div>
+          </div>
+          <div class="gate">
+            <div class="label" style="color:var(--signal);">0–3 months</div>
+            <div class="h-3">One real project</div>
+            <ul class="ticks" style="gap:.6cqh;">
+              <li>One design partner, one live data-centre build</li>
+              <li>Authentication and RBAC — today's hard blocker</li>
+              <li>Instrument the time study and <b>publish the hours-saved number</b></li>
+            </ul>
+            <div class="tags" style="margin-top:auto;"><span class="tag">Free pilot, paid on proof</span></div>
+          </div>
+          <div class="gate">
+            <div class="label" style="color:var(--signal);">3–9 months</div>
+            <div class="h-3">Into the real stack</div>
+            <ul class="ticks" style="gap:.6cqh;">
+              <li>Primavera P6, ERP and QMS adapters with validated source evidence</li>
+              <li>Live logistics replacing the synthetic shipment layer</li>
+              <li>Second vertical — pharma or a fab</li>
+            </ul>
+            <div class="tags" style="margin-top:auto;"><span class="tag">3–5 paying projects</span></div>
+          </div>
+          <div class="gate">
+            <div class="label" style="color:var(--signal);">9–18 months</div>
+            <div class="h-3">Portfolio and proof</div>
+            <ul class="ticks" style="gap:.6cqh;">
+              <li>Enterprise portfolio tier for owners</li>
+              <li>Tier III / IV commissioning audit pack as the handover artefact</li>
+              <li>Middle East, with the same contractors</li>
+            </ul>
+            <div class="tags" style="margin-top:auto;"><span class="tag">Repeatable, referenceable</span></div>
+          </div>
+        </div>
+
+        <div class="card plain" style="padding:1.4cqh 0 0; border-top:1px solid var(--rule); gap:.8cqh;">
+          <div class="label">What would kill this — and the answer</div>
+          <div class="grid g-3" style="gap:1.6cqh;">
+            <p class="small"><b style="color:var(--ink);">Document access.</b> EPC data is contractually locked. → Deploy inside the contractor's tenancy; project-scoped isolation is already how the system is built.</p>
+            <p class="small"><b style="color:var(--ink);">Procurement cycles.</b> Enterprise EPC buys slowly. → Land as a single-project licence a project director can approve, not a portfolio deal.</p>
+            <p class="small"><b style="color:var(--ink);">Incumbent bundling.</b> Procore or Autodesk ships something adjacent. → We integrate rather than replace, and win on the depth they won't build for one vertical.</p>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ 12 · CLOSE ══════════ -->
+    <section class="sheet invert" data-sec="Close" data-t="480" data-rev="A">
+      <div class="body" style="gap:2.4cqh;">
+        <div class="eyebrow">Close</div>
+        <h2 class="h-1" style="max-width:24ch; font-size:6.4cqh;">
+          From <span style="color:var(--ink-3);">finding out at commissioning</span><br>
+          to <span class="accent">knowing at submittal</span>.
+        </h2>
+
+        <div class="card" style="background:var(--sheet-2); border-color:var(--rule-soft); gap:1.3cqh;">
+          <div class="row between center wrap" style="gap:1cqh;">
+            <div class="label">Measured today · synthetic corpus, labelled cases</div>
+            <span class="tag warn">Not a production or customer claim</span>
+          </div>
+          <div class="grid g-4" style="gap:1.6cqh;">
+            <div class="stat"><div class="stat-v sm">27 / 27</div><div class="stat-k">documents ingested</div></div>
+            <div class="stat"><div class="stat-v sm">1.0</div><div class="stat-k">compliance precision, recall and F1 on 12 labelled cases</div></div>
+            <div class="stat"><div class="stat-v sm">17 / 17</div><div class="stat-k">citations correct</div></div>
+            <div class="stat"><div class="stat-v sm">21 / 21</div><div class="stat-k">commissioning steps auto-evaluated</div></div>
+          </div>
+          <div class="hairline"></div>
+          <p class="small">
+            And the one that didn't win: on sixteen held-out questions our advanced RAG path scores
+            <b>0.2432 citation precision against the baseline's 0.3226</b>. It is in the report, unhidden.
+            A system that hides its own regressions has no business asking an engineer to trust its
+            findings &mdash; so when we went to widen the test set from three questions to sixteen, we
+            reported the two harness defects we found on the way as well.
+          </p>
+        </div>
+
+        <div class="hairline"></div>
+
+        <p class="lede" style="font-size:2.6cqh; color:var(--ink); max-width:60ch;">
+          A hackathon prototype today. The control layer for the
+          <b class="accent">$20–25 billion</b> India is about to spend on data-centre
+          construction, if we're right.
+        </p>
+
+        <div class="row between center wrap" style="margin-top:auto; gap:1.2cqh;">
+          <div class="h-2" style="font-size:4cqh;">Thank you.</div>
+          <div class="tags">
+            <span class="tag">Looking for: one design partner, one live project</span>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ A1 · APPENDIX — EVIDENCE ══════════ -->
+    <section class="sheet" data-sec="Appendix" data-apx="1" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Appendix A1 <span class="dim">/ measured evidence and honest boundaries</span></div>
+        <h2 class="h-2">Every number in this deck that describes Atlas, and where it comes from.</h2>
+
+        <div class="grid g-2 fill" style="gap:2.2cqh;">
+          <div class="col">
+            <div class="label">Measured by <span class="mono">python3 -m evaluation.run_all</span></div>
+            <div class="card" style="gap:.75cqh; flex:1;">
+              <div class="row between"><span class="small">Compliance TP / FP / FN / TN</span><b class="small mono" style="color:var(--ink);">6 / 0 / 0 / 6</b></div>
+              <div class="hairline"></div>
+              <div class="row between"><span class="small">Compliance precision · recall · F1</span><b class="small mono" style="color:var(--ink);">1.0 · 1.0 · 1.0</b></div>
+              <div class="hairline"></div>
+              <div class="row between"><span class="small">RAG Recall@12 · MRR — advanced vs baseline, 16 held-out cases</span><b class="small mono" style="color:var(--ink);">1.0 vs 0.92 · 0.75 vs 0.63</b></div>
+              <div class="hairline"></div>
+              <div class="row between"><span class="small">Citation precision — advanced vs baseline</span><b class="small mono" style="color:var(--alert);">0.2432 vs 0.3226</b></div>
+              <div class="hairline"></div>
+              <div class="row between"><span class="small">Schedule prediction error — 12 cases, mean absolute · max</span><b class="small mono" style="color:var(--ink);">1.5 · 3 days</b></div>
+              <div class="hairline"></div>
+              <div class="row between"><span class="small">Supply chain — shipments · tiers · alert latency median/max</span><b class="small mono" style="color:var(--ink);">5/5 · 15 · 75/420 min</b></div>
+              <div class="hairline"></div>
+              <div class="row between"><span class="small">Commissioning coverage · NCR correctness</span><b class="small mono" style="color:var(--ink);">1.0 · 1/1</b></div>
+              <div class="hairline"></div>
+              <div class="row between"><span class="small">Manual hours saved</span><b class="small mono" style="color:var(--alert);">NOT_MEASURED</b></div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="label">Built vs roadmap — stated plainly</div>
+            <div class="card" style="flex:1; gap:1.1cqh;">
+              <div>
+                <div class="small" style="color:var(--ink); font-weight:600; margin-bottom:.6cqh;">Implemented</div>
+                <div class="tags">
+                  <span class="tag on">Ingestion &amp; project-scoped indexing</span>
+                  <span class="tag on">Compliance + reviewer audit trail</span>
+                  <span class="tag on">CPM schedule impact</span>
+                  <span class="tag on">Commissioning &amp; NCRs</span>
+                  <span class="tag on">Equipment Digital Thread</span>
+                </div>
+              </div>
+              <div>
+                <div class="small" style="color:var(--ink); font-weight:600; margin-bottom:.6cqh;">Demo depth only</div>
+                <div class="tags">
+                  <span class="tag warn">Advanced RAG &amp; RFI matching</span>
+                  <span class="tag warn">Supply-chain risk (synthetic)</span>
+                  <span class="tag warn">Impact Chain &amp; mitigations</span>
+                </div>
+              </div>
+              <div>
+                <div class="small" style="color:var(--ink); font-weight:600; margin-bottom:.6cqh;">Roadmap — not represented as working</div>
+                <div class="tags">
+                  <span class="tag bad">Auth &amp; RBAC</span><span class="tag bad">Object storage</span>
+                  <span class="tag bad">Queued ingestion</span><span class="tag bad">Live AIS / weather</span>
+                  <span class="tag bad">ERP · P6 · QMS integrations</span>
+                </div>
+              </div>
+              <p class="src" style="margin-top:auto;">
+                All EPC documents, vendors, costs, dates and shipments are synthetic and fictional.
+                No standards body's requirements are reproduced or claimed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+    <!-- ══════════ A2 · APPENDIX — SOURCES ══════════ -->
+    <section class="sheet" data-sec="Appendix" data-apx="1" data-rev="A">
+      <div class="body">
+        <div class="eyebrow">Appendix A2 <span class="dim">/ market sources</span></div>
+        <h2 class="h-2">Where every external number came from.</h2>
+
+        <div class="grid g-3 fill" style="gap:2cqh; align-content:start;">
+          <div class="col" style="gap:.8cqh;">
+            <div class="label">Market &amp; capacity</div>
+            <p class="small"><b style="color:var(--ink);">JLL</b> — India capacity 1,123 MW (H1 2025) → 2,073 MW by end-2027, +85%; ~10.7 M sq ft and ~$6.3 B of capex.</p>
+            <p class="small"><b style="color:var(--ink);">Knight Frank India, 2026</b> — total pipeline 8.33 GW; 322.4 MW under construction, 2,920.2 MW committed; ~30 large projects announced Mar 2025 – Apr 2026 adding ~3.5 GW.</p>
+            <p class="small"><b style="color:var(--ink);">Arizton / operators</b> — ~1,263 MW operational Apr 2025; 4,500+ MW by 2030 on $20–25 B. Market $9.79 B (2025) → $21.03 B (2031). Shares: NTT 20%, STT 19%, Sify 19%, CtrlS 15%.</p>
+            <p class="small"><b style="color:var(--ink);">India build cost</b> — ₹465 M (~$5.5 M) per MW, among the world's lowest vs $6.8 M in China; Tier III turnkey $6–8 M/MW; Tier IV ₹70–90 crore/MW.</p>
+            <p class="small"><b style="color:var(--ink);">Grand View / TBRC</b> — global data-centre construction $261 B (2025) → $382.6 B (2030). Omdia: $1.6 T total data-centre capex by 2030. Construction-management software $10.6–10.8 B (2025) → $17.8 B (2031).</p>
+          </div>
+
+          <div class="col" style="gap:.8cqh;">
+            <div class="label">Cost of the problem</div>
+            <p class="small"><b style="color:var(--ink);">Turner &amp; Townsend</b>, Data Centre Cost Index 2024 — <b>~80% of respondents report delays to the manufacture or delivery of critical equipment</b>; 92% now rank power availability above location.</p>
+            <p class="small"><b style="color:var(--ink);">MoSPI</b> — 764 of 1,902 monitored projects delayed (Feb 2024); ₹5.42 lakh crore cumulative cost overrun across 1,392 projects (Dec 2025).</p>
+            <p class="small"><b style="color:var(--ink);">FMI + Autodesk</b> — bad data cost global construction $1.85 T in 2020, including $88.69 B of rework = 14% of all rework. 3,900+ respondents.</p>
+            <p class="small"><b style="color:var(--ink);">Navigant</b> (1,362 projects, &gt;1 M RFIs) — $1,080 to respond to one RFI. <b style="color:var(--ink);">Autodesk</b> — 9.9 RFIs per $1 M of construction value.</p>
+            <p class="small"><b style="color:var(--ink);">Exto</b>, 2025 — a three-month hyperscale slip costs $30–150 M; 50 MW breakdown $15–40 M stranded capital, $10–60 M lost revenue, $5–30 M penalties; 60 MW IRR 17.1% → 12.6% → 8.8%.</p>
+            <p class="small"><b style="color:var(--ink);">Uptime Institute 2025</b> — 58% of human-error outages were staff failing to follow procedure, up from 48%.</p>
+          </div>
+
+          <div class="col" style="gap:.8cqh;">
+            <div class="label">Competitive landscape</div>
+            <p class="small"><b style="color:var(--ink);">AI submittal review, 2026 cohort</b> — BuildSync, Part3, Remy, SpecLens, iFieldSmart, InspectMind. Industry reporting: a normalised 35% submittal rejection rate, 3,000+ documents on complex projects, ~80% review-time reduction claimed. <b>They stop at the submittal.</b></p>
+            <p class="small"><b style="color:var(--ink);">Procore</b> — publishes a data-centre vertical page; no public rate card. Reported at 0.1–0.2% of hard cost, $15–30 K/yr small GC, $30–80 K/yr mid-size, plus $50–150 K implementation and 10–15% renewal uplift.</p>
+            <p class="small"><b style="color:var(--ink);">Autodesk</b> — construction platform rebranded to Forma, Mar 2026. <b style="color:var(--ink);">OpenSpace</b> — data-centre reality capture. <b style="color:var(--ink);">Trimble</b> — acquired Document Crunch, 2025.</p>
+            <p class="small"><b style="color:var(--ink);">Commissioning</b> — CxAlloy, Facility Grid, CxPlanner ($65–430/mo), Bluerithm. <b style="color:var(--ink);">Schedule</b> — nPlan; ALICE Technologies, $61.1 M raised.</p>
+            <p class="small"><b style="color:var(--ink);">India</b> — Powerplay $15.6 M raised; Indian construction-tech funding $35.1 M in 2026 to date. No Indian entrant found covering the full spec-to-commissioning chain.</p>
+          </div>
+        </div>
+
+        <div class="card plain" style="padding:1.2cqh 0 0; border-top:1px solid var(--rule);">
+          <p class="small">
+            <b style="color:var(--ink);">Policy tailwind</b> — India's Draft National Data Centre Policy 2025 proposes up to 20 years of conditional tax exemption, 100% electricity-duty exemption, input tax credits on HVAC and electrical equipment, single-window clearance and dedicated Data Centre Economic Zones. Maharashtra, Tamil Nadu and Uttar Pradesh already run their own subsidy and stamp-duty regimes.
+            <b style="color:var(--ink);"> Unverified:</b> the brief's claim that 67% of APAC data-centre EPC projects overran schedule by &gt;10% (attributed there to Turner &amp; Townsend, 2024) could not be located in the source; the 80% equipment-delay figure above is used instead.
+          </p>
+        </div>
+      </div>
+      <div class="titleblock"></div>
+    </section>
+
+  </div>
+
+  <!-- ══════════ chrome ══════════ -->
+  <div class="chrome">
+    <button id="prev" aria-label="Previous sheet">←</button>
+    <button id="next" aria-label="Next sheet">→</button>
+    <div class="rail" id="rail"></div>
+    <span class="spacer"></span>
+    <span id="secname">Cover</span>
+    <span id="pace">—</span>
+    <span id="clock">00:00</span>
+    <button id="tbtn" title="Start / pause the pitch clock (T)">Start</button>
+    <button id="rbtn" title="Reset the clock (R)">Reset</button>
+    <button id="nbtn" title="Speaker notes (N)">Notes</button>
+    <button id="obtn" title="Sheet register (O)">Register</button>
+    <button id="fbtn" title="Fullscreen (F)">Full</button>
+  </div>
+</div>
+
+<div id="tip" role="status" aria-live="off"></div>
+
+<div class="overlay" id="overlay">
+  <h2>Sheet register</h2>
+  <span class="label">Project Atlas · pitch · rev A · click a row to jump</span>
+  <table class="register">
+    <thead><tr><th>Sheet</th><th>Title</th><th>Section</th><th>Target</th></tr></thead>
+    <tbody id="regbody"></tbody>
+  </table>
+</div>
+
+<div id="notes">
+  <span class="label" id="notes-h">Speaker notes</span>
+  <div id="notes-b"></div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const sheets  = Array.from(document.querySelectorAll(".sheet"));
+  const rail    = document.getElementById("rail");
+  const overlay = document.getElementById("overlay");
+  const regbody = document.getElementById("regbody");
+  const notes   = document.getElementById("notes");
+  const notesB  = document.getElementById("notes-b");
+  const notesH  = document.getElementById("notes-h");
+  const tip     = document.getElementById("tip");
+
+  const TOTAL = sheets.length;
+
+  /* ---------- titles + speaker script, keyed by sheet index ---------- */
+
+  const TITLES = [
+    "Project Atlas — cover",
+    "The build-out",
+    "The fracture",
+    "What Atlas is",
+    "How it works",
+    "Demo — the situation",
+    "Demo — the Impact Chain",
+    "Demo — cited, or silent",
+    "Who needs it first",
+    "How it makes money",
+    "Why this and not that",
+    "What happens next",
+    "Close",
+    "Appendix — measured evidence",
+    "Appendix — market sources",
+  ];
+
+  const SCRIPT = [
+    `<p class="say">"Project Atlas. Evidence-led delivery intelligence for data-centre EPC."</p>
+     <p>Hold this sheet for five seconds. Press <b>T</b> before you speak — the clock and the pacing pill run the rest of the pitch for you.</p>
+     <p>Full verbatim script, cut list, demo-failure protocol and the Q&amp;A bank: <span class="mono">docs/PITCH_SPEAKER_NOTES.md</span>. These panels are the on-stage cues.</p>`,
+
+    `<p class="say">"India is building the compute faster than it can control the build. Capacity nearly doubles by 2027, and the pipeline behind it is eight point three gigawatts — a third of that already committed or under construction."</p>
+     <p>Then the complexity beat: <b>one</b> hyperscale project is forty thousand equipment line items and two hundred concurrent trade contractors. Finish on the bridge line — <b>eighty per cent of data-centre clients already report delays to critical equipment delivery.</b> The supply chain is the binding constraint, and that is exactly what Atlas watches.</p>`,
+
+    `<p class="say">"Here's how a deviation gets caught today: a PDF, an email, a spreadsheet, P6 in a silo — and a senior engineer who remembers."</p>
+     <p>Read the four cost cards fast. The 35% submittal rejection rate is the one that lands with EPC people — they live it.</p>
+     <p>Then slow right down on the red card: <b>a three-month commissioning slip on a 50 MW campus costs thirty to a hundred and fifty million dollars.</b> Pause there. That number buys you the rest of the pitch.</p>
+     <p><i>Backup stat if challenged on commissioning quality:</i> Uptime Institute 2025 — 58% of human-error outages are staff not following the procedure, up from 48%.</p>`,
+
+    `<p class="say">"Atlas is the evidence layer between the documents and the decision."</p>
+     <p>Three things, one sentence each: the <b>Digital Thread</b> is the spine, the <b>Impact Chain</b> is the propagation, the <b>evidence gate</b> is the guardrail. Close on the line at the bottom — ask once, get the chain, with the page number.</p>`,
+
+    `<p class="say">"The model explains. It never decides."</p>
+     <p>This is the trust slide. Point at the two columns: the LLM rewrites, extracts and explains. It never computes a pass/fail, a delay day, or a readiness score, and it never approves anything. For an EPC audience this is the whole reason they'd let it near a project.</p>`,
+
+    `<p class="say">"A submittal lands on a Tuesday. The energisation date is in June."</p>
+     <p>Keep it human and short. Six tools, four people, two to three days — and no auditable answer at the end. Set up the exact question so the next sheet answers it.</p>`,
+
+    `<p><b>Run the live product here.</b> This sheet is your labelled backup — the same protocol as <i>docs/DEMO_SCRIPT.md</i>.</p>
+     <p>Click <b>Run connected flow</b>, then narrate each stage as it lands: fifty kAIC against a sixty-five kAIC requirement — vendor resubmission, thirty-five days — twenty-eight days of critical-path exposure against seven days of float — readiness sixty-five down to forty-five — three costed options, awaiting a human.</p>
+     <p class="say">"Six clicks. Under ninety seconds. Every number traceable to a page."</p>
+     <p>Then click a mitigation card and let the residual exposure recalculate on screen. Say the word <b>synthetic</b> at least once.</p>`,
+
+    `<p class="say">"In EPC, a confident wrong answer is worse than no answer."</p>
+     <p>Point at the amber card. The refusal <b>is the feature</b>. The gate is code — retrieval, fusion and the sufficiency check run without an LLM, so it can't be talked out of refusing. Finish on the audit chain: AI assessment, human approval, persisted action, evidence register.</p>`,
+
+    `<p class="say">"Start where a single day of schedule is worth the most money."</p>
+     <p>Name the buyers out loud — L&amp;T, Tata Projects, Sterling &amp; Wilson; NTT, STT, Sify, CtrlS, Yotta, AdaniConneX. Then walk the sizing <b>as arithmetic</b>, not as a hockey stick: ten point eight billion TAM; three hundred and ninety million SAM; and for the SOM, India's eight point three gigawatt pipeline at seven million dollars a megawatt is fifty-eight billion of construction spend — twenty-nine million of licence value at our rate, eleven million of it already committed or under construction.</p>
+     <p>Judges reward the method, not the number. Say every multiplier out loud.</p>`,
+
+    `<p>Open with the honest line: <b>prototype, no revenue, no pilots, no LOIs.</b> Say it before they ask.</p>
+     <p class="say">"We price against the delay we prevent, not the seats we fill."</p>
+     <p>The worked example is deliberately in <b>Indian</b> economics — India builds at five and a half to eight million dollars a megawatt, among the lowest in the world, so a US price anchor would be wrong. Two thousand nine hundred crore build; one and a half to two crore for Atlas across the whole build; and three months of stranded capital alone on that build is seventy-two crore.</p>
+     <p><b>The licence is two to three per cent of the financing charge alone.</b> Stop talking after that sentence.</p>`,
+
+    `<p class="say">"A dozen tools now read the submittal. None of them tell you what it does to your energisation date."</p>
+     <p><b>Name the competition first — it builds credibility.</b> There is a real 2026 AI submittal-review category: BuildSync, Part3, Remy, SpecLens. Procore and Autodesk both market to data centres. CxAlloy and Facility Grid own commissioning. Concede all of it.</p>
+     <p>Then the wedge: every one of them owns <b>one</b> box in our chain. The submittal tools stop at "is it compliant?". Commissioning tools start after the equipment has already arrived late. The top-right quadrant — data-centre depth <i>and</i> a connected chain — is empty.</p>
+     <p>If a judge names a competitor you don't know: say you'll check it, don't bluff. The appendix has the full landscape.</p>`,
+
+    `<p class="say">"The next number we ship is the one we currently refuse to claim."</p>
+     <p>Point at <span class="mono">manual_hours: NOT_MEASURED</span>. We could have invented an hours-saved figure. We didn't, and the first thing a design partner buys us is the right to publish it.</p>
+     <p>The risk row at the bottom is deliberate — name the three things that could kill this before a judge does.</p>`,
+
+    `<p class="say">"From finding out at commissioning, to knowing at submittal."</p>
+     <p>Read the four measured numbers. Then the regression — <b>0.2432 against the baseline's 0.3226</b> — and the line about hiding regressions. That paragraph is the strongest thing in the deck; don't rush it.</p>
+     <p>If a judge asks why it isn't the <span class="mono">0.667 vs 1.0</span> of an earlier draft: that ran on <b>three</b> test questions, where one extra citation moves the figure by a third, and the parameter search broke ties on measured wall-clock latency, so the same script picked different parameters on consecutive runs. Sixteen cases and a deterministic tiebreaker later, three runs agree exactly and the regression is still there. That is the answer you want to give — we found it by checking our own instrument.</p>
+     <p class="say">"A hackathon prototype today. The control layer for the twenty to twenty-five billion dollars India is about to spend on data-centre construction, if we're right. Thank you."</p>`,
+
+    `<p>Appendix. Do not present — open it if a judge asks how anything was measured, or challenges a metric.</p>`,
+
+    `<p>Appendix. Every external figure with its source. Open this if a judge questions a market number.</p>`,
+  ];
+
+  /* ---------- pacing targets ---------- */
+
+  const targets = sheets.map(s => s.dataset.t ? parseInt(s.dataset.t, 10) : null);
+
+  /* ---------- navigation ---------- */
+
+  let i = 0;
+
+  sheets.forEach((s, n) => {
+    const dot = document.createElement("span");
+    dot.title = `${String(n).padStart(2, "0")} · ${TITLES[n]}`;
+    if (s.dataset.apx) dot.classList.add("apx");
+    dot.addEventListener("click", () => go(n));
+    rail.appendChild(dot);
+
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      `<td class="n">${String(n).padStart(2, "0")}</td>` +
+      `<td class="t">${TITLES[n]}</td>` +
+      `<td class="s">${s.dataset.sec}</td>` +
+      `<td class="k">${targets[n] === null ? "—" : "T+" + fmt(targets[n])}</td>`;
+    tr.addEventListener("click", () => { go(n); overlay.classList.remove("on"); });
+    regbody.appendChild(tr);
+  });
+
+  /* every sheet's title block is generated, so it can never drift from the register */
+  sheets.forEach((s, n) => {
+    const tb = s.querySelector(".titleblock");
+    if (!tb) return;
+    tb.innerHTML =
+      `<div><span class="tb-k">Project</span><span class="tb-v">Atlas · ET AI Hackathon 2026 · PS-04</span></div>` +
+      `<div><span class="tb-k">Section</span><span class="tb-v">${s.dataset.sec}</span></div>` +
+      `<div><span class="tb-k">Sheet</span><span class="tb-v">${String(n).padStart(2, "0")} of ${String(TOTAL - 1).padStart(2, "0")}</span></div>` +
+      `<div><span class="tb-k">Cue</span><span class="tb-v accent">${targets[n] === null ? "APPENDIX" : "T+" + fmt(targets[n])}</span></div>`;
+  });
+
+  const railDots = Array.from(rail.children);
+  const secname  = document.getElementById("secname");
+
+  function go(n) {
+    i = Math.max(0, Math.min(TOTAL - 1, n));
+    sheets.forEach((s, k) => s.classList.toggle("is-active", k === i));
+    railDots.forEach((d, k) => {
+      d.classList.toggle("now", k === i);
+      d.classList.toggle("done", k < i);
+    });
+    Array.from(regbody.children).forEach((r, k) => r.classList.toggle("now", k === i));
+    secname.textContent = TITLES[i];
+    notesH.textContent = `Sheet ${String(i).padStart(2, "0")} — ${TITLES[i]}`;
+    notesB.innerHTML = SCRIPT[i] || "";
+    paint();
+  }
+
+  document.getElementById("prev").addEventListener("click", () => go(i - 1));
+  document.getElementById("next").addEventListener("click", () => go(i + 1));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    if (k === "ArrowRight" || k === "PageDown" || k === " ") { e.preventDefault(); go(i + 1); }
+    else if (k === "ArrowLeft" || k === "PageUp") { e.preventDefault(); go(i - 1); }
+    else if (k === "Home") { e.preventDefault(); go(0); }
+    else if (k === "End")  { e.preventDefault(); go(TOTAL - 1); }
+    else if (k === "o" || k === "O") { overlay.classList.toggle("on"); }
+    else if (k === "n" || k === "N") { notes.classList.toggle("on"); syncBtns(); }
+    else if (k === "t" || k === "T") { toggleClock(); }
+    else if (k === "r" || k === "R") { resetClock(); }
+    else if (k === "f" || k === "F") { fullscreen(); }
+    else if (k === "Escape") { overlay.classList.remove("on"); notes.classList.remove("on"); syncBtns(); }
+  });
+
+  /* ---------- the pitch clock ---------- */
+
+  let elapsed = 0, running = false, last = 0, raf = 0;
+  const clockEl = document.getElementById("clock");
+  const paceEl  = document.getElementById("pace");
+  const tbtn    = document.getElementById("tbtn");
+
+  function fmt(s) {
+    s = Math.max(0, Math.round(s));
+    return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  }
+
+  function tick(now) {
+    if (!running) return;
+    elapsed += (now - last) / 1000;
+    last = now;
+    paint();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function paint() {
+    clockEl.textContent = fmt(elapsed);
+    const t = targets[i];
+    paceEl.className = "";
+    if (t === null) { paceEl.textContent = "APPENDIX"; return; }
+    if (!running && elapsed === 0) { paceEl.textContent = "T+" + fmt(t); return; }
+    const drift = elapsed - t;
+    if (drift <= -15)     { paceEl.textContent = fmt(-drift) + " ahead"; paceEl.className = "ok"; }
+    else if (drift < 20)  { paceEl.textContent = "on time";              paceEl.className = "ok"; }
+    else if (drift < 45)  { paceEl.textContent = "+" + fmt(drift);       paceEl.className = "warnx"; }
+    else                  { paceEl.textContent = "+" + fmt(drift);       paceEl.className = "late"; }
+  }
+
+  function toggleClock() {
+    running = !running;
+    tbtn.textContent = running ? "Pause" : "Start";
+    tbtn.classList.toggle("hot", running);
+    if (running) { last = performance.now(); raf = requestAnimationFrame(tick); }
+    else { cancelAnimationFrame(raf); }
+    paint();
+  }
+  function resetClock() {
+    running = false; elapsed = 0; cancelAnimationFrame(raf);
+    tbtn.textContent = "Start"; tbtn.classList.remove("hot");
+    paint();
+  }
+
+  tbtn.addEventListener("click", toggleClock);
+  document.getElementById("rbtn").addEventListener("click", resetClock);
+
+  function fullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen?.();
+    else document.documentElement.requestFullscreen?.().catch(() => {});
+  }
+  document.getElementById("fbtn").addEventListener("click", fullscreen);
+
+  const nbtn = document.getElementById("nbtn");
+  const obtn = document.getElementById("obtn");
+  function syncBtns() {
+    nbtn.classList.toggle("hot", notes.classList.contains("on"));
+    obtn.classList.toggle("hot", overlay.classList.contains("on"));
+  }
+  nbtn.addEventListener("click", () => { notes.classList.toggle("on"); syncBtns(); });
+  obtn.addEventListener("click", () => { overlay.classList.toggle("on"); syncBtns(); });
+
+  /* ---------- chart tooltips ---------- */
+
+  document.querySelectorAll("[data-tip]").forEach((g) => {
+    g.addEventListener("pointerenter", (e) => {
+      tip.textContent = g.dataset.tip.replace(/&#10;/g, "\n");
+      tip.classList.add("on");
+      move(e);
+    });
+    g.addEventListener("pointermove", move);
+    g.addEventListener("pointerleave", () => tip.classList.remove("on"));
+  });
+  function move(e) { tip.style.left = e.clientX + "px"; tip.style.top = e.clientY + "px"; }
+
+  /* ---------- sheet 06: the Impact Chain ---------- */
+
+  const runBtn = document.getElementById("ic-run");
+  const stages = Array.from(document.querySelectorAll(".ic-stage"));
+  const scen   = document.getElementById("ic-scen");
+  const out    = document.getElementById("ic-out");
+  const cards  = Array.from(document.querySelectorAll(".scen-c"));
+  let timers = [];
+
+  function runChain() {
+    timers.forEach(clearTimeout); timers = [];
+    stages.forEach(s => s.classList.remove("on"));
+    scen.style.opacity = "0";
+    cards.forEach(c => c.setAttribute("aria-pressed", "false"));
+    out.textContent = "No scenario selected · residual exposure 28 d";
+    runBtn.textContent = "Calculating…";
+
+    stages.forEach((s, n) => {
+      timers.push(setTimeout(() => s.classList.add("on"), 260 + n * 480));
+    });
+    timers.push(setTimeout(() => {
+      scen.style.opacity = "1";
+      runBtn.textContent = "Run again";
+    }, 260 + stages.length * 480));
+  }
+
+  runBtn?.addEventListener("click", runChain);
+
+  cards.forEach((c) => {
+    c.addEventListener("click", () => {
+      const on = c.getAttribute("aria-pressed") === "true";
+      cards.forEach(x => x.setAttribute("aria-pressed", "false"));
+      if (on) { out.textContent = "No scenario selected · residual exposure 28 d"; return; }
+      c.setAttribute("aria-pressed", "true");
+      const rem = c.dataset.rem, res = c.dataset.res;
+      out.textContent = `Selected · projected delay ${rem} d · residual critical-path exposure ${res} d`;
+    });
+  });
+
+  /* ---------- go ---------- */
+  go(0);
+})();
+</script>

@@ -1,0 +1,90 @@
+{
+  "data_classification": "SYNTHETIC EPC DEMO DATA",
+  "project_id": "atlas-demo-dc-02",
+  "vendors": [
+    {
+      "vendor_id": "V-TG",
+      "name": "TitanGen Power Systems",
+      "equipment_category": "Generator",
+      "submittal_id": "SUB-GENA-001",
+      "status": "compliant_control"
+    },
+    {
+      "vendor_id": "V-NS",
+      "name": "NorthStar Genset Works",
+      "equipment_category": "Generator",
+      "submittal_id": "SUB-GENA-002",
+      "status": "intentional_deviations"
+    },
+    {
+      "vendor_id": "V-CL",
+      "name": "CryoLine Thermal",
+      "equipment_category": "Chiller",
+      "submittal_id": "SUB-CHA-001",
+      "status": "compliant_control"
+    },
+    {
+      "vendor_id": "V-FA",
+      "name": "FrostArc Cooling",
+      "equipment_category": "Chiller",
+      "submittal_id": "SUB-CHA-002",
+      "status": "intentional_deviations"
+    },
+    {
+      "vendor_id": "V-VH",
+      "name": "VoltHub Distribution",
+      "equipment_category": "PDU",
+      "submittal_id": "SUB-PDUA-001",
+      "status": "compliant_control"
+    },
+    {
+      "vendor_id": "V-CS",
+      "name": "CircuitSpan Systems",
+      "equipment_category": "PDU",
+      "submittal_id": "SUB-PDUA-002",
+      "status": "intentional_deviations"
+    },
+    {
+      "vendor_id": "V-MC",
+      "name": "MagnaCore Transformers",
+      "equipment_category": "Transformer",
+      "submittal_id": "SUB-XFMRA-001",
+      "status": "compliant_control"
+    },
+    {
+      "vendor_id": "V-FL",
+      "name": "FerroLink Magnetics",
+      "equipment_category": "Transformer",
+      "submittal_id": "SUB-XFMRA-002",
+      "status": "intentional_deviations"
+    },
+    {
+      "vendor_id": "V-SG",
+      "name": "SafeGuard Suppression",
+      "equipment_category": "FireSuppression",
+      "submittal_id": "SUB-FSA-001",
+      "status": "compliant_control"
+    },
+    {
+      "vendor_id": "V-PS",
+      "name": "PyroShield Fire Systems",
+      "equipment_category": "FireSuppression",
+      "submittal_id": "SUB-FSA-002",
+      "status": "intentional_deviations"
+    },
+    {
+      "vendor_id": "V-NC",
+      "name": "NexusControls Integration",
+      "equipment_category": "BMS",
+      "submittal_id": "SUB-BMSA-001",
+      "status": "compliant_control"
+    },
+    {
+      "vendor_id": "V-OL",
+      "name": "OmniLogic Automation",
+      "equipment_category": "BMS",
+      "submittal_id": "SUB-BMSA-002",
+      "status": "intentional_deviations"
+    }
+  ]
+}

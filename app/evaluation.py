@@ -203,14 +203,18 @@ def load_fixture(name: str, fixture_format: str) -> EvaluationFixture:
     )
 
 
-async def run_evaluation(
-    session: AsyncSession,
-    request: EvaluationRunRequest,
-    compliance_service,
-    knowledge_service,
-    qdrant,
-    settings,
+async def create_pending_run(
+    session: AsyncSession, request: EvaluationRunRequest
 ) -> EvaluationRunResponse:
+    """
+    Persist a RUNNING row and return it immediately.
+
+    The work itself is executed out of band by `execute_evaluation_run`. A live
+    RAG case spends most of its time waiting on the model provider — measured at
+    roughly 67 s per case — so running the fixture inside the POST held the
+    connection open for minutes and any proxy in front of the API returned 504
+    long before the run finished. Callers now poll `GET /runs/{id}` instead.
+    """
     run = EvaluationRun(
         project_id=request.project_id,
         fixture_name=request.fixture_name,
@@ -219,6 +223,22 @@ async def run_evaluation(
     )
     session.add(run)
     await session.commit()
+    return await get_evaluation_run(session, request.project_id, run.id)
+
+
+async def execute_evaluation_run(
+    session: AsyncSession,
+    run_id: uuid.UUID,
+    request: EvaluationRunRequest,
+    compliance_service,
+    knowledge_service,
+    qdrant,
+    settings,
+) -> None:
+    """Run the fixture against an existing RUNNING row and record the outcome."""
+    run = await session.get(EvaluationRun, run_id)
+    if run is None:  # deleted between scheduling and execution
+        return
     try:
         fixture = load_fixture(request.fixture_name, request.fixture_format)
         compliance_rows, rag_rows = [], []
@@ -274,7 +294,6 @@ async def run_evaluation(
         run.status, run.error = "FAILED", f"{type(exc).__name__}: {exc}"
     run.completed_at = datetime.now(UTC)
     await session.commit()
-    return await get_evaluation_run(session, request.project_id, run.id)
 
 
 async def get_evaluation_run(
@@ -310,11 +329,21 @@ async def _run_compliance_case(session, project_id, case, service) -> list[dict]
     if case.specification not in by_name or case.submittal not in by_name:
         raise ValueError("Required project-scoped compliance documents are missing")
     findings = await service.assess(by_name[case.specification], by_name[case.submittal])
+    from app.compliance import _document_text
+
+    try:
+        specification_text = _document_text(by_name[case.specification], service.settings)
+    except Exception:  # clause resolution is best-effort; never fail the case on it
+        specification_text = ""
     return [
         {
             "parameter": item.parameter,
             "status": item.status,
-            "clause": _citation_clause(item.original_requirement_text, item.specification_citation.section),
+            "clause": _resolve_clause(
+                specification_text,
+                item.original_requirement_text,
+                item.specification_citation.section,
+            ),
         }
         for item in findings
     ]
@@ -334,6 +363,32 @@ async def _candidate_references(qdrant, settings, chunk_ids: list[str]) -> list[
         for value in chunk_ids
         if value in payloads and payloads[value].get("filename") and payloads[value].get("page")
     ]
+
+
+# A numbered clause at the start of a line, with or without Markdown bold:
+# "**2.2.1** Nominal system rating: ..." or "1.1 Provide one modular ...".
+# A Markdown heading ("### 2.2 Electrical and performance requirements") is
+# deliberately excluded, because the heading is the section, not the clause.
+CLAUSE_MARKER = re.compile(r"(?m)^[ \t]*\*{0,2}(\d+\.\d+(?:\.\d+)?)\*{0,2}[ \t]")
+
+
+def _resolve_clause(specification_text: str, requirement_text: str, fallback: str) -> str:
+    """
+    The numbered clause a requirement sits under.
+
+    The compliance rules capture only the requirement itself — "Nominal system
+    rating: ... 480/277 V" — which starts *after* the "**2.2.1**" marker on the
+    same line, so searching the captured text alone never finds a clause number
+    and every finding fell back to the section heading. Locate the requirement
+    in the source document instead and take the nearest marker above it.
+    """
+    if specification_text and requirement_text:
+        index = specification_text.find(requirement_text)
+        if index != -1:
+            markers = list(CLAUSE_MARKER.finditer(specification_text, 0, index))
+            if markers:
+                return markers[-1].group(1)
+    return _citation_clause(requirement_text, fallback)
 
 
 def _citation_clause(text: str, fallback: str) -> str:

@@ -10,8 +10,17 @@
       "finding": "Offered voltage is 415/240 V rather than the required 480/277 V.",
       "severity": "high",
       "evidence": [
-        {"document": "submittals/UPS-002_VoltEdge_UPS-A.md", "page": 1, "excerpt": "Voltage: 415/240 V"},
-        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.1", "excerpt": "480/277 V"}
+        {
+          "document": "submittals/UPS-002_VoltEdge_UPS-A.md",
+          "page": 1,
+          "excerpt": "Voltage: 415/240 V"
+        },
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.1",
+          "excerpt": "480/277 V"
+        }
       ]
     },
     {
@@ -22,8 +31,17 @@
       "finding": "Offered battery autonomy is 10 minutes rather than the required minimum 15 minutes at full rated load.",
       "severity": "high",
       "evidence": [
-        {"document": "submittals/UPS-002_VoltEdge_UPS-A.md", "page": 1, "excerpt": "Battery: 10 minutes"},
-        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.4", "excerpt": "not less than 15 minutes"}
+        {
+          "document": "submittals/UPS-002_VoltEdge_UPS-A.md",
+          "page": 1,
+          "excerpt": "Battery: 10 minutes"
+        },
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.4",
+          "excerpt": "not less than 15 minutes"
+        }
       ]
     },
     {
@@ -34,8 +52,17 @@
       "finding": "Offered net sensible cooling capacity is 105 kW rather than the required minimum 120 kW.",
       "severity": "high",
       "evidence": [
-        {"document": "submittals/CRAC-002_ThermalCore_CRAC-1.md", "page": 1, "excerpt": "Net sensible capacity: 105 kW"},
-        {"document": "specifications/CRAC_Specification.md", "page": 2, "clause": "2.3.1", "excerpt": "Minimum net sensible cooling capacity: 120 kW"}
+        {
+          "document": "submittals/CRAC-002_ThermalCore_CRAC-1.md",
+          "page": 1,
+          "excerpt": "Net sensible capacity: 105 kW"
+        },
+        {
+          "document": "specifications/CRAC_Specification.md",
+          "page": 2,
+          "clause": "2.3.1",
+          "excerpt": "Minimum net sensible cooling capacity: 120 kW"
+        }
       ]
     },
     {
@@ -46,8 +73,17 @@
       "finding": "Offered front service clearance is 12 inches rather than the required minimum 24 inches.",
       "severity": "medium",
       "evidence": [
-        {"document": "submittals/CRAC-002_ThermalCore_CRAC-1.md", "page": 1, "excerpt": "Service clearance: 12 inches"},
-        {"document": "specifications/CRAC_Specification.md", "page": 2, "clause": "2.4.2", "excerpt": "not less than 24 inches"}
+        {
+          "document": "submittals/CRAC-002_ThermalCore_CRAC-1.md",
+          "page": 1,
+          "excerpt": "Service clearance: 12 inches"
+        },
+        {
+          "document": "specifications/CRAC_Specification.md",
+          "page": 2,
+          "clause": "2.4.2",
+          "excerpt": "not less than 24 inches"
+        }
       ]
     },
     {
@@ -58,8 +94,17 @@
       "finding": "Offered interrupting rating is 50 kAIC rather than the required minimum 65 kAIC at 480 V.",
       "severity": "high",
       "evidence": [
-        {"document": "submittals/SWGR-002_ArcLine_SWGR-A.md", "page": 1, "excerpt": "Interrupting rating: 50 kAIC"},
-        {"document": "specifications/Switchgear_Specification.md", "page": 2, "clause": "2.2.3", "excerpt": "not less than 65 kAIC"}
+        {
+          "document": "submittals/SWGR-002_ArcLine_SWGR-A.md",
+          "page": 1,
+          "excerpt": "Interrupting rating: 50 kAIC"
+        },
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.2.3",
+          "excerpt": "not less than 65 kAIC"
+        }
       ]
     },
     {
@@ -70,8 +115,17 @@
       "finding": "Offered Type 1 indoor enclosure does not meet the project-specific synthetic Type 2B enclosure requirement.",
       "severity": "high",
       "evidence": [
-        {"document": "submittals/SWGR-002_ArcLine_SWGR-A.md", "page": 1, "excerpt": "Enclosure: Type 1 indoor enclosure"},
-        {"document": "specifications/Switchgear_Specification.md", "page": 2, "clause": "2.3.4", "excerpt": "arc-resistant Type 2B"}
+        {
+          "document": "submittals/SWGR-002_ArcLine_SWGR-A.md",
+          "page": 1,
+          "excerpt": "Enclosure: Type 1 indoor enclosure"
+        },
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.3.4",
+          "excerpt": "arc-resistant Type 2B"
+        }
       ]
     }
   ],
@@ -87,8 +141,15 @@
       "reason": "Both request the UPS-A front service and bypass maintenance clearance.",
       "expected_answer": "Maintain 900 mm minimum clear working space at the UPS-A front service face, including the bypass cabinet operating position.",
       "evidence": [
-        {"document": "rfis/RFI-003_UPS_bypass_clearance.md", "page": 1},
-        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.5"}
+        {
+          "document": "rfis/RFI-003_UPS_bypass_clearance.md",
+          "page": 1
+        },
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.5"
+        }
       ]
     },
     {
@@ -97,8 +158,15 @@
       "reason": "Both request the east louvre removal and reinstatement sequence for switchgear delivery.",
       "expected_answer": "Yes. Use the east equipment louvre. Remove its centre bay after the electrical room slab is cured and before the planned switchgear delivery window; reinstate after final section placement.",
       "evidence": [
-        {"document": "rfis/RFI-005_switchgear_delivery_route.md", "page": 1},
-        {"document": "specifications/Switchgear_Specification.md", "page": 1, "clause": "1.3"}
+        {
+          "document": "rfis/RFI-005_switchgear_delivery_route.md",
+          "page": 1
+        },
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 1,
+          "clause": "1.3"
+        }
       ]
     }
   ],
@@ -110,12 +178,285 @@
       "analysis_date": "2026-04-15",
       "risk_level": "critical",
       "forecast_delay_days": 35,
-      "impact_chain": ["T-140", "T-160", "T-170", "T-180"],
+      "impact_chain": [
+        "T-140",
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
       "expected_narrative": "Switchgear delivery is forecast 35 days late and delays installation, critical distribution energization, and integrated systems testing on the critical path.",
       "evidence": [
-        {"document": "schedules/atlas_demo_schedule.csv", "row": "T-140", "excerpt": "forecast_finish=2026-06-24; delay_days=35; risk_flag=critical"},
-        {"document": "meeting_minutes/MM-014_delivery_risk_review.md", "page": 1, "excerpt": "35 calendar days later than the baseline"},
-        {"document": "change_orders/CO-001_switchgear_recovery.md", "page": 1, "excerpt": "No recovery commitment is approved"}
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-140",
+          "excerpt": "forecast_finish=2026-06-24; delay_days=35; risk_flag=critical"
+        },
+        {
+          "document": "meeting_minutes/MM-014_delivery_risk_review.md",
+          "page": 1,
+          "excerpt": "35 calendar days later than the baseline"
+        },
+        {
+          "document": "change_orders/CO-001_switchgear_recovery.md",
+          "page": 1,
+          "excerpt": "No recovery commitment is approved"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-001",
+      "task_id": "T-120",
+      "task_name": "Switchgear fabrication",
+      "analysis_date": "2026-04-15",
+      "risk_level": "high",
+      "forecast_delay_days": 35,
+      "impact_chain": [
+        "T-120",
+        "T-130",
+        "T-140",
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Switchgear fabrication is recorded 35 days late in the synthetic schedule (synthetic busbar material shortage), analysed on 2026-04-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-120",
+          "excerpt": "baseline_finish=2026-05-08; delay_days=35; risk_flag=at_risk"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-002",
+      "task_id": "T-130",
+      "task_name": "Switchgear factory acceptance test",
+      "analysis_date": "2026-04-15",
+      "risk_level": "high",
+      "forecast_delay_days": 35,
+      "impact_chain": [
+        "T-130",
+        "T-140",
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Switchgear factory acceptance test is recorded 35 days late in the synthetic schedule (forecast from synthetic vendor update), analysed on 2026-04-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-130",
+          "excerpt": "baseline_finish=2026-05-13; delay_days=35; risk_flag=at_risk"
+        },
+        {
+          "document": "meeting_minutes/MM-014_delivery_risk_review.md",
+          "page": 1,
+          "excerpt": "factory acceptance testing is forecast to complete on 2026-06-17"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-003",
+      "task_id": "T-160",
+      "task_name": "Install SWGR-A",
+      "analysis_date": "2026-04-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 30,
+      "impact_chain": [
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Install SWGR-A is recorded 30 days late in the synthetic schedule (blocked by delayed delivery), analysed on 2026-04-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-160",
+          "excerpt": "baseline_finish=2026-06-03; delay_days=30; risk_flag=critical"
+        },
+        {
+          "document": "meeting_minutes/MM-014_delivery_risk_review.md",
+          "page": 1,
+          "excerpt": "factory acceptance testing is forecast to complete on 2026-06-17"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-004",
+      "task_id": "T-170",
+      "task_name": "Energize critical distribution",
+      "analysis_date": "2026-04-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 32,
+      "impact_chain": [
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Energize critical distribution is recorded 32 days late in the synthetic schedule (electrical energization critical path), analysed on 2026-04-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-170",
+          "excerpt": "baseline_finish=2026-06-10; delay_days=32; risk_flag=critical"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-005",
+      "task_id": "T-180",
+      "task_name": "Integrated systems test",
+      "analysis_date": "2026-04-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 32,
+      "impact_chain": [
+        "T-180"
+      ],
+      "expected_narrative": "Integrated systems test is recorded 32 days late in the synthetic schedule (final synthetic critical-path successor), analysed on 2026-04-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-180",
+          "excerpt": "baseline_finish=2026-06-19; delay_days=32; risk_flag=critical"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-006",
+      "task_id": "T-120",
+      "task_name": "Switchgear fabrication",
+      "analysis_date": "2026-05-15",
+      "risk_level": "high",
+      "forecast_delay_days": 35,
+      "impact_chain": [
+        "T-120",
+        "T-130",
+        "T-140",
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Switchgear fabrication is recorded 35 days late in the synthetic schedule (synthetic busbar material shortage), analysed on 2026-05-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-120",
+          "excerpt": "baseline_finish=2026-05-08; delay_days=35; risk_flag=at_risk"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-007",
+      "task_id": "T-130",
+      "task_name": "Switchgear factory acceptance test",
+      "analysis_date": "2026-05-15",
+      "risk_level": "high",
+      "forecast_delay_days": 35,
+      "impact_chain": [
+        "T-130",
+        "T-140",
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Switchgear factory acceptance test is recorded 35 days late in the synthetic schedule (forecast from synthetic vendor update), analysed on 2026-05-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-130",
+          "excerpt": "baseline_finish=2026-05-13; delay_days=35; risk_flag=at_risk"
+        },
+        {
+          "document": "meeting_minutes/MM-014_delivery_risk_review.md",
+          "page": 1,
+          "excerpt": "factory acceptance testing is forecast to complete on 2026-06-17"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-008",
+      "task_id": "T-160",
+      "task_name": "Install SWGR-A",
+      "analysis_date": "2026-05-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 30,
+      "impact_chain": [
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Install SWGR-A is recorded 30 days late in the synthetic schedule (blocked by delayed delivery), analysed on 2026-05-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-160",
+          "excerpt": "baseline_finish=2026-06-03; delay_days=30; risk_flag=critical"
+        },
+        {
+          "document": "meeting_minutes/MM-014_delivery_risk_review.md",
+          "page": 1,
+          "excerpt": "factory acceptance testing is forecast to complete on 2026-06-17"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-009",
+      "task_id": "T-170",
+      "task_name": "Energize critical distribution",
+      "analysis_date": "2026-05-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 32,
+      "impact_chain": [
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Energize critical distribution is recorded 32 days late in the synthetic schedule (electrical energization critical path), analysed on 2026-05-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-170",
+          "excerpt": "baseline_finish=2026-06-10; delay_days=32; risk_flag=critical"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SCH-010",
+      "task_id": "T-180",
+      "task_name": "Integrated systems test",
+      "analysis_date": "2026-05-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 32,
+      "impact_chain": [
+        "T-180"
+      ],
+      "expected_narrative": "Integrated systems test is recorded 32 days late in the synthetic schedule (final synthetic critical-path successor), analysed on 2026-05-15.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-180",
+          "excerpt": "baseline_finish=2026-06-19; delay_days=32; risk_flag=critical"
+        }
+      ]
+    },
+    {
+      "risk_id": "SR-SWGR-002",
+      "task_id": "T-140",
+      "task_name": "SWGR-A delivery milestone",
+      "analysis_date": "2026-05-15",
+      "risk_level": "critical",
+      "forecast_delay_days": 35,
+      "impact_chain": [
+        "T-140",
+        "T-160",
+        "T-170",
+        "T-180"
+      ],
+      "expected_narrative": "Re-analysis of the switchgear delivery milestone five days before its 2026-05-20 baseline finish, with the 35-day delay still recorded.",
+      "evidence": [
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-140",
+          "excerpt": "forecast_finish=2026-06-24; delay_days=35; risk_flag=critical"
+        }
       ]
     }
   ],
@@ -124,15 +465,28 @@
       "question": "What is the minimum UPS-A battery autonomy?",
       "split": "development",
       "answer": "The synthetic specification requires not less than 15 minutes at 100 percent rated load at 25 °C.",
-      "supporting_references": [{"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.4"}]
+      "supporting_references": [
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.4"
+        }
+      ]
     },
     {
       "question": "Has the UPS front-clearance question been answered before?",
       "split": "development",
       "answer": "Yes. RFI-003 answered that UPS-A requires 900 mm minimum clear working space at the front service face, including bypass operation.",
       "supporting_references": [
-        {"document": "rfis/RFI-003_UPS_bypass_clearance.md", "page": 1},
-        {"document": "specifications/UPS_Specification.md", "page": 2, "clause": "2.2.5"}
+        {
+          "document": "rfis/RFI-003_UPS_bypass_clearance.md",
+          "page": 1
+        },
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.5"
+        }
       ]
     },
     {
@@ -140,8 +494,18 @@
       "split": "development",
       "answer": "Expose condensate alarm, fan status, supply-air temperature, and common alarm to the project controls gateway.",
       "supporting_references": [
-        {"document": "specifications/CRAC_Specification.md", "page": 2, "clauses": ["2.3.3", "2.4.1"]},
-        {"document": "rfis/RFI-010_CRAC_controls_alarm.md", "page": 1}
+        {
+          "document": "specifications/CRAC_Specification.md",
+          "page": 2,
+          "clauses": [
+            "2.3.3",
+            "2.4.1"
+          ]
+        },
+        {
+          "document": "rfis/RFI-010_CRAC_controls_alarm.md",
+          "page": 1
+        }
       ]
     },
     {
@@ -149,15 +513,227 @@
       "split": "test",
       "answer": "T-140 SWGR-A delivery is forecast 35 days late, delaying T-160 installation, T-170 critical distribution energization, and T-180 integrated systems test.",
       "supporting_references": [
-        {"document": "schedules/atlas_demo_schedule.csv", "row": "T-140"},
-        {"document": "meeting_minutes/MM-014_delivery_risk_review.md", "page": 1}
+        {
+          "document": "schedules/atlas_demo_schedule.csv",
+          "row": "T-140"
+        },
+        {
+          "document": "meeting_minutes/MM-014_delivery_risk_review.md",
+          "page": 1
+        }
       ]
     },
     {
       "question": "Is a switchgear delivery recovery measure approved?",
       "split": "test",
       "answer": "No. CO-001 is proposed only; it evaluates after-hours access, a route mock-up, and potential expedited freight without approving a recovery commitment.",
-      "supporting_references": [{"document": "change_orders/CO-001_switchgear_recovery.md", "page": 1}]
+      "supporting_references": [
+        {
+          "document": "change_orders/CO-001_switchgear_recovery.md",
+          "page": 1
+        }
+      ]
+    },
+    {
+      "question": "What is the minimum short-circuit interrupting rating for SWGR-A?",
+      "split": "development",
+      "answer": "Not less than 65 kAIC at 480 V for all main and feeder protective devices.",
+      "supporting_references": [
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.2.3"
+        }
+      ]
+    },
+    {
+      "question": "What enclosure configuration does the switchgear specification require?",
+      "split": "test",
+      "answer": "An arc-resistant Type 2B enclosure, stated as a fictional project requirement.",
+      "supporting_references": [
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.3.4"
+        }
+      ]
+    },
+    {
+      "question": "What main bus rating is specified for the switchgear lineup?",
+      "split": "test",
+      "answer": "4,000 A continuous, copper, in a main-tie-main arrangement with drawout breakers.",
+      "supporting_references": [
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.2.2"
+        }
+      ]
+    },
+    {
+      "question": "What system voltage is specified for SWGR-A?",
+      "split": "development",
+      "answer": "480Y/277 V, three-phase, four-wire, 60 Hz.",
+      "supporting_references": [
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.2.1"
+        }
+      ]
+    },
+    {
+      "question": "What operating aisle is required in front of the switchgear?",
+      "split": "test",
+      "answer": "A front-accessible indoor lineup with a minimum 1,200 mm operating aisle.",
+      "supporting_references": [
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.3.1"
+        }
+      ]
+    },
+    {
+      "question": "What form of separation is required for the switchgear?",
+      "split": "test",
+      "answer": "Form 3b equivalent compartment segregation.",
+      "supporting_references": [
+        {
+          "document": "specifications/Switchgear_Specification.md",
+          "page": 2,
+          "clause": "2.2.4"
+        }
+      ]
+    },
+    {
+      "question": "What is the minimum net sensible cooling capacity for the CRAC unit?",
+      "split": "development",
+      "answer": "120 kW at 24 degrees Celsius return-air dry bulb and the scheduled chilled-water condition.",
+      "supporting_references": [
+        {
+          "document": "specifications/CRAC_Specification.md",
+          "page": 2,
+          "clause": "2.3.1"
+        }
+      ]
+    },
+    {
+      "question": "What service access clearance is required at the CRAC front face?",
+      "split": "test",
+      "answer": "Not less than 24 inches of clear service access at the front coil and filter access face.",
+      "supporting_references": [
+        {
+          "document": "specifications/CRAC_Specification.md",
+          "page": 2,
+          "clause": "2.4.2"
+        }
+      ]
+    },
+    {
+      "question": "What electrical supply is specified for the CRAC unit?",
+      "split": "test",
+      "answer": "480 V, three-phase, 60 Hz, with dual independent control-power inputs where offered.",
+      "supporting_references": [
+        {
+          "document": "specifications/CRAC_Specification.md",
+          "page": 2,
+          "clause": "2.3.2"
+        }
+      ]
+    },
+    {
+      "question": "What is the minimum nominal rating for the UPS?",
+      "split": "development",
+      "answer": "100 kVA / 90 kW minimum at 480/277 V, three-phase, four-wire, 60 Hz.",
+      "supporting_references": [
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.1"
+        }
+      ]
+    },
+    {
+      "question": "What module redundancy does the UPS specification require?",
+      "split": "test",
+      "answer": "Online double-conversion with a minimum N+1 power-module arrangement; losing one module must not take capacity below 90 kW.",
+      "supporting_references": [
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.2"
+        }
+      ]
+    },
+    {
+      "question": "What harmonic limits apply to the UPS?",
+      "split": "test",
+      "answer": "Input current THDi not more than 5 percent at full load and output voltage THDv not more than 3 percent for linear load.",
+      "supporting_references": [
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.3"
+        }
+      ]
+    },
+    {
+      "question": "What clear working space is required at the UPS front service face?",
+      "split": "development",
+      "answer": "A minimum 900 mm clear working space at the front service face.",
+      "supporting_references": [
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 2,
+          "clause": "2.2.5"
+        }
+      ]
+    },
+    {
+      "question": "What must be recorded in the UPS commissioning turnover package?",
+      "split": "test",
+      "answer": "Serial numbers, firmware version, and final battery string quantities.",
+      "supporting_references": [
+        {
+          "document": "specifications/UPS_Specification.md",
+          "page": 3,
+          "clause": "2.3.3"
+        }
+      ]
+    },
+    {
+      "question": "Why is the SWGR-A delivery milestone forecast late?",
+      "split": "test",
+      "answer": "A synthetic busbar material shortage moved factory acceptance testing to 2026-06-17, putting the delivery milestone 35 calendar days behind the 2026-05-20 baseline.",
+      "supporting_references": [
+        {
+          "document": "meeting_minutes/MM-014_delivery_risk_review.md",
+          "page": 1
+        }
+      ]
+    },
+    {
+      "question": "What recovery measures were proposed after the switchgear delay?",
+      "split": "development",
+      "answer": "Reserve after-hours delivery access through the east louvre, add a pre-delivery mock-up of the shipping-section route, and evaluate expedited freight only after a revised factory acceptance date is provided.",
+      "supporting_references": [
+        {
+          "document": "change_orders/CO-001_switchgear_recovery.md",
+          "page": 1
+        }
+      ]
+    },
+    {
+      "question": "What minimum clearance was confirmed for the UPS-A bypass cabinet?",
+      "split": "test",
+      "answer": "900 mm minimum clear working space at the UPS-A front service face, including the bypass cabinet operating position.",
+      "supporting_references": [
+        {
+          "document": "rfis/RFI-003_UPS_bypass_clearance.md",
+          "page": 1
+        }
+      ]
     }
   ],
   "expected_insufficient_answers": [
@@ -168,6 +744,22 @@
     {
       "question": "What is the generator fuel polishing interval?",
       "split": "test"
+    },
+    {
+      "question": "What is the annual electricity tariff for the site?",
+      "split": "development"
+    },
+    {
+      "question": "Who is the appointed fire safety officer for the project?",
+      "split": "test"
+    },
+    {
+      "question": "What is the warranty period offered on the CRAC compressors?",
+      "split": "test"
+    },
+    {
+      "question": "What is the contract value of the switchgear purchase order?",
+      "split": "development"
     }
   ],
   "expected_commissioning_evaluation": {

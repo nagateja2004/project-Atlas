@@ -1,7 +1,7 @@
 ## Completed
 - Foundation: FastAPI, configuration, PostgreSQL/Qdrant clients, data models, health check, workflow skeleton, local dependencies, and focused tests.
 - Fully synthetic, project-scoped EPC demo corpus with compliance, RFI similarity, schedule-risk, commissioning, and context test cases.
-- Project-scoped document ingestion: upload validation, PDF/CSV extraction, conditional OCR fallback, metadata/chunking, local deterministic embeddings, Qdrant indexing, hybrid retrieval, citations, duplicate protection, and failure tracking.
+- Project-scoped document ingestion: upload validation, PDF/CSV extraction, conditional OCR fallback, metadata/chunking, sentence-transformer embeddings, Qdrant indexing, hybrid retrieval, citations, duplicate protection, and failure tracking.
 - Knowledge Copilot and RFI Intelligence LangGraph workflows, plus NetworkX entity extraction and project-scoped graph JSON export.
 - Specification and Quality Compliance Agent with deterministic normalized comparisons, reviewer audit trail, APIs, and ground-truth metrics.
 - Schedule Intelligence Agent with deterministic dependency validation, CPM/float calculations, scenario delay propagation, risk classification, evidence, API, and ground-truth tests.
@@ -29,7 +29,7 @@
 
 ## Known issues
 - Production migrations are not provisioned; `.env.example` enables local schema creation for the Compose database.
-- Live knowledge responses and optional narrative enrichment require `ATLAS_GEMINI_API_KEY`; scanned-PDF fallback also requires the system Tesseract binary.
+- Live knowledge responses and optional narrative enrichment require `ATLAS_GROQ_API_KEY`; scanned-PDF fallback also requires the system Tesseract binary.
 - `npm audit --omit=dev` reports a moderate Next bundled-PostCSS advisory with no compatible npm upgrade path reported by the registry.
 - Authentic dashboard screenshots and a recording still require a locally configured Gemini key and browser capture; static, clearly labelled measured backup visuals and a capture manifest are included.
 - Prompt-injection detection is a deterministic baseline; production deployment needs policy tuning, adversarial evaluation, and monitoring.

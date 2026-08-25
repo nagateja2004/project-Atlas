@@ -170,3 +170,57 @@ def test_conflicting_sources_remain_identified_when_approved_evidence_is_suffici
 
     assert _evidence_sufficiency(context, plan, Settings(reranker_score_threshold=0.2)) == []
     assert context.revision_conflicts == [conflict]
+
+
+def _multi_bundle(items: list[RetrievalResult], query: str) -> ContextBundle:
+    return ContextBundle(
+        project_id=items[0].project_id,
+        query=query,
+        chunks=[ContextChunk(**item.model_dump(), rerank_score=0.9) for item in items],
+        total_tokens=40,
+        max_context_tokens=4_000,
+    )
+
+
+def _plan(project_id: uuid.UUID, query: str) -> QueryPlan:
+    return QueryPlan(
+        original_query=query, standalone_query=query, intent="knowledge_query", project_id=project_id
+    )
+
+
+def test_one_open_rfi_does_not_block_an_answer_supported_by_approved_evidence() -> None:
+    """
+    Regression: the gate used to fail a context if ANY chunk was non-approved,
+    and _approval_status falls back to rfi_status, so a single open RFI made an
+    otherwise-supported answer return INSUFFICIENT_EVIDENCE.
+    """
+    project_id = uuid.uuid4()
+    query = "What is the minimum UPS-A battery autonomy?"
+    approved = result("Battery autonomy: not less than 15 minutes.", project_id, approval="approved")
+    open_rfi = result("Autonomy question is still open.", project_id, document_type="RFI", approval="open")
+
+    reasons = _evidence_sufficiency(_multi_bundle([approved, open_rfi], query), _plan(project_id, query), Settings())
+
+    assert not any("current-revision" in reason for reason in reasons), reasons
+
+
+def test_context_with_only_non_current_evidence_is_still_refused() -> None:
+    project_id = uuid.uuid4()
+    query = "What is the minimum UPS-A battery autonomy?"
+    superseded = result("Battery autonomy: not less than 10 minutes.", project_id, approval="superseded")
+    open_rfi = result("Autonomy question is still open.", project_id, document_type="RFI", approval="open")
+
+    reasons = _evidence_sufficiency(_multi_bundle([superseded, open_rfi], query), _plan(project_id, query), Settings())
+
+    assert any("no current-revision evidence" in reason for reason in reasons), reasons
+    assert "open" in " ".join(reasons) and "superseded" in " ".join(reasons)
+
+
+def test_evidence_without_any_revision_metadata_is_treated_as_usable() -> None:
+    project_id = uuid.uuid4()
+    query = "What is the minimum UPS-A battery autonomy?"
+    unlabelled = result("Battery autonomy: not less than 15 minutes.", project_id, approval="")
+
+    reasons = _evidence_sufficiency(_multi_bundle([unlabelled], query), _plan(project_id, query), Settings())
+
+    assert not any("current-revision" in reason for reason in reasons), reasons

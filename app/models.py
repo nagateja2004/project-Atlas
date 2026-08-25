@@ -1,7 +1,18 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, ForeignKey, JSON, String, Text, UniqueConstraint, func
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    JSON,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+    true as sa_true,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, synonym
 
@@ -33,13 +44,39 @@ class Equipment(Base):
 
 
 class User(Base):
+    """
+    A person who can sign in. Global, not project-scoped.
+
+    This table previously carried `project_id` and a `role`, which made an
+    account belong to exactly one project and left no way to log in by email
+    alone. Identity and access are now separated: a User is one credential, and
+    ProjectMember grants it a role on each project it may see. The table was
+    never populated, so nothing was migrated.
+    """
+
     __tablename__ = "users"
-    __table_args__ = (UniqueConstraint("project_id", "email", name="uq_users_project_email"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
+    # Nullable so an account can exist before a credential is set, and so a
+    # deactivated account can have its hash cleared without deleting the row
+    # that compliance_findings.reviewer_id still points at.
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default=sa_true())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class ProjectMember(Base):
+    """Grants one user a role on one project. Absence of a row means no access."""
+
+    __tablename__ = "project_members"
+    __table_args__ = (UniqueConstraint("project_id", "user_id", name="uq_project_members_project_user"),)
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id"), index=True)
-    email: Mapped[str] = mapped_column(String(320))
-    role: Mapped[str] = mapped_column(String(50), default="member")
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    # viewer | reviewer | admin - ordered in app.auth.ROLE_ORDER.
+    role: Mapped[str] = mapped_column(String(50), default="viewer")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -68,7 +105,10 @@ class IngestionJob(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id"), index=True)
     document_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("documents.id"), index=True)
-    status: Mapped[str] = mapped_column(String(50), default="queued")
+    # Synchronous execution record, not a queue entry: "pending" -> "processing"
+    # -> "completed"|"failed", all within one upload request. attempt_count
+    # increments per explicit re-ingest call; there is no automatic retry.
+    status: Mapped[str] = mapped_column(String(50), default="pending")
     chunk_count: Mapped[int] = mapped_column(default=0)
     attempt_count: Mapped[int] = mapped_column(default=0)
     error: Mapped[str | None] = mapped_column(Text)

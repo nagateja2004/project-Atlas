@@ -1,0 +1,38 @@
+# Build context hygiene. The model weights and node_modules dominate the
+# context size; sending them wastes minutes on a 1 vCPU builder.
+.git
+.github
+.venv
+venv
+__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+htmlcov
+
+# Never bake secrets into an image layer.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# NOTE: data/ is deliberately NOT ignored. app/api.py and app/evaluation.py
+# resolve data/synthetic_epc at runtime via Path(__file__).parents[1], so
+# excluding it 404s the evaluation and shipment endpoints.
+frontend
+docs
+evaluation
+tests
+reports
+uploads
+graphs
+*.md
+!README.md
+
+docker-compose*.yml
+deploy
+render.yaml

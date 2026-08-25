@@ -1,0 +1,314 @@
+{
+  "data_classification": "SYNTHETIC EPC DEMO DATA \u2014 extended corpus, fictional values only",
+  "project_id": "atlas-demo-dc-02",
+  "expected_compliance_findings": [
+    {
+      "finding_id": "CF-GENA-001",
+      "submittal": "submittals/GEN-A-002_NorthStar_GEN-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "GEN-A",
+      "parameter": "standby_rating",
+      "finding": "Offered standby rating is 2,250 kW rather than the required minimum 2,500 kW.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/GEN-A-002_NorthStar_GEN-A.md",
+          "page": 1,
+          "excerpt": "2,250 kW"
+        },
+        {
+          "document": "specifications/Generator_Specification.md",
+          "page": 2,
+          "clause": "2.2.1",
+          "excerpt": "not less than 2,500 kW"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-GENA-002",
+      "submittal": "submittals/GEN-A-002_NorthStar_GEN-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "GEN-A",
+      "parameter": "fuel_autonomy",
+      "finding": "Offered on-site fuel autonomy is 16 hours rather than the required minimum 24 hours at full load.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/GEN-A-002_NorthStar_GEN-A.md",
+          "page": 1,
+          "excerpt": "16 hours"
+        },
+        {
+          "document": "specifications/Generator_Specification.md",
+          "page": 2,
+          "clause": "2.2.2",
+          "excerpt": "not less than 24 hours"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-CHA-001",
+      "submittal": "submittals/CH-A-002_FrostArc_CH-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "CH-A",
+      "parameter": "net_cooling_capacity",
+      "finding": "Offered capacity is stated as 4,000,000 BTU/hr, approximately 1,172 kW, against a required minimum of 1,400 kW. The offered figure requires unit conversion before the shortfall is visible.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/CH-A-002_FrostArc_CH-A.md",
+          "page": 1,
+          "excerpt": "4,000,000 BTU/hr"
+        },
+        {
+          "document": "specifications/Chiller_Specification.md",
+          "page": 2,
+          "clause": "2.2.1",
+          "excerpt": "not less than 1,400 kW"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-CHA-002",
+      "submittal": "submittals/CH-A-002_FrostArc_CH-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "CH-A",
+      "parameter": "refrigerant",
+      "finding": "Offered refrigerant is R-410A rather than the specified R-513A, and no written approval is recorded.",
+      "severity": "medium",
+      "evidence": [
+        {
+          "document": "submittals/CH-A-002_FrostArc_CH-A.md",
+          "page": 1,
+          "excerpt": "R-410A"
+        },
+        {
+          "document": "specifications/Chiller_Specification.md",
+          "page": 2,
+          "clause": "2.2.3",
+          "excerpt": "R-513A"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-PDUA-001",
+      "submittal": "submittals/PDU-A-002_CircuitSpan_PDU-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "PDU-A",
+      "parameter": "rating_kva",
+      "finding": "Offered PDU rating is 225 kVA rather than the required minimum 300 kVA.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/PDU-A-002_CircuitSpan_PDU-A.md",
+          "page": 1,
+          "excerpt": "225 kVA"
+        },
+        {
+          "document": "specifications/PDU_Specification.md",
+          "page": 2,
+          "clause": "2.2.1",
+          "excerpt": "not less than 300 kVA"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-PDUA-002",
+      "submittal": "submittals/PDU-A-002_CircuitSpan_PDU-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "PDU-A",
+      "parameter": "transformer_k_factor",
+      "finding": "Offered integral transformer is K-4 rated rather than the required K-13 for harmonic loading.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/PDU-A-002_CircuitSpan_PDU-A.md",
+          "page": 1,
+          "excerpt": "K-4"
+        },
+        {
+          "document": "specifications/PDU_Specification.md",
+          "page": 2,
+          "clause": "2.2.2",
+          "excerpt": "K-13"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-XFMRA-001",
+      "submittal": "submittals/XFMR-A-002_FerroLink_XFMR-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "XFMR-A",
+      "parameter": "rating_kva",
+      "finding": "Offered transformer rating is 1,600 kVA rather than the required minimum 2,000 kVA.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/XFMR-A-002_FerroLink_XFMR-A.md",
+          "page": 1,
+          "excerpt": "1,600 kVA"
+        },
+        {
+          "document": "specifications/Transformer_Specification.md",
+          "page": 2,
+          "clause": "2.2.1",
+          "excerpt": "not less than 2,000 kVA"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-XFMRA-002",
+      "submittal": "submittals/XFMR-A-002_FerroLink_XFMR-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "XFMR-A",
+      "parameter": "winding_temperature_rise",
+      "finding": "Offered winding temperature rise is 115 K against a specified maximum of 100 K.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/XFMR-A-002_FerroLink_XFMR-A.md",
+          "page": 1,
+          "excerpt": "115 K"
+        },
+        {
+          "document": "specifications/Transformer_Specification.md",
+          "page": 2,
+          "clause": "2.2.3",
+          "excerpt": "not greater than 100 K"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-FSA-001",
+      "submittal": "submittals/FS-A-002_PyroShield_FS-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "FS-A",
+      "parameter": "design_concentration",
+      "finding": "Offered design concentration is 6.2 percent by volume against a required minimum of 7.0 percent.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/FS-A-002_PyroShield_FS-A.md",
+          "page": 1,
+          "excerpt": "6.2 percent"
+        },
+        {
+          "document": "specifications/FireSuppression_Specification.md",
+          "page": 2,
+          "clause": "2.2.1",
+          "excerpt": "not less than 7.0 percent"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-FSA-002",
+      "submittal": "submittals/FS-A-002_PyroShield_FS-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "FS-A",
+      "parameter": "discharge_time",
+      "finding": "Offered discharge time is 14 seconds against a specified maximum of 10 seconds.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/FS-A-002_PyroShield_FS-A.md",
+          "page": 1,
+          "excerpt": "14 seconds"
+        },
+        {
+          "document": "specifications/FireSuppression_Specification.md",
+          "page": 2,
+          "clause": "2.2.2",
+          "excerpt": "not greater than 10 seconds"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-BMSA-001",
+      "submittal": "submittals/BMS-A-002_OmniLogic_BMS-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "BMS-A",
+      "parameter": "protocol_support",
+      "finding": "Offered platform supports BACnet/IP only; the required concurrent Modbus TCP support is absent.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/BMS-A-002_OmniLogic_BMS-A.md",
+          "page": 1,
+          "excerpt": "BACnet/IP only"
+        },
+        {
+          "document": "specifications/BMS_Specification.md",
+          "page": 2,
+          "clause": "2.2.1",
+          "excerpt": "Modbus TCP and BACnet/IP"
+        }
+      ]
+    },
+    {
+      "finding_id": "CF-BMSA-002",
+      "submittal": "submittals/BMS-A-002_OmniLogic_BMS-A.md",
+      "submittal_page": 1,
+      "equipment_tag": "BMS-A",
+      "parameter": "point_capacity",
+      "finding": "Offered point capacity is 3,500 rather than the required minimum 5,000 monitored points.",
+      "severity": "high",
+      "evidence": [
+        {
+          "document": "submittals/BMS-A-002_OmniLogic_BMS-A.md",
+          "page": 1,
+          "excerpt": "3,500 points"
+        },
+        {
+          "document": "specifications/BMS_Specification.md",
+          "page": 2,
+          "clause": "2.2.2",
+          "excerpt": "not less than 5,000 points"
+        }
+      ]
+    }
+  ],
+  "expected_clean_submittals": [
+    "submittals/GEN-A-001_TitanGen_GEN-A.md",
+    "submittals/CH-A-001_CryoLine_CH-A.md",
+    "submittals/PDU-A-001_VoltHub_PDU-A.md",
+    "submittals/XFMR-A-001_MagnaCore_XFMR-A.md",
+    "submittals/FS-A-001_SafeGuard_FS-A.md",
+    "submittals/BMS-A-001_NexusControls_BMS-A.md"
+  ],
+  "expected_duplicate_rfi_matches": [
+    {
+      "rfi_a": "RFI-103",
+      "rfi_b": "RFI-104",
+      "reason": "Same unit-conversion question restated"
+    }
+  ],
+  "expected_schedule_risks": [
+    {
+      "risk_id": "SR-CHA-001",
+      "task_id": "T-240",
+      "task_name": "CH-A delivery milestone",
+      "analysis_date": "2026-05-18",
+      "risk_level": "critical",
+      "forecast_delay_days": 28,
+      "impact_chain": [
+        "T-240",
+        "T-250",
+        "T-260",
+        "T-270"
+      ],
+      "expected_narrative": "Chiller delivery is forecast 28 days late and delays installation, mechanical plant energization, and the integrated systems test."
+    }
+  ],
+  "expected_unit_normalisation_cases": [
+    {
+      "equipment_tag": "CH-A",
+      "parameter": "net_cooling_capacity",
+      "specification_unit": "kW",
+      "submittal_unit": "BTU/hr",
+      "submittal_value": 4000000,
+      "converted_value_kw": 1172.28,
+      "required_minimum_kw": 1400,
+      "note": "The shortfall is only visible after conversion; this case exists to exercise unit normalisation."
+    }
+  ]
+}

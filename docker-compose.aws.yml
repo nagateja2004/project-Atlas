@@ -1,0 +1,154 @@
+# Single-instance AWS deployment: everything on one EC2 box.
+#
+# Run it with an explicit env file so the local-development .env can never
+# leak into a deployed environment:
+#
+#   docker compose -f docker-compose.aws.yml --env-file .env.aws up -d --build
+#
+# Only Caddy publishes ports. Postgres and Qdrant are reachable on the compose
+# network alone, which is what keeps a self-hosted vector store off the public
+# internet on an instance with a public IP.
+
+name: atlas
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-atlas}
+      POSTGRES_USER: ${POSTGRES_USER:-atlas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    # Defaults assume a machine that is not sharing 1 GB with a torch process.
+    # These keep Postgres to roughly 100 MB resident.
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c max_connections=25
+      -c effective_cache_size=192MB
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-atlas} -d ${POSTGRES_DB:-atlas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.6
+    restart: unless-stopped
+    environment:
+      # scripts/start_production.sh refuses to boot without QDRANT_API_KEY, and
+      # the same value is what actually enforces auth on the store.
+      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:?QDRANT_API_KEY is required}
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  api:
+    # Two modes, deliberately:
+    #   CI deploy  - ATLAS_API_IMAGE points at a ghcr.io tag that GitHub
+    #                Actions already built, and the instance only pulls.
+    #   Local/manual - unset, so `docker compose build` builds it here.
+    # Building the torch image ON a free-tier instance (1 vCPU / 1 GB) either
+    # OOMs or takes tens of minutes, which is why CI does it instead.
+    image: ${ATLAS_API_IMAGE:-atlas-api:local}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        # The container entrypoint runs `alembic upgrade head` before uvicorn,
+        # so it must not start until Postgres accepts connections.
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-atlas}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-atlas}
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+
+      # Same origin as the dashboard, so this is belt-and-braces: CORS is not
+      # exercised when Caddy fronts both. start_production.sh still requires it.
+      FRONTEND_URL: ${ATLAS_PUBLIC_URL:?ATLAS_PUBLIC_URL is required}
+
+      PORT: "8000"
+      # One worker. A second uvicorn worker loads a second copy of both
+      # transformer models, which will not fit alongside the first on a
+      # free-tier instance.
+      WEB_CONCURRENCY: "1"
+      # Caddy terminates TLS and forwards on the compose network.
+      FORWARDED_ALLOW_IPS: "*"
+
+      # Authentication. Off unless explicitly enabled, and the API refuses to
+      # issue a token without a signing key rather than falling back to a
+      # predictable default. Both must be listed here: compose passes only the
+      # variables named in this block, so setting them in .env.aws alone leaves
+      # the container without them - which presents as
+      # "JWT_SECRET_KEY is not configured" from a key that is plainly in the file.
+      ATLAS_AUTH_ENABLED: ${ATLAS_AUTH_ENABLED:-false}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-}
+      ATLAS_AUTH_TOKEN_TTL_SECONDS: ${ATLAS_AUTH_TOKEN_TTL_SECONDS:-28800}
+
+      ATLAS_ENVIRONMENT: production
+      ATLAS_LOG_LEVEL: ${ATLAS_LOG_LEVEL:-INFO}
+      # Schema comes from `alembic upgrade head` in the entrypoint. Never let
+      # the application create tables implicitly in a deployed environment.
+      ATLAS_AUTO_CREATE_SCHEMA: "false"
+
+      ATLAS_EMBEDDING_BACKEND: ${ATLAS_EMBEDDING_BACKEND:-sentence_transformer}
+      ATLAS_EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+      ATLAS_EMBEDDING_DIMENSIONS: "384"
+      ATLAS_INDEX_VERSION: "3"
+
+      # Ordered provider list. A provider without its key is skipped, so extra
+      # entries are free insurance against one free tier hitting its daily cap
+      # mid-demo. The anonymous llm7 tier is absent on purpose: it has no
+      # stated data handling and should not receive project content.
+      ATLAS_LLM_PROVIDERS: ${ATLAS_LLM_PROVIDERS:-groq,openrouter,gemini}
+      ATLAS_LLM_ATTEMPTS_PER_PROVIDER: "3"
+      GROQ_API_KEY: ${GROQ_API_KEY:?GROQ_API_KEY is required}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-120b}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    volumes:
+      # Uploaded originals and the NetworkX export survive redeploys here.
+      # Without these mounts every citation would outlive the file behind it.
+      - atlas_uploads:/data/uploads
+      - atlas_graphs:/data/graphs
+
+  web:
+    image: ${ATLAS_WEB_IMAGE:-atlas-web:local}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # No NEXT_PUBLIC_API_URL: the bundle calls the same origin and Caddy routes
+    # the API prefixes. See the comment in frontend/Dockerfile.
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      ATLAS_SITE_ADDRESS: ${ATLAS_SITE_ADDRESS:-:80}
+      ATLAS_ACME_EMAIL: ${ATLAS_ACME_EMAIL:-atlas@example.invalid}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Issued certificates. Losing this volume means re-requesting from
+      # Let's Encrypt on every restart, which will hit rate limits.
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  postgres_data:
+  qdrant_data:
+  atlas_uploads:
+  atlas_graphs:
+  caddy_data:
+  caddy_config:

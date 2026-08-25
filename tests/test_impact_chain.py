@@ -16,7 +16,6 @@ from app.models import (
     Document,
     Equipment,
     MitigationScenario,
-    Project,
     ScheduleTask,
     Shipment,
 )

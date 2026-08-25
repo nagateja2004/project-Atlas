@@ -1,12 +1,15 @@
+import asyncio
 import csv
 import hashlib
 import io
 import logging
 import math
+import os
 import re
 import uuid
 from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Protocol
@@ -37,8 +40,65 @@ DocumentType = Literal[
     "schedule",
     "commissioning_record",
 ]
-SUPPORTED_TYPES = {"specification", "submittal", "RFI", "meeting_minutes", "change_order", "schedule", "commissioning_record"}
-EQUIPMENT_PATTERN = re.compile(r"\b(?:UPS-[A-Z][A-Z0-9]*|CRAC-\d+|SWGR-[A-Z][A-Z0-9]*)\b")
+# Row-keyed CSV document types. Both are read row-per-task by _extract_schedule,
+# which keys on the task_id column that each of them carries.
+ROW_KEYED_CSV_TYPES = {"schedule", "site_conditions"}
+SUPPORTED_TYPES = {"specification", "submittal", "RFI", "meeting_minutes", "change_order", "schedule", "commissioning_record", "site_conditions"}
+# Equipment tags are recognised by SHAPE, not from a whitelist.
+#
+# This was `UPS-[A-Z]…|CRAC-\d+|SWGR-[A-Z]…`, which had two consequences. It
+# could only ever see three families, so every other equipment item on a project
+# was invisible to any view that lists equipment - including the generator,
+# chiller, PDU, transformer, fire-suppression and BMS items in the extended
+# corpus. And `CRAC-\d+` matched document sequence numbers: the filename
+# `CRAC-001_PolarAir_CRAC-1.md` yielded a phantom tag `CRAC-001` alongside the
+# real `CRAC-1`, which then travelled into compliance findings and stopped them
+# pairing with the shipment for the same equipment.
+#
+# A tag is a short uppercase family, a hyphen, then a short designator: SWGR-A,
+# CRAC-1, XFMR-A, PDU-A2. Two exclusions keep document identifiers out:
+#
+#   DOCUMENT_PREFIXES  identifiers that share the shape but name a document,
+#                      a task or a finding rather than a piece of equipment.
+#   leading zero       a zero-padded suffix (-001, -002) is a sequence number.
+#                      Real tags are not zero-padded, which is what separates
+#                      CRAC-1 from CRAC-001.
+DOCUMENT_PREFIXES = frozenset({
+    "SUB", "SPEC", "RFI", "CO", "MM", "CX", "SR", "CF", "T", "SHP", "SYN", "EQ", "V", "PO", "NCR",
+})
+
+_EQUIPMENT_CANDIDATE = re.compile(r"\b([A-Z]{2,6})-([A-Z0-9]{1,4})\b")
+
+
+def _is_equipment_tag(family: str, designator: str) -> bool:
+    if family in DOCUMENT_PREFIXES:
+        return False
+    # A zero-padded suffix is a document sequence number, not a designator.
+    if len(designator) > 1 and designator[0] == "0" and designator.isdigit():
+        return False
+    # A designator that is itself a known document prefix means this matched the
+    # first two segments of something like SUB-CRAC-002.
+    if designator in DOCUMENT_PREFIXES:
+        return False
+    return True
+
+
+class _EquipmentPattern:
+    """Keeps the `.findall(text)` interface the callers already use."""
+
+    def findall(self, text: str) -> list[str]:
+        return [
+            f"{family}-{designator}"
+            for family, designator in _EQUIPMENT_CANDIDATE.findall(text)
+            if _is_equipment_tag(family, designator)
+        ]
+
+    @property
+    def pattern(self) -> str:
+        return _EQUIPMENT_CANDIDATE.pattern
+
+
+EQUIPMENT_PATTERN = _EquipmentPattern()
 SPEC_PATTERN = re.compile(r"\b\d+\.\d+(?:\.\d+)?\b")
 
 
@@ -55,11 +115,78 @@ class Embedder(Protocol):
 
 
 class LocalHashEmbedder:
+    """
+    Deterministic, offline, NON-SEMANTIC embedder.
+
+    Hashes tokens into fixed buckets, so it behaves as a dense bag of words:
+    paraphrases and synonyms match only by coincidence. Retained for the
+    evaluation harness and tests, where determinism matters more than recall.
+    Production should use SentenceTransformerEmbedder.
+    """
+
     def __init__(self, settings: Settings) -> None:
         self.dimensions = settings.embedding_dimensions
 
     async def embed(self, texts: list[str]) -> list[list[float]]:
         return [_hash_embedding(text, self.dimensions) for text in texts]
+
+
+@lru_cache(maxsize=2)
+def _sentence_transformer(model_name: str):
+    os.environ.setdefault("USE_TF", "0")
+    os.environ.setdefault("USE_FLAX", "0")
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(model_name)
+
+
+def _encode(model_name: str, texts: list[str]) -> list[list[float]]:
+    model = _sentence_transformer(model_name)
+    return model.encode(texts, normalize_embeddings=True, convert_to_numpy=True).tolist()
+
+
+class SentenceTransformerEmbedder:
+    """
+    Semantic embedder. The model is loaded lazily on first use and cached, so
+    constructing this at startup costs nothing and tests that swap in a double
+    never trigger a download.
+
+    There is deliberately no fallback to LocalHashEmbedder: mixing hashed and
+    model vectors in one collection would silently destroy retrieval quality,
+    so an unavailable model is a loud 503 instead.
+    """
+
+    def __init__(self, settings: Settings) -> None:
+        self.model_name = settings.embedding_model
+        self.dimensions = settings.embedding_dimensions
+
+    async def embed(self, texts: list[str]) -> list[list[float]]:
+        if not texts:
+            return []
+        try:
+            vectors = await asyncio.to_thread(_encode, self.model_name, texts)
+        except Exception as exc:
+            logger.warning("embedding_model_unavailable model=%s error=%s", self.model_name, type(exc).__name__)
+            raise IngestionError(
+                "embedding_unavailable",
+                "The embedding model could not be loaded. Set ATLAS_EMBEDDING_BACKEND=local_hash to run offline.",
+                503,
+            ) from exc
+        width = len(vectors[0])
+        if width != self.dimensions:
+            raise IngestionError(
+                "embedding_dimension_mismatch",
+                f"{self.model_name} produces {width} dimensions but ATLAS_EMBEDDING_DIMENSIONS is {self.dimensions}.",
+                500,
+            )
+        return vectors
+
+
+def build_embedder(settings: Settings) -> Embedder:
+    """Select the embedder named by ATLAS_EMBEDDING_BACKEND."""
+    if settings.embedding_backend == "local_hash":
+        return LocalHashEmbedder(settings)
+    return SentenceTransformerEmbedder(settings)
 
 
 def _hash_embedding(text: str, dimensions: int) -> list[float]:
@@ -147,10 +274,10 @@ def validate_upload(filename: str, document_type: str, size_bytes: int, settings
         raise IngestionError("unsupported_document_type", "Unsupported document type")
     if not filename or suffix not in {".pdf", ".csv", ".md", ".txt"}:
         raise IngestionError("unsupported_file", "Only PDF, CSV, Markdown, and text files are supported")
-    if document_type == "schedule" and suffix != ".csv":
-        raise IngestionError("invalid_schedule", "Schedules must be uploaded as CSV")
-    if document_type != "schedule" and suffix == ".csv":
-        raise IngestionError("invalid_document", "CSV files must use the schedule document type")
+    if document_type in ROW_KEYED_CSV_TYPES and suffix != ".csv":
+        raise IngestionError("invalid_schedule", "Schedules and site conditions logs must be uploaded as CSV")
+    if document_type not in ROW_KEYED_CSV_TYPES and suffix == ".csv":
+        raise IngestionError("invalid_document", "CSV files must use the schedule or site_conditions document type")
     if size_bytes == 0 or size_bytes > settings.max_upload_bytes:
         raise IngestionError("invalid_file_size", f"File must be between 1 and {settings.max_upload_bytes} bytes")
 
@@ -357,6 +484,23 @@ async def ensure_collection(client: AsyncQdrantClient, settings: Settings) -> No
             collection_name=settings.qdrant_collection,
             vectors_config=VectorParams(size=settings.embedding_dimensions, distance=Distance.COSINE),
         )
+        return
+    existing = _collection_dimensions(await client.get_collection(settings.qdrant_collection))
+    if existing is not None and existing != settings.embedding_dimensions:
+        raise IngestionError(
+            "embedding_dimension_mismatch",
+            f"Collection '{settings.qdrant_collection}' stores {existing}-dimension vectors but the configured "
+            f"embedder produces {settings.embedding_dimensions}. Delete the collection and reindex "
+            f"(`python -m scripts.reindex --force`), or point ATLAS_QDRANT_COLLECTION at a new name.",
+            409,
+        )
+
+
+def _collection_dimensions(info: object) -> int | None:
+    """Vector width of an existing collection, or None for named-vector configs."""
+    params = getattr(getattr(info, "config", None), "params", None)
+    size = getattr(getattr(params, "vectors", None), "size", None)
+    return int(size) if size is not None else None
 
 
 async def index_chunks(
@@ -597,7 +741,14 @@ async def run_ingestion(
     job.started_at, job.error = datetime.now(UTC), None
     await session.commit()
     try:
-        extracted = extract_document(Path(document.storage_path), settings)
+        # Parsing and the OCR fallback are blocking and can take minutes on a
+        # large scanned PDF. Run them on a worker thread so the event loop stays
+        # responsive, and bound them so a pathological file fails instead of
+        # holding the upload connection open indefinitely.
+        extracted = await asyncio.wait_for(
+            asyncio.to_thread(extract_document, Path(document.storage_path), settings),
+            timeout=settings.ingestion_timeout_seconds,
+        )
         metadata = extract_metadata(extracted)
         metadata["index_version"] = settings.index_version
         metadata["document_title"] = metadata.get("title") or Path(document.filename).stem
@@ -643,6 +794,11 @@ async def run_ingestion(
     except IngestionError as exc:
         await _mark_failed(session, document, job, exc.message)
         raise
+    except TimeoutError as exc:
+        message = f"Document parsing exceeded {settings.ingestion_timeout_seconds:g}s"
+        logger.warning("ingestion_timeout project=%s document=%s", document.project_id, document.id)
+        await _mark_failed(session, document, job, message)
+        raise IngestionError("ingestion_timeout", message, 504) from exc
     except Exception as exc:
         logger.exception("ingestion_failed project=%s document=%s", document.project_id, document.id)
         await _mark_failed(session, document, job, "Ingestion failed")
@@ -674,7 +830,7 @@ async def reindex_documents(
         if not force and (document.metadata_json or {}).get("index_version") == settings.index_version:
             skipped += 1
             continue
-        job = IngestionJob(project_id=project_id, document_id=document.id, status="queued")
+        job = IngestionJob(project_id=project_id, document_id=document.id, status="pending")
         session.add(job)
         await session.flush()
         await run_ingestion(session, client, embedder, settings, document, job)

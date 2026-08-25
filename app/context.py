@@ -31,6 +31,11 @@ class ContextChunk(RetrievalResult):
     rerank_score: float
     evidence_spans: list[EvidenceSpan] = Field(default_factory=list)
     expanded_from_chunk_ids: list[str] = Field(default_factory=list)
+    # The retrieved evidence before compression trimmed it to fit the prompt
+    # budget. `text` is what the model was shown; this is what the claim is
+    # checked against. Verifying against the trimmed excerpt rejected true
+    # claims whenever the supporting sentence happened to be cut for length.
+    source_text: str = ""
 
 
 class RevisionConflict(BaseModel):
@@ -139,10 +144,52 @@ class PostRetrievalProcessor:
     async def expand(
         self, selected: list[tuple[RetrievalResult, float]]
     ) -> list[tuple[RetrievalResult, float, str, list[str]]]:
+        """
+        Attach parent context to each selected chunk.
+
+        Awaiting one chunk at a time made this stage cost the sum of every
+        database round trip instead of the slowest one, and selected chunks
+        routinely share a parent, so the same siblings were fetched repeatedly.
+        Each distinct parent is now loaded once, concurrently. Output order and
+        per-item content are unchanged - the ranking rerank established is
+        preserved.
+        """
+        if not self.parent_loader:
+            return [(item, score, item.text, []) for item, score in selected]
+
+        keys = list(
+            dict.fromkeys(
+                (item.project_id, item.parent_id)
+                for item, _ in selected
+                if _needs_parent(item)
+            )
+        )
+        loaded = (
+            await asyncio.gather(
+                *(self.parent_loader(project_id, parent_id) for project_id, parent_id in keys)
+            )
+            if keys
+            else []
+        )
+        siblings_by_key = dict(zip(keys, loaded))
+
         expanded = []
         for item, rerank_score in selected:
-            source, expanded_ids = await self._expand(item)
-            expanded.append((item, rerank_score, source, expanded_ids))
+            siblings = (
+                siblings_by_key.get((item.project_id, item.parent_id))
+                if _needs_parent(item)
+                else None
+            )
+            if not siblings:
+                expanded.append((item, rerank_score, item.text, []))
+                continue
+            text = "\n".join(
+                dict.fromkeys([*(sibling.text for sibling in siblings), item.text])
+            )
+            expanded_ids = [
+                sibling.chunk_id for sibling in siblings if sibling.chunk_id != item.chunk_id
+            ]
+            expanded.append((item, rerank_score, text, expanded_ids))
         return expanded
 
     def compress(
@@ -168,6 +215,7 @@ class PostRetrievalProcessor:
                     rerank_score=rerank_score,
                     evidence_spans=spans,
                     expanded_from_chunk_ids=expanded_ids,
+                    source_text=source,
                 )
             )
             seen.extend(_segments(text))

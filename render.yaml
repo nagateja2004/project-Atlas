@@ -2,25 +2,86 @@ services:
   - type: web
     name: project-atlas-api
     runtime: python
-    buildCommand: pip install .
+    # Install the pinned set, then the package itself without re-resolving.
+    # `pip install .` alone would resolve the >= floors in pyproject.toml to
+    # whatever is newest at deploy time, which is not what CI tested.
+    #
+    # Retrieval and reranking load model weights on first use. Pre-fetching them
+    # at build time keeps them out of the request path and off the ephemeral
+    # disk-warmup path, so the first query is not a multi-second download that
+    # can fail with embedding_unavailable (503).
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.lock
+      pip install . --no-deps
+      python -c "from sentence_transformers import SentenceTransformer, CrossEncoder; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'); CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
     startCommand: ./scripts/start_production.sh
     healthCheckPath: /ready
     envVars:
+      # --- Required. start_production.sh refuses to boot without these. ---
       - key: DATABASE_URL
-        sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
       - key: QDRANT_URL
         sync: false
       - key: QDRANT_API_KEY
         sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+
+      # --- LLM provider order. Extra providers are skipped without a key,
+      # so a second entry costs nothing and survives the first hitting its
+      # daily cap. See app/llm.py PROVIDERS for the registry. ---
+      # Keyed providers only. The anonymous llm7 tier is deliberately absent:
+      # it is a local demo convenience, not something a deployment should send
+      # project content to.
+      - key: ATLAS_LLM_PROVIDERS
+        value: groq,openrouter,gemini
+      - key: ATLAS_LLM_ATTEMPTS_PER_PROVIDER
+        value: "3"
+      - key: OPENROUTER_API_KEY
+        sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: GEMINI_MODEL
+
+      # --- Optional. Defaults live in app/config.py. ---
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
       - key: JWT_SECRET_KEY
         sync: false
-      - key: FRONTEND_URL
-        sync: false
+
+      # Retrieval. embedding_dimensions must match the model's width, and
+      # changing either invalidates an existing Qdrant collection - ingestion
+      # then fails with embedding_dimension_mismatch (409) rather than mixing
+      # incomparable vectors. See the migration note in README.md.
+      - key: ATLAS_EMBEDDING_BACKEND
+        value: sentence_transformer
+      - key: ATLAS_EMBEDDING_MODEL
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: ATLAS_EMBEDDING_DIMENSIONS
+        value: "384"
+      - key: ATLAS_INDEX_VERSION
+        value: "3"
+
+      - key: ATLAS_ENVIRONMENT
+        value: production
+      - key: ATLAS_LOG_LEVEL
+        value: INFO
+      # Schema is applied by `alembic upgrade head` in the start script; never
+      # let the application create tables implicitly in a deployed environment.
+      - key: ATLAS_AUTO_CREATE_SCHEMA
+        value: "false"
+      # Render terminates TLS at its proxy, so trust its forwarded headers.
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
+
+# NOTE: uploaded documents (ATLAS_UPLOAD_DIR) and the NetworkX graph export
+# (ATLAS_GRAPH_DIR) are written to the container's local filesystem, which Render
+# does not persist across deploys or restarts. Re-seed after a deploy, or attach a
+# disk / move originals to object storage before treating this as durable. This is
+# tracked in docs/LIMITATIONS.md.

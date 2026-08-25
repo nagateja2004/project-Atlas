@@ -5,7 +5,7 @@ set -euo pipefail
 : "${QDRANT_URL:?QDRANT_URL is required}"
 : "${QDRANT_API_KEY:?QDRANT_API_KEY is required}"
 : "${FRONTEND_URL:?FRONTEND_URL is required}"
-: "${GEMINI_API_KEY:?GEMINI_API_KEY is required}"
+: "${GROQ_API_KEY:?GROQ_API_KEY is required}"
 : "${PORT:?PORT is required}"
 
 alembic upgrade head

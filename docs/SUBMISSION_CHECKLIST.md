@@ -32,7 +32,6 @@ Items marked complete are verifiable in this local repository. External publicat
 
 - [ ] Record a 3-minute maximum walkthrough using `docs/DEMO_SCRIPT.md`.
 - [ ] Show the synthetic-data label and AI-suggestion/human-approval distinction.
-- [ ] Disclose the UPS-01 presentation label versus `UPS-A` source tag.
 - [ ] Do not edit a failed API response to look live; use labelled backup assets if needed.
 - [ ] Verify audio, resolution, captions, links, permissions, and playback from a signed-out browser.
 - [ ] Record the verified public video URL and time: `________________`.

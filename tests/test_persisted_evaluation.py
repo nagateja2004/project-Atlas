@@ -107,15 +107,22 @@ def test_failed_cases_are_persisted_and_project_scoped(tmp_path) -> None:
                 "/api/evaluation/run",
                 json={"project_id": project["id"], "fixture_name": "synthetic_small", "fixture_format": "json"},
             )
-            assert response.status_code == 201, response.text
+            # The run is accepted and executed out of band, so the POST returns
+            # a RUNNING row immediately; the outcome is read back by polling.
+            assert response.status_code == 202, response.text
             run = response.json()
-            assert run["status"] == "COMPLETED_WITH_FAILURES"
-            assert len(run["cases"]) == 3
-            assert all(item["status"] == "ERROR" for item in run["cases"])
-            assert run["metrics"]["compliance"]["precision"] == 0
-            assert client.get(
+            assert run["status"] == "RUNNING"
+            assert run["cases"] == []
+
+            completed = client.get(
                 f"/api/evaluation/runs/{run['id']}?project_id={project['id']}"
-            ).status_code == 200
+            )
+            assert completed.status_code == 200
+            finished = completed.json()
+            assert finished["status"] == "COMPLETED_WITH_FAILURES"
+            assert len(finished["cases"]) == 3
+            assert all(item["status"] == "ERROR" for item in finished["cases"])
+            assert finished["metrics"]["compliance"]["precision"] == 0
             assert client.get(
                 f"/api/evaluation/runs/{run['id']}?project_id={other['id']}"
             ).status_code == 404

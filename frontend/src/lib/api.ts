@@ -1,5 +1,7 @@
 const baseUrl = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_ATLAS_API_URL || (process.env.NODE_ENV === "production" ? "" : "http://localhost:8001")).replace(/\/$/, "");
 
+import { clearToken, getToken, setToken } from "./token";
+
 export type Project = { id: string; name: string };
 export type Citation = { document_id: string; filename: string; page: number; section: string };
 export type SupportingSpan = { text: string; start: number; end: number };
@@ -40,21 +42,77 @@ export type WorkflowBenchmark = { id: string; project_id: string; workflow_type:
 export type BenchmarkSummary = { project_id: string; measured_hours_saved: number; projected_monthly_hours_saved: number; measured_sample_count: number; projected_monthly_sample_count: number; record_count: number; synthetic_data_present: boolean; label: string; workflows: Array<{ workflow_type: WorkflowType; measured_hours_saved: number; projected_monthly_hours_saved: number; measured_sample_count: number; projected_monthly_sample_count: number }> };
 export type ExecutiveSummary = { project_id: string; critical_deviations: number; equipment_at_risk: number; schedule_exposure_days: number; supply_chain_alerts: number; commissioning_readiness: number | null; open_ncrs: number; measured_hours_saved: number; projected_monthly_hours_saved: number; recommended_mitigation: string | null; evidence_confidence: number | null; synthetic_data: boolean };
 
+export type ApiErrorDetail = { type?: string; msg?: string; loc?: Array<string | number>; ctx?: Record<string, unknown> };
+
 export class ApiError extends Error {
-  constructor(message: string, public status: number) { super(message); }
+  constructor(message: string, public status: number, public details?: ApiErrorDetail[]) { super(message); }
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${baseUrl}${path}`, { ...init, headers: { ...(init?.body instanceof FormData ? {} : { "Content-Type": "application/json" }), ...init?.headers } });
+  // One choke point for every call, so the token cannot be forgotten on an
+  // individual endpoint. Omitted entirely when absent rather than sent empty:
+  // the API distinguishes "no credentials" from "bad credentials", and with
+  // ATLAS_AUTH_ENABLED off an empty header would still be rejected as malformed.
+  // Built as an explicit record rather than a spread. RequestInit.headers is
+  // HeadersInit - a Headers instance or an array of pairs, not only an object -
+  // so spreading it alongside another object widens to a union TypeScript will
+  // not accept back as HeadersInit.
+  const headers: Record<string, string> = {};
+  if (!(init?.body instanceof FormData)) headers["Content-Type"] = "application/json";
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  // Applied last so an explicit per-call header still wins, as before.
+  if (init?.headers) Object.assign(headers, init.headers as Record<string, string>);
+
+  const response = await fetch(`${baseUrl}${path}`, { ...init, headers });
   if (!response.ok) {
-    const body = await response.json().catch(() => null) as { error?: { message?: string } } | null;
-    throw new ApiError(body?.error?.message ?? `Request failed (${response.status})`, response.status);
+    const body = await response.json().catch(() => null) as { error?: { message?: string; details?: ApiErrorDetail[] } } | null;
+    // A 401 anywhere means the stored token is no longer usable - expired, or
+    // the account was deactivated. Clearing it here means every caller gets the
+    // sign-in screen back without each one having to handle the case.
+    // /auth/login is exempt: a wrong password there must not look like a
+    // session expiry.
+    if (response.status === 401 && !path.startsWith("/auth/login")) clearToken();
+    // Keep `details`: the API reports which field failed and why, and the
+    // envelope message on its own ("Request validation failed") is not actionable.
+    throw new ApiError(body?.error?.message ?? `Request failed (${response.status})`, response.status, body?.error?.details);
   }
-  return response.json() as Promise<T>;
+  // A 200 whose body is not JSON means the request never reached the API - the
+  // reverse proxy handed it to the dashboard instead, which answers any unknown
+  // path with HTML. Reported as such rather than as a bare SyntaxError, because
+  // the fix is a routing rule and the stack trace does not say so.
+  try {
+    return await response.json() as T;
+  } catch {
+    throw new ApiError(
+      `The API returned a non-JSON response for ${path}. Check that the reverse proxy routes this path to the API service.`,
+      response.status,
+    );
+  }
+}
+
+export type Membership = { project_id: string; role: "viewer" | "reviewer" | "admin" };
+export type AuthUser = { id: string; email: string; is_active: boolean; memberships?: Membership[] };
+export type LoginResult = { access_token: string; token_type: string; expires_in: number; user: AuthUser };
+
+/**
+ * True when the API reports an anonymous caller, which it does only while
+ * ATLAS_AUTH_ENABLED is false. The dashboard uses this to skip the sign-in
+ * screen entirely rather than needing a build-time flag of its own.
+ */
+export function isAuthDisabled(user: AuthUser): boolean {
+  return user.email.startsWith("anonymous");
 }
 
 export const api = {
   health: () => request<{ status: string; components: Record<string, string> }>("/health"),
+  me: () => request<AuthUser>("/auth/me"),
+  login: async (email: string, password: string) => {
+    const result = await request<LoginResult>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+    setToken(result.access_token);
+    return result;
+  },
+  logout: () => clearToken(),
   projects: () => request<Project[]>("/projects"),
   createProject: (name: string) => request<Project>("/projects", { method: "POST", body: JSON.stringify({ name }) }),
   documents: (projectId: string) => request<Document[]>(`/projects/${projectId}/documents`),

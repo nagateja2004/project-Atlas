@@ -1,9 +1,10 @@
+import logging
 import mimetypes
 import uuid
 from collections.abc import AsyncIterator
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -26,7 +27,13 @@ from app.benchmarks import (
 from app.compliance import ComplianceFindingResponse, ComplianceMetrics, evaluate_ground_truth, finding_response, review_finding
 from app.context import ContextBundle
 from app.equipment import DigitalThreadResponse, equipment_digital_thread, store_mitigation_scenarios, store_procurement_entities
-from app.evaluation import EvaluationRunRequest, EvaluationRunResponse, get_evaluation_run, run_evaluation
+from app.evaluation import (
+    EvaluationRunRequest,
+    EvaluationRunResponse,
+    create_pending_run,
+    execute_evaluation_run,
+    get_evaluation_run,
+)
 from app.demo import VerticalDemoResponse, seed_vertical_demo
 from app.executive import ExecutiveSummary, executive_summary
 from app.ingestion import DocumentType, IngestionError, RetrievalResult, file_hash, retrieve_chunks, run_ingestion, validate_upload
@@ -39,7 +46,8 @@ from app.impact_chain import (
     equipment_impact_chain,
     propagate_event,
 )
-from app.models import AuditEvent, ComplianceFinding, Document, Equipment, IngestionJob, Project, ScheduleTask
+from app.auth import Principal, current_principal
+from app.models import AuditEvent, ComplianceFinding, Document, Equipment, IngestionJob, Project, ScheduleTask, ProjectMember
 from app.mitigation import (
     MitigationSelectionRequest,
     MitigationSelectionResponse,
@@ -70,8 +78,14 @@ from app.procurement import (
     shipment_risk,
     shipment_timeline,
 )
-from app.schedule import ScheduleAnalysis, ScheduleScenario, ScheduleSnapshot
+from app.schedule import ScheduleAnalysis, ScheduleScenario, ScheduleSnapshot, load_site_conditions
 from app.workflow import ConversationMessage, CopilotResult, QueryPlanResult, RfiResult
+
+logger = logging.getLogger("atlas.api")
+
+# Slack for multipart boundaries and the document_type field when comparing a
+# declared Content-Length against the configured upload limit.
+MULTIPART_ENVELOPE_ALLOWANCE = 8 * 1024
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 evaluation_router = APIRouter(prefix="/api/evaluation", tags=["evaluation"])
@@ -154,6 +168,11 @@ class ComplianceReviewRequest(BaseModel):
 
 class ScheduleAnalysisRequest(ScheduleScenario):
     schedule_document_id: uuid.UUID
+    # Point this at an uploaded site conditions log and weather and workforce
+    # are read from its dated rows instead of from this request. What the
+    # analysis used is stated back in `mitigation_inputs` either way, so a
+    # reviewer can always tell an evidenced figure from a typed-in one.
+    site_conditions_document_id: uuid.UUID | None = None
 
 
 class CommissioningRecordRequest(BaseModel):
@@ -221,17 +240,55 @@ async def _latest_job(session: AsyncSession, project_id: uuid.UUID, document_id:
 
 
 @router.post("", response_model=ProjectResponse, status_code=201)
-async def create_project(payload: ProjectCreate, session: AsyncSession = Depends(get_session)) -> ProjectResponse:
+async def create_project(
+    payload: ProjectCreate,
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    principal: Principal = Depends(current_principal),
+) -> ProjectResponse:
+    """
+    Create a project and make the creator its administrator.
+
+    Without that second step the creator immediately loses access to what they
+    just made: every project-scoped route requires a project_members row, so the
+    project existed, appeared in the list, and answered "Project not found" for
+    everything else.
+    """
     project = Project(name=payload.name)
     session.add(project)
+    await session.flush()
+
+    if request.app.state.settings.auth_enabled and not principal.is_anonymous:
+        session.add(ProjectMember(project_id=project.id, user_id=principal.user_id, role="admin"))
+
     await session.commit()
     await session.refresh(project)
     return ProjectResponse(id=project.id, name=project.name)
 
 
 @router.get("", response_model=list[ProjectResponse])
-async def list_projects(session: AsyncSession = Depends(get_session)) -> list[ProjectResponse]:
-    projects = (await session.scalars(select(Project).order_by(Project.created_at.desc()))).all()
+async def list_projects(
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    principal: Principal = Depends(current_principal),
+) -> list[ProjectResponse]:
+    """
+    The projects the caller may see.
+
+    This listed every project regardless of membership, which leaked other
+    tenants' project names and ids - the exact disclosure that returning 404
+    rather than 403 elsewhere was meant to prevent. A collection route has no
+    project_id in its path, so the router-level guard cannot filter it; the
+    filter has to be in the query.
+    """
+    statement = select(Project).order_by(Project.created_at.desc())
+
+    if request.app.state.settings.auth_enabled and not principal.is_anonymous:
+        statement = statement.join(
+            ProjectMember, ProjectMember.project_id == Project.id
+        ).where(ProjectMember.user_id == principal.user_id)
+
+    projects = (await session.scalars(statement)).all()
     return [ProjectResponse(id=project.id, name=project.name) for project in projects]
 
 
@@ -256,9 +313,19 @@ async def upload_document(
     session: AsyncSession = Depends(get_session),
 ) -> UploadResponse:
     await _project_or_404(session, project_id)
+    settings = request.app.state.settings
+    # Reject an over-sized body from its declared length before buffering it.
+    # validate_upload only sees len(content), i.e. after the whole request is
+    # already in memory. MULTIPART_ENVELOPE_ALLOWANCE covers boundary markers and
+    # the document_type part so a file at exactly the limit is not refused.
+    declared = request.headers.get("content-length", "")
+    if declared.isdigit() and int(declared) > settings.max_upload_bytes + MULTIPART_ENVELOPE_ALLOWANCE:
+        raise IngestionError(
+            "invalid_file_size", f"File must be between 1 and {settings.max_upload_bytes} bytes", 413
+        )
     content = await file.read()
     filename = Path(file.filename or "").name
-    validate_upload(filename, document_type, len(content), request.app.state.settings)
+    validate_upload(filename, document_type, len(content), settings)
     content_sha256 = file_hash(content)
     duplicate = await session.scalar(
         select(Document).where(Document.project_id == project_id, Document.content_sha256 == content_sha256)
@@ -275,13 +342,13 @@ async def upload_document(
         filename=filename,
         storage_path=str(upload_path),
         document_type=document_type,
-        status="queued",
+        status="pending",
         content_sha256=content_sha256,
         mime_type=file.content_type or mimetypes.guess_type(filename)[0] or "application/octet-stream",
         size_bytes=len(content),
         metadata_json={},
     )
-    job = IngestionJob(project_id=project_id, document_id=document_id, status="queued")
+    job = IngestionJob(project_id=project_id, document_id=document_id, status="pending")
     session.add_all([document, job])
     try:
         await session.commit()
@@ -340,7 +407,9 @@ async def retrieve(
     session: AsyncSession = Depends(get_session),
 ) -> RetrievalResponse:
     await _project_or_404(session, project_id)
+
     plan = await request.app.state.knowledge_service.query_plan(project_id, payload.query, [])
+
     results = await retrieve_chunks(
         request.app.state.qdrant,
         request.app.state.embedder,
@@ -350,9 +419,9 @@ async def retrieve(
         payload.limit,
         query_plan=plan,
     )
+
+    logger.debug("retrieve project=%s results=%d", project_id, len(results))
     return RetrievalResponse(results=results)
-
-
 @router.post("/{project_id}/context", response_model=ContextBundle)
 async def build_context(
     project_id: uuid.UUID,
@@ -473,7 +542,11 @@ async def analyze_schedule(
     session: AsyncSession = Depends(get_session),
 ) -> ScheduleAnalysis:
     schedule = await _document_or_404(session, project_id, payload.schedule_document_id)
-    analysis = await request.app.state.schedule_service.analyze(schedule, payload)
+    conditions = None
+    if payload.site_conditions_document_id:
+        conditions_document = await _document_or_404(session, project_id, payload.site_conditions_document_id)
+        conditions = load_site_conditions(Path(conditions_document.storage_path), conditions_document)
+    analysis = await request.app.state.schedule_service.analyze(schedule, payload, conditions)
     session.add(
         AuditEvent(
             project_id=project_id,
@@ -830,21 +903,39 @@ async def decide_impact_chain(
     return result
 
 
-@evaluation_router.post("/run", response_model=EvaluationRunResponse, status_code=201)
+async def _execute_evaluation_run(app, payload: EvaluationRunRequest, run_id: uuid.UUID) -> None:
+    """Background worker: owns its own session, because the request's is closed."""
+    async with app.state.session_factory() as session:
+        await execute_evaluation_run(
+            session,
+            run_id,
+            payload,
+            app.state.compliance_service,
+            app.state.knowledge_service,
+            app.state.qdrant,
+            app.state.settings,
+        )
+
+
+@evaluation_router.post("/run", response_model=EvaluationRunResponse, status_code=202)
 async def create_evaluation_run(
     payload: EvaluationRunRequest,
     request: Request,
+    background: BackgroundTasks,
     session: AsyncSession = Depends(get_session),
 ) -> EvaluationRunResponse:
+    """
+    Accept the run and return the RUNNING row straight away.
+
+    A live RAG case waits on the model provider for around a minute, so
+    executing the fixture inline held the HTTP connection open for minutes and
+    any proxy in front of the API cut it off with a 504 before it finished.
+    Poll `GET /api/evaluation/runs/{run_id}` until `status` leaves RUNNING.
+    """
     await _project_or_404(session, payload.project_id)
-    return await run_evaluation(
-        session,
-        payload,
-        request.app.state.compliance_service,
-        request.app.state.knowledge_service,
-        request.app.state.qdrant,
-        request.app.state.settings,
-    )
+    pending = await create_pending_run(session, payload)
+    background.add_task(_execute_evaluation_run, request.app, payload, pending.id)
+    return pending
 
 
 @evaluation_router.get("/runs/{run_id}", response_model=EvaluationRunResponse)

@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from app.config import Settings
 from app.ingestion import IngestionError
 from app.main import app
-from app.models import Base, Document, Project
+from app.models import Base, Document
 from app.schedule import ScheduleScenario, ScheduleService, calculate_cpm, load_schedule, validate_dependencies
 
 DATASET = Path(__file__).parents[1] / "data" / "synthetic_epc"

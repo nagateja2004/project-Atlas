@@ -20,7 +20,6 @@ from app.commissioning import CommissioningService
 from app.compliance import ComplianceService
 from app.config import Settings
 from app.graph import GraphStore
-from app.ingestion import IngestionError
 from app.main import app
 from app.models import Base
 from app.schedule import ScheduleService

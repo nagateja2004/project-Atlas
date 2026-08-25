@@ -6,41 +6,173 @@
         {
           "mrr": 1.0,
           "question": "What is the active schedule risk and what is its downstream impact?",
-          "recall_at_12": 0.5,
-          "recall_at_5": 0.5
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
         },
         {
           "mrr": 1.0,
           "question": "Is a switchgear delivery recovery measure approved?",
           "recall_at_12": 1.0,
           "recall_at_5": 1.0
+        },
+        {
+          "mrr": 1.0,
+          "question": "What enclosure configuration does the switchgear specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 1.0,
+          "question": "What main bus rating is specified for the switchgear lineup?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.125,
+          "question": "What operating aisle is required in front of the switchgear?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 0.0
+        },
+        {
+          "mrr": 1.0,
+          "question": "What form of separation is required for the switchgear?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.2,
+          "question": "What service access clearance is required at the CRAC front face?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.2,
+          "question": "What electrical supply is specified for the CRAC unit?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.5,
+          "question": "What module redundancy does the UPS specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.5,
+          "question": "What harmonic limits apply to the UPS?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.25,
+          "question": "What must be recorded in the UPS commissioning turnover package?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.5,
+          "question": "Why is the SWGR-A delivery milestone forecast late?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 1.0,
+          "question": "What minimum clearance was confirmed for the UPS-A bypass cabinet?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
         }
       ],
       "metrics": {
-        "mrr": 1.0,
-        "recall_at_12": 0.75,
-        "recall_at_5": 0.75
+        "mrr": 0.6365,
+        "recall_at_12": 1.0,
+        "recall_at_5": 0.9231
       }
     },
     "non_contextual": {
       "cases": [
         {
-          "mrr": 0,
+          "mrr": 1.0,
           "question": "What is the active schedule risk and what is its downstream impact?",
-          "recall_at_12": 0.0,
-          "recall_at_5": 0.0
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
         },
         {
           "mrr": 1.0,
           "question": "Is a switchgear delivery recovery measure approved?",
           "recall_at_12": 1.0,
           "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.5,
+          "question": "What enclosure configuration does the switchgear specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 1.0,
+          "question": "What main bus rating is specified for the switchgear lineup?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.14285714285714285,
+          "question": "What operating aisle is required in front of the switchgear?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 0.0
+        },
+        {
+          "mrr": 1.0,
+          "question": "What form of separation is required for the switchgear?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 0.16666666666666666,
+          "question": "What service access clearance is required at the CRAC front face?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 0.0
+        },
+        {
+          "mrr": 0,
+          "question": "What electrical supply is specified for the CRAC unit?",
+          "recall_at_12": 0.0,
+          "recall_at_5": 0.0
+        },
+        {
+          "mrr": 0.08333333333333333,
+          "question": "What module redundancy does the UPS specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 0.0
+        },
+        {
+          "mrr": 0,
+          "question": "What harmonic limits apply to the UPS?",
+          "recall_at_12": 0.0,
+          "recall_at_5": 0.0
+        },
+        {
+          "mrr": 0,
+          "question": "What must be recorded in the UPS commissioning turnover package?",
+          "recall_at_12": 0.0,
+          "recall_at_5": 0.0
+        },
+        {
+          "mrr": 0.5,
+          "question": "Why is the SWGR-A delivery milestone forecast late?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
+        },
+        {
+          "mrr": 1.0,
+          "question": "What minimum clearance was confirmed for the UPS-A bypass cabinet?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0
         }
       ],
       "metrics": {
-        "mrr": 0.5,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5
+        "mrr": 0.4918,
+        "recall_at_12": 0.7692,
+        "recall_at_5": 0.5385
       }
     },
     "scope": "held-out test split; dense retrieval only; identical chunks and query embedder"
@@ -49,18 +181,19 @@
   "development_tuning": [
     {
       "metrics": {
-        "average_input_tokens": 225.0,
-        "average_latency_ms": 35.92,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.097,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.1667,
+        "average_input_tokens": 235.17,
+        "average_latency_ms": 172.77,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "dense_retrieval_limit",
@@ -68,18 +201,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 240.5,
-        "average_latency_ms": 21.09,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.15,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 218.25,
+        "average_latency_ms": 145.39,
+        "average_output_tokens": 105.25,
+        "citation_completeness": 0.5455,
+        "citation_precision": 0.2609,
+        "citation_precision_per_citation": 0.25,
+        "correct_document_rate": 0.7778,
+        "correct_page_rate": 0.6667,
+        "corrective_retry_rate": 0.1667,
+        "insufficient_evidence_accuracy": 0.75,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "dense_retrieval_limit",
@@ -87,18 +221,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 220.5,
-        "average_latency_ms": 20.82,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.15,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 236.08,
+        "average_latency_ms": 157.16,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "bm25_retrieval_limit",
@@ -106,18 +241,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 240.5,
-        "average_latency_ms": 21.36,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.15,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 235.17,
+        "average_latency_ms": 190.92,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "bm25_retrieval_limit",
@@ -125,18 +261,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 220.5,
-        "average_latency_ms": 20.93,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.15,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 235.17,
+        "average_latency_ms": 187.52,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "rrf_weights",
@@ -147,18 +284,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 232.0,
-        "average_latency_ms": 21.13,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 243.5,
+        "average_latency_ms": 274.08,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "rrf_weights",
@@ -169,18 +307,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 222.75,
-        "average_latency_ms": 22.52,
-        "average_output_tokens": 24.75,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.75,
-        "insufficient_evidence_accuracy": 0.5,
-        "mrr": 0.1222,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.1667,
+        "average_input_tokens": 219.08,
+        "average_latency_ms": 138.05,
+        "average_output_tokens": 118.58,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6889,
+        "recall_at_12": 0.8889,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "rrf_weights",
@@ -191,18 +330,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 207.25,
-        "average_latency_ms": 20.25,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 192.42,
+        "average_latency_ms": 118.82,
+        "average_output_tokens": 102.17,
+        "citation_completeness": 0.5455,
+        "citation_precision": 0.2609,
+        "citation_precision_per_citation": 0.25,
+        "correct_document_rate": 0.7778,
+        "correct_page_rate": 0.6667,
+        "corrective_retry_rate": 0.1667,
+        "insufficient_evidence_accuracy": 0.75,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "rerank_candidate_limit",
@@ -210,18 +350,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 232.0,
-        "average_latency_ms": 21.05,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 235.17,
+        "average_latency_ms": 142.72,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "rerank_candidate_limit",
@@ -229,18 +370,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 173.5,
-        "average_latency_ms": 17.94,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 184.0,
+        "average_latency_ms": 157.6,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "context_max_chunks",
@@ -248,18 +390,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 207.25,
-        "average_latency_ms": 20.16,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 235.17,
+        "average_latency_ms": 116.97,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "context_max_chunks",
@@ -267,18 +410,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 197.5,
-        "average_latency_ms": 20.27,
-        "average_output_tokens": 41.75,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 197.92,
+        "average_latency_ms": 106.15,
+        "average_output_tokens": 123.58,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "reranker_score_threshold",
@@ -286,18 +430,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 173.5,
-        "average_latency_ms": 18.12,
-        "average_output_tokens": 30.5,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.5,
-        "insufficient_evidence_accuracy": 0.25,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 184.0,
+        "average_latency_ms": 107.22,
+        "average_output_tokens": 120.33,
+        "citation_completeness": 0.6364,
+        "citation_precision": 0.28,
+        "citation_precision_per_citation": 0.2963,
+        "correct_document_rate": 0.8889,
+        "correct_page_rate": 0.7778,
+        "corrective_retry_rate": 0.0833,
+        "insufficient_evidence_accuracy": 0.8333,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "reranker_score_threshold",
@@ -305,18 +450,19 @@
     },
     {
       "metrics": {
-        "average_input_tokens": 134.75,
-        "average_latency_ms": 17.86,
-        "average_output_tokens": 14.75,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 0.75,
-        "insufficient_evidence_accuracy": 0.5,
-        "mrr": 0.1667,
-        "recall_at_12": 0.5,
-        "recall_at_5": 0.5,
+        "average_input_tokens": 146.5,
+        "average_latency_ms": 115.95,
+        "average_output_tokens": 82.58,
+        "citation_completeness": 0.5455,
+        "citation_precision": 0.3158,
+        "citation_precision_per_citation": 0.3158,
+        "correct_document_rate": 0.6667,
+        "correct_page_rate": 0.6667,
+        "corrective_retry_rate": 0.3333,
+        "insufficient_evidence_accuracy": 0.75,
+        "mrr": 0.6944,
+        "recall_at_12": 0.8333,
+        "recall_at_5": 0.8333,
         "unsupported_claim_rate": 0.0
       },
       "parameter": "reranker_score_threshold",
@@ -331,32 +477,47 @@
   "methodology": {
     "advanced": "QueryPlan, hybrid retrieval, weighted RRF, lexical rerank, parent expansion, compression, evidence gate, grounded extractive generation, verification",
     "baseline": "dense retrieval top 5, then deterministic extractive generation",
+    "citation_precision": "distinct cited (document, page) pairs that appear in the labelled references, over all distinct pairs cited; scored only on questions that have labelled references",
+    "citation_precision_per_citation": "the same ratio counting duplicate citations separately; reported alongside because it rewards redundant evidence and is the weaker definition",
     "contextual_ablation": "dense retrieval with contextual_text embeddings versus original_text embeddings",
-    "development_cases": 4,
+    "development_cases": 12,
     "judge": "exact document/page/span checks; no LLM judge",
-    "test_cases": 3,
-    "token_counting": "ceil(character count / 4), reported as estimated tokens"
+    "test_cases": 16,
+    "token_counting": "ceil(character count / 4), reported as estimated tokens",
+    "tuning_tiebreak": "average input tokens; wall-clock latency is not used to select parameters because it is not reproducible"
   },
   "qdrant_client_version": "1.18.0",
   "selected_parameters": {
-    "bm25_retrieval_limit": 10,
+    "bm25_retrieval_limit": 20,
     "context_max_chunks": 5,
-    "dense_retrieval_limit": 20,
-    "rerank_candidate_limit": 8,
-    "reranker_score_threshold": 0.3,
-    "rrf_bm25_weight": 1.5,
+    "dense_retrieval_limit": 10,
+    "rerank_candidate_limit": 12,
+    "reranker_score_threshold": 0.15,
+    "rrf_bm25_weight": 1.0,
     "rrf_dense_weight": 1.0
   },
   "test": {
     "advanced": {
       "cases": [
         {
-          "citation_count": 0,
-          "claim_count": 0,
-          "correct_citations": 0,
-          "correct_document": false,
-          "correct_page": false,
-          "covered_references": 0,
+          "citation_count": 2,
+          "cited": [
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ]
+          ],
+          "claim_count": 2,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 1,
           "expected": [
             [
               "MM-014_delivery_risk_review.md",
@@ -367,25 +528,53 @@
               1
             ]
           ],
-          "input_tokens": 40,
-          "insufficient_correct": false,
-          "latency_ms": 22.783000022172928,
+          "input_tokens": 65,
+          "insufficient_correct": true,
+          "latency_ms": 179.89399998623412,
           "mrr": 1.0,
-          "output_tokens": 10,
+          "output_tokens": 68,
           "question": "What is the active schedule risk and what is its downstream impact?",
           "recall_at_12": 1.0,
-          "recall_at_5": 0.5,
+          "recall_at_5": 1.0,
           "retrieved": [
             [
               "MM-014_delivery_risk_review.md",
               1
             ],
             [
-              "MM-014_delivery_risk_review.md",
+              "atlas_demo_schedule.csv",
               1
             ],
             [
-              "MM-014_delivery_risk_review.md",
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
               1
             ],
             [
@@ -397,84 +586,76 @@
               1
             ],
             [
-              "atlas_demo_schedule.csv",
+              "CO-001_switchgear_recovery.md",
               1
             ],
             [
-              "atlas_demo_schedule.csv",
+              "RFI-004_switchgear_meter_protocol.md",
               1
-            ],
-            [
-              "atlas_demo_schedule.csv",
-              1
-            ],
-            [
-              "atlas_demo_schedule.csv",
-              1
-            ],
-            [
-              "atlas_demo_schedule.csv",
-              1
-            ],
-            [
-              "CRAC-002_ThermalCore_CRAC-1.md",
-              2
             ],
             [
               "CO-001_switchgear_recovery.md",
               1
             ],
             [
-              "SWGR-002_ArcLine_SWGR-A.md",
-              2
-            ],
-            [
-              "RFI-007_UPS_heat_rejection.md",
+              "RFI-005_switchgear_delivery_route.md",
               1
             ],
             [
-              "UPS-001_ApexPower_UPS-A.md",
-              2
+              "MM-014_delivery_risk_review.md",
+              1
             ],
             [
-              "RFI-002_UPS_battery_monitoring.md",
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "CO-001_switchgear_recovery.md",
               1
             ],
             [
               "UPS-002_VoltEdge_UPS-A.md",
-              2
-            ],
-            [
-              "UPS_Specification.md",
               1
             ],
             [
-              "RFI-009_UPS_front_access.md",
+              "Switchgear_Specification.md",
               1
             ]
           ],
-          "retry_count": 1,
-          "status": "INSUFFICIENT_EVIDENCE",
+          "retry_count": 0,
+          "status": "ANSWERED",
           "unsupported_claims": 0
         },
         {
-          "citation_count": 0,
-          "claim_count": 0,
-          "correct_citations": 0,
-          "correct_document": false,
-          "correct_page": false,
-          "covered_references": 0,
+          "citation_count": 3,
+          "cited": [
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 2,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 1,
           "expected": [
             [
               "CO-001_switchgear_recovery.md",
               1
             ]
           ],
-          "input_tokens": 216,
-          "insufficient_correct": false,
-          "latency_ms": 26.256333105266094,
+          "input_tokens": 272,
+          "insufficient_correct": true,
+          "latency_ms": 105.51329998997971,
           "mrr": 1.0,
-          "output_tokens": 10,
+          "output_tokens": 167,
           "question": "Is a switchgear delivery recovery measure approved?",
           "recall_at_12": 1.0,
           "recall_at_5": 1.0,
@@ -493,10 +674,6 @@
             ],
             [
               "CO-001_switchgear_recovery.md",
-              1
-            ],
-            [
-              "MM-014_delivery_risk_review.md",
               1
             ],
             [
@@ -508,7 +685,268 @@
               1
             ],
             [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ],
+            [
               "RFI-005_switchgear_delivery_route.md",
+              1
+            ],
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-006_CRAC_water_treatment.md",
+              1
+            ],
+            [
+              "SWGR-002_ArcLine_SWGR-A.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": true,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 213,
+          "insufficient_correct": true,
+          "latency_ms": 102.9934999969555,
+          "mrr": 1.0,
+          "output_tokens": 166,
+          "question": "What enclosure configuration does the switchgear specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "SWGR-002_ArcLine_SWGR-A.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-006_CRAC_water_treatment.md",
+              1
+            ],
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              2
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              1
+            ],
+            [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              1
+            ],
+            [
+              "SWGR-002_ArcLine_SWGR-A.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 231,
+          "insufficient_correct": true,
+          "latency_ms": 106.24259999895003,
+          "mrr": 1.0,
+          "output_tokens": 139,
+          "question": "What main bus rating is specified for the switchgear lineup?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "SWGR-002_ArcLine_SWGR-A.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ],
+            [
+              "Switchgear_Procedure_Template.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "SWGR-002_ArcLine_SWGR-A.md",
+              2
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "Switchgear_Procedure_Template.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 178,
+          "insufficient_correct": true,
+          "latency_ms": 102.17969999939669,
+          "mrr": 0.1111111111111111,
+          "output_tokens": 138,
+          "question": "What operating aisle is required in front of the switchgear?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 0.0,
+          "retrieved": [
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
               1
             ],
             [
@@ -516,15 +954,11 @@
               1
             ],
             [
-              "UPS_Procedure_Template.md",
+              "Switchgear_Specification.md",
               1
             ],
             [
-              "MM-014_delivery_risk_review.md",
-              1
-            ],
-            [
-              "MM-014_delivery_risk_review.md",
+              "RFI-011_louvre_removal_sequence.md",
               1
             ],
             [
@@ -532,58 +966,344 @@
               1
             ],
             [
-              "Switchgear_Procedure_Template.md",
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ],
+            [
+              "RFI-012_switchgear_torque_records.md",
               1
             ],
             [
-              "MM-014_delivery_risk_review.md",
+              "RFI-004_switchgear_meter_protocol.md",
               1
             ]
           ],
-          "retry_count": 1,
-          "status": "INSUFFICIENT_EVIDENCE",
+          "retry_count": 0,
+          "status": "ANSWERED",
           "unsupported_claims": 0
         },
         {
-          "citation_count": 0,
-          "claim_count": 0,
+          "citation_count": 3,
+          "cited": [
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              1
+            ],
+            [
+              "SWGR-002_ArcLine_SWGR-A.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 147,
+          "insufficient_correct": true,
+          "latency_ms": 97.6348000112921,
+          "mrr": 1.0,
+          "output_tokens": 60,
+          "question": "What form of separation is required for the switchgear?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ],
+            [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "RFI-005_switchgear_delivery_route.md",
+              1
+            ],
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ],
+            [
+              "SWGR-002_ArcLine_SWGR-A.md",
+              1
+            ],
+            [
+              "RFI-012_switchgear_torque_records.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              2
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
           "correct_citations": 0,
           "correct_document": false,
           "correct_page": false,
           "covered_references": 0,
-          "expected": [],
-          "input_tokens": 26,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "CRAC_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 308,
           "insufficient_correct": true,
-          "latency_ms": 17.12912507355213,
-          "mrr": 0,
-          "output_tokens": 10,
-          "question": "What is the generator fuel polishing interval?",
-          "recall_at_12": 0,
-          "recall_at_5": 0,
+          "latency_ms": 101.87990000122227,
+          "mrr": 0.3333333333333333,
+          "output_tokens": 221,
+          "question": "What service access clearance is required at the CRAC front face?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
           "retrieved": [
             [
-              "UPS_Procedure_Template.md",
+              "CRAC-002_ThermalCore_CRAC-1.md",
               2
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC_Specification.md",
+              1
+            ],
+            [
+              "CRAC_Procedure_Template.md",
+              1
             ],
             [
               "RFI-006_CRAC_water_treatment.md",
               1
             ],
             [
-              "RFI-004_switchgear_meter_protocol.md",
+              "RFI-009_UPS_front_access.md",
               1
             ],
             [
-              "RFI-007_UPS_heat_rejection.md",
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
               1
             ],
             [
-              "MM-014_delivery_risk_review.md",
+              "CRAC-002_ThermalCore_CRAC-1.md",
               1
             ],
             [
-              "RFI-005_switchgear_delivery_route.md",
+              "CRAC_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "CRAC_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 145,
+          "insufficient_correct": true,
+          "latency_ms": 103.17280000890605,
+          "mrr": 0.3333333333333333,
+          "output_tokens": 86,
+          "question": "What electrical supply is specified for the CRAC unit?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
               1
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC_Specification.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "CRAC_Procedure_Template.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              1
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC_Specification.md",
+              3
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-006_CRAC_water_treatment.md",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": true,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 197,
+          "insufficient_correct": true,
+          "latency_ms": 98.9358000078937,
+          "mrr": 0.5,
+          "output_tokens": 158,
+          "question": "What module redundancy does the UPS specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              2
             ],
             [
               "UPS_Specification.md",
@@ -594,40 +1314,663 @@
               1
             ],
             [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-006_CRAC_water_treatment.md",
+              1
+            ],
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              1
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              2
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              2
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              2
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 137,
+          "insufficient_correct": true,
+          "latency_ms": 114.57639999571256,
+          "mrr": 0.5,
+          "output_tokens": 86,
+          "question": "What harmonic limits apply to the UPS?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              2
+            ],
+            [
+              "UPS_Specification.md",
+              2
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              3
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "RFI-007_UPS_heat_rejection.md",
+              1
+            ],
+            [
+              "RFI-002_UPS_battery_monitoring.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-012_switchgear_torque_records.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              3
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "UPS_Specification.md",
+              3
+            ]
+          ],
+          "input_tokens": 181,
+          "insufficient_correct": true,
+          "latency_ms": 104.71200000029057,
+          "mrr": 1.0,
+          "output_tokens": 154,
+          "question": "What must be recorded in the UPS commissioning turnover package?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "UPS_Specification.md",
+              3
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              2
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "RFI-012_switchgear_torque_records.md",
+              1
+            ],
+            [
+              "RFI-005_switchgear_delivery_route.md",
+              1
+            ],
+            [
+              "RFI-007_UPS_heat_rejection.md",
+              1
+            ],
+            [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
               "MM-014_delivery_risk_review.md",
               1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ]
+          ],
+          "input_tokens": 158,
+          "insufficient_correct": true,
+          "latency_ms": 106.84249999758322,
+          "mrr": 1.0,
+          "output_tokens": 153,
+          "question": "Why is the SWGR-A delivery milestone forecast late?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "RFI-005_switchgear_delivery_route.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-007_UPS_heat_rejection.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ]
+          ],
+          "input_tokens": 305,
+          "insufficient_correct": true,
+          "latency_ms": 103.63740001048427,
+          "mrr": 1.0,
+          "output_tokens": 178,
+          "question": "What minimum clearance was confirmed for the UPS-A bypass cabinet?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "RFI-007_UPS_heat_rejection.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              2
+            ],
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              2
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              2
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              3
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 1,
+          "cited": [
+            [
+              "UPS_Procedure_Template.md",
+              2
+            ]
+          ],
+          "claim_count": 1,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 1,
+          "distinct_correct_citations": 0,
+          "expected": [],
+          "input_tokens": 26,
+          "insufficient_correct": false,
+          "latency_ms": 69.05940000433475,
+          "mrr": 0,
+          "output_tokens": 27,
+          "question": "What is the generator fuel polishing interval?",
+          "recall_at_12": 0,
+          "recall_at_5": 0,
+          "retrieved": [
+            [
+              "UPS_Procedure_Template.md",
+              2
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "RFI-010_CRAC_controls_alarm.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              3
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [],
+          "input_tokens": 82,
+          "insufficient_correct": false,
+          "latency_ms": 86.72659999865573,
+          "mrr": 0,
+          "output_tokens": 85,
+          "question": "Who is the appointed fire safety officer for the project?",
+          "recall_at_12": 0,
+          "recall_at_5": 0,
+          "retrieved": [
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "RFI-010_CRAC_controls_alarm.md",
+              1
+            ],
+            [
+              "RFI-007_UPS_heat_rejection.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "UPS_Specification.md",
+              3
+            ],
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "RFI-006_CRAC_water_treatment.md",
+              1
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "RFI-004_switchgear_meter_protocol.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [],
+          "input_tokens": 122,
+          "insufficient_correct": false,
+          "latency_ms": 107.1349999983795,
+          "mrr": 0,
+          "output_tokens": 78,
+          "question": "What is the warranty period offered on the CRAC compressors?",
+          "recall_at_12": 0,
+          "recall_at_5": 0,
+          "retrieved": [
+            [
+              "CRAC_Specification.md",
+              1
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              2
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              2
             ],
             [
               "SWGR-002_ArcLine_SWGR-A.md",
               2
             ],
             [
-              "CO-001_switchgear_recovery.md",
+              "RFI-008_switchgear_spares.md",
               1
             ],
             [
-              "CO-001_switchgear_recovery.md",
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "CRAC_Procedure_Template.md",
               1
             ]
           ],
-          "retry_count": 1,
-          "status": "INSUFFICIENT_EVIDENCE",
+          "retry_count": 0,
+          "status": "ANSWERED",
           "unsupported_claims": 0
         }
       ],
       "metrics": {
-        "average_input_tokens": 94.0,
-        "average_latency_ms": 22.06,
-        "average_output_tokens": 10.0,
-        "citation_completeness": 0.0,
-        "citation_precision": 0.0,
-        "correct_document_rate": 0.0,
-        "correct_page_rate": 0.0,
-        "corrective_retry_rate": 1.0,
-        "insufficient_evidence_accuracy": 0.3333,
-        "mrr": 1.0,
+        "average_input_tokens": 172.94,
+        "average_latency_ms": 105.7,
+        "average_output_tokens": 122.75,
+        "citation_completeness": 0.6429,
+        "citation_precision": 0.2432,
+        "citation_precision_per_citation": 0.2632,
+        "correct_document_rate": 0.8462,
+        "correct_page_rate": 0.6923,
+        "corrective_retry_rate": 0.0,
+        "insufficient_evidence_accuracy": 0.8125,
+        "mrr": 0.7521,
         "recall_at_12": 1.0,
-        "recall_at_5": 0.75,
+        "recall_at_5": 0.9231,
         "unsupported_claim_rate": 0.0
       }
     },
@@ -635,11 +1978,23 @@
       "cases": [
         {
           "citation_count": 3,
+          "cited": [
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
           "claim_count": 3,
-          "correct_citations": 2,
+          "correct_citations": 3,
           "correct_document": true,
           "correct_page": true,
-          "covered_references": 1,
+          "covered_references": 2,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 2,
           "expected": [
             [
               "MM-014_delivery_risk_review.md",
@@ -650,33 +2005,33 @@
               1
             ]
           ],
-          "input_tokens": 483,
+          "input_tokens": 474,
           "insufficient_correct": true,
-          "latency_ms": 1.4455411583185196,
+          "latency_ms": 30.108899998595007,
           "mrr": 1.0,
-          "output_tokens": 237,
+          "output_tokens": 276,
           "question": "What is the active schedule risk and what is its downstream impact?",
-          "recall_at_12": 0.5,
-          "recall_at_5": 0.5,
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
           "retrieved": [
             [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
               "MM-014_delivery_risk_review.md",
               1
             ],
             [
-              "CRAC-002_ThermalCore_CRAC-1.md",
-              2
-            ],
-            [
-              "MM-014_delivery_risk_review.md",
+              "atlas_demo_schedule.csv",
               1
             ],
             [
-              "UPS_Specification.md",
-              1
-            ],
-            [
-              "RFI-007_UPS_heat_rejection.md",
+              "atlas_demo_schedule.csv",
               1
             ]
           ],
@@ -686,22 +2041,30 @@
         },
         {
           "citation_count": 3,
+          "cited": [
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ]
+          ],
           "claim_count": 3,
           "correct_citations": 3,
           "correct_document": true,
           "correct_page": true,
           "covered_references": 1,
+          "distinct_citation_count": 1,
+          "distinct_correct_citations": 1,
           "expected": [
             [
               "CO-001_switchgear_recovery.md",
               1
             ]
           ],
-          "input_tokens": 316,
+          "input_tokens": 349,
           "insufficient_correct": true,
-          "latency_ms": 1.4172079972922802,
+          "latency_ms": 25.432199996430427,
           "mrr": 1.0,
-          "output_tokens": 210,
+          "output_tokens": 173,
           "question": "Is a switchgear delivery recovery measure approved?",
           "recall_at_12": 1.0,
           "recall_at_5": 1.0,
@@ -719,7 +2082,788 @@
               1
             ],
             [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 2,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 443,
+          "insufficient_correct": true,
+          "latency_ms": 102.24449999805074,
+          "mrr": 1.0,
+          "output_tokens": 346,
+          "question": "What enclosure configuration does the switchgear specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 489,
+          "insufficient_correct": true,
+          "latency_ms": 31.048200005898252,
+          "mrr": 1.0,
+          "output_tokens": 314,
+          "question": "What main bus rating is specified for the switchgear lineup?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "SWGR-001_GridPoint_SWGR-A.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 314,
+          "insufficient_correct": true,
+          "latency_ms": 30.919999990146607,
+          "mrr": 0,
+          "output_tokens": 119,
+          "question": "What operating aisle is required in front of the switchgear?",
+          "recall_at_12": 0.0,
+          "recall_at_5": 0.0,
+          "retrieved": [
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 293,
+          "insufficient_correct": true,
+          "latency_ms": 29.522200013161637,
+          "mrr": 1.0,
+          "output_tokens": 204,
+          "question": "What form of separation is required for the switchgear?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "Switchgear_Specification.md",
+              2
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "Switchgear_Specification.md",
+              3
+            ],
+            [
+              "RFI-008_switchgear_spares.md",
+              1
+            ],
+            [
+              "RFI-011_louvre_removal_sequence.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              2
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "CRAC_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 514,
+          "insufficient_correct": true,
+          "latency_ms": 31.166300002951175,
+          "mrr": 0.2,
+          "output_tokens": 325,
+          "question": "What service access clearance is required at the CRAC front face?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              2
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "CRAC_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 542,
+          "insufficient_correct": true,
+          "latency_ms": 32.413199995062314,
+          "mrr": 0.2,
+          "output_tokens": 263,
+          "question": "What electrical supply is specified for the CRAC unit?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 685,
+          "insufficient_correct": true,
+          "latency_ms": 32.093000001623295,
+          "mrr": 0.5,
+          "output_tokens": 454,
+          "question": "What module redundancy does the UPS specification require?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              2
+            ],
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              1
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              2
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              2
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "UPS_Specification.md",
+              2
+            ]
+          ],
+          "input_tokens": 647,
+          "insufficient_correct": true,
+          "latency_ms": 33.76669999852311,
+          "mrr": 0.5,
+          "output_tokens": 382,
+          "question": "What harmonic limits apply to the UPS?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              2
+            ],
+            [
+              "UPS_Specification.md",
+              2
+            ],
+            [
+              "UPS-002_VoltEdge_UPS-A.md",
+              1
+            ],
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              2
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 0,
+          "expected": [
+            [
+              "UPS_Specification.md",
+              3
+            ]
+          ],
+          "input_tokens": 341,
+          "insufficient_correct": true,
+          "latency_ms": 37.61780000058934,
+          "mrr": 0.25,
+          "output_tokens": 173,
+          "question": "What must be recorded in the UPS commissioning turnover package?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "UPS_Procedure_Template.md",
+              2
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              3
+            ],
+            [
+              "UPS_Procedure_Template.md",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
               "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 1,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ]
+          ],
+          "input_tokens": 494,
+          "insufficient_correct": true,
+          "latency_ms": 38.11600001063198,
+          "mrr": 0.5,
+          "output_tokens": 336,
+          "question": "Why is the SWGR-A delivery milestone forecast late?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "CO-001_switchgear_recovery.md",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 2,
+          "correct_document": true,
+          "correct_page": true,
+          "covered_references": 1,
+          "distinct_citation_count": 2,
+          "distinct_correct_citations": 1,
+          "expected": [
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ]
+          ],
+          "input_tokens": 500,
+          "insufficient_correct": true,
+          "latency_ms": 39.504000000306405,
+          "mrr": 1.0,
+          "output_tokens": 224,
+          "question": "What minimum clearance was confirmed for the UPS-A bypass cabinet?",
+          "recall_at_12": 1.0,
+          "recall_at_5": 1.0,
+          "retrieved": [
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "RFI-009_UPS_front_access.md",
+              1
+            ],
+            [
+              "RFI-003_UPS_bypass_clearance.md",
+              1
+            ],
+            [
+              "UPS_Specification.md",
+              1
+            ],
+            [
+              "UPS-001_ApexPower_UPS-A.md",
+              2
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 1,
+          "distinct_correct_citations": 0,
+          "expected": [],
+          "input_tokens": 494,
+          "insufficient_correct": false,
+          "latency_ms": 34.16170000855345,
+          "mrr": 0,
+          "output_tokens": 301,
+          "question": "What is the generator fuel polishing interval?",
+          "recall_at_12": 0,
+          "recall_at_5": 0,
+          "retrieved": [
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ],
+            [
+              "atlas_demo_schedule.csv",
+              1
+            ]
+          ],
+          "retry_count": 0,
+          "status": "ANSWERED",
+          "unsupported_claims": 0
+        },
+        {
+          "citation_count": 3,
+          "cited": [
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "RFI-007_UPS_heat_rejection.md",
+              1
+            ]
+          ],
+          "claim_count": 3,
+          "correct_citations": 0,
+          "correct_document": false,
+          "correct_page": false,
+          "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
+          "expected": [],
+          "input_tokens": 176,
+          "insufficient_correct": false,
+          "latency_ms": 31.834699999308214,
+          "mrr": 0,
+          "output_tokens": 122,
+          "question": "Who is the appointed fire safety officer for the project?",
+          "recall_at_12": 0,
+          "recall_at_5": 0,
+          "retrieved": [
+            [
+              "RFI-007_UPS_heat_rejection.md",
+              1
+            ],
+            [
+              "MM-014_delivery_risk_review.md",
+              1
+            ],
+            [
+              "CRAC_Specification.md",
+              2
+            ],
+            [
+              "RFI-010_CRAC_controls_alarm.md",
               1
             ],
             [
@@ -733,40 +2877,56 @@
         },
         {
           "citation_count": 3,
+          "cited": [
+            [
+              "CRAC-001_PolarAir_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC_Specification.md",
+              1
+            ]
+          ],
           "claim_count": 3,
           "correct_citations": 0,
           "correct_document": false,
           "correct_page": false,
           "covered_references": 0,
+          "distinct_citation_count": 3,
+          "distinct_correct_citations": 0,
           "expected": [],
-          "input_tokens": 441,
+          "input_tokens": 571,
           "insufficient_correct": false,
-          "latency_ms": 1.4979173429310322,
+          "latency_ms": 70.20129999727942,
           "mrr": 0,
-          "output_tokens": 235,
-          "question": "What is the generator fuel polishing interval?",
+          "output_tokens": 331,
+          "question": "What is the warranty period offered on the CRAC compressors?",
           "recall_at_12": 0,
           "recall_at_5": 0,
           "retrieved": [
             [
-              "RFI-006_CRAC_water_treatment.md",
-              1
-            ],
-            [
-              "UPS_Procedure_Template.md",
+              "CRAC-001_PolarAir_CRAC-1.md",
               2
             ],
             [
-              "RFI-004_switchgear_meter_protocol.md",
+              "CRAC-002_ThermalCore_CRAC-1.md",
+              2
+            ],
+            [
+              "CRAC_Specification.md",
               1
             ],
             [
-              "RFI-007_UPS_heat_rejection.md",
+              "CRAC-002_ThermalCore_CRAC-1.md",
               1
             ],
             [
-              "MM-014_delivery_risk_review.md",
-              1
+              "CRAC_Specification.md",
+              2
             ]
           ],
           "retry_count": 0,
@@ -775,18 +2935,19 @@
         }
       ],
       "metrics": {
-        "average_input_tokens": 413.33,
-        "average_latency_ms": 1.45,
-        "average_output_tokens": 227.33,
-        "citation_completeness": 0.6667,
-        "citation_precision": 0.8333,
-        "correct_document_rate": 1.0,
-        "correct_page_rate": 1.0,
+        "average_input_tokens": 457.88,
+        "average_latency_ms": 39.38,
+        "average_output_tokens": 271.44,
+        "citation_completeness": 0.7143,
+        "citation_precision": 0.3226,
+        "citation_precision_per_citation": 0.3846,
+        "correct_document_rate": 0.6923,
+        "correct_page_rate": 0.6923,
         "corrective_retry_rate": 0.0,
-        "insufficient_evidence_accuracy": 0.6667,
-        "mrr": 1.0,
-        "recall_at_12": 0.75,
-        "recall_at_5": 0.75,
+        "insufficient_evidence_accuracy": 0.8125,
+        "mrr": 0.6269,
+        "recall_at_12": 0.9231,
+        "recall_at_5": 0.9231,
         "unsupported_claim_rate": 0.0
       }
     }

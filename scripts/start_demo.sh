@@ -3,11 +3,11 @@ set -euo pipefail
 
 if [[ ! -f .env ]]; then
   cp .env.example .env
-  echo "Created .env. Set GEMINI_API_KEY, then rerun ./scripts/start_demo.sh."
+  echo "Created .env. Set GROQ_API_KEY, then rerun ./scripts/start_demo.sh."
   exit 1
 fi
-if ! grep -Eq '^(GEMINI_API_KEY|ATLAS_GEMINI_API_KEY)=.+$' .env; then
-  echo "GEMINI_API_KEY is required for live answer generation."
+if ! grep -Eq '^(GROQ_API_KEY|ATLAS_GROQ_API_KEY)=.+$' .env; then
+  echo "GROQ_API_KEY is required for live answer generation."
   exit 1
 fi
 

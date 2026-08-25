@@ -1,3 +1,4 @@
+import itertools
 import math
 import uuid
 from datetime import UTC, date, datetime, timedelta
@@ -164,7 +165,7 @@ async def propagate_event(
             delay_days=delays[index],
             confidence=target.confidence,
         )
-        for index, (source, target) in enumerate(zip(events, events[1:], strict=False))
+        for index, (source, target) in enumerate(itertools.pairwise(events))
     )
     for item in payload.evidence:
         session.add(

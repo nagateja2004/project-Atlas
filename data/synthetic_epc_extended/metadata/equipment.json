@@ -1,0 +1,66 @@
+{
+  "data_classification": "SYNTHETIC EPC DEMO DATA",
+  "project_id": "atlas-demo-dc-02",
+  "equipment": [
+    {
+      "equipment_id": "EQ-GENA",
+      "tag": "GEN-A",
+      "category": "Generator",
+      "specification_id": "SPEC-GENA-001",
+      "selected_vendor_id": "V-TG",
+      "selected_model": "TG-STB-2500",
+      "location": "Generator Yard GY-01",
+      "lead_time_days": 210
+    },
+    {
+      "equipment_id": "EQ-CHA",
+      "tag": "CH-A",
+      "category": "Chiller",
+      "specification_id": "SPEC-CHA-001",
+      "selected_vendor_id": "V-CL",
+      "selected_model": "CL-ACS-1400",
+      "location": "Chiller Yard CY-01",
+      "lead_time_days": 168
+    },
+    {
+      "equipment_id": "EQ-PDUA",
+      "tag": "PDU-A",
+      "category": "PDU",
+      "specification_id": "SPEC-PDUA-001",
+      "selected_vendor_id": "V-VH",
+      "selected_model": "VH-PDU-300",
+      "location": "Data Hall DH-01",
+      "lead_time_days": 120
+    },
+    {
+      "equipment_id": "EQ-XFMRA",
+      "tag": "XFMR-A",
+      "category": "Transformer",
+      "specification_id": "SPEC-XFMRA-001",
+      "selected_vendor_id": "V-MC",
+      "selected_model": "MC-CR-2000",
+      "location": "Electrical Room ER-02",
+      "lead_time_days": 196
+    },
+    {
+      "equipment_id": "EQ-FSA",
+      "tag": "FS-A",
+      "category": "FireSuppression",
+      "specification_id": "SPEC-FSA-001",
+      "selected_vendor_id": "V-SG",
+      "selected_model": "SG-CA-700",
+      "location": "Data Hall DH-01",
+      "lead_time_days": 98
+    },
+    {
+      "equipment_id": "EQ-BMSA",
+      "tag": "BMS-A",
+      "category": "BMS",
+      "specification_id": "SPEC-BMSA-001",
+      "selected_vendor_id": "V-NC",
+      "selected_model": "NC-SUP-6000",
+      "location": "Control Room CR-01",
+      "lead_time_days": 84
+    }
+  ]
+}

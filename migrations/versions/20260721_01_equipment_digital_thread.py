@@ -34,7 +34,11 @@ def upgrade() -> None:
         if "equipment_id" not in {column["name"] for column in inspector.get_columns(table_name)}:
             op.add_column(table_name, sa.Column("equipment_id", sa.String(100), nullable=True))
             op.create_index(f"ix_{table_name}_equipment_id", table_name, ["equipment_id"])
-    # ponytail: current metadata keeps this first migration compact; freeze explicit table DDL before an independent release train.
+    # TODO(schema-provenance): this migration creates tables from live
+    # Base.metadata rather than explicit DDL, so the Alembic history cannot
+    # reproduce any past schema version - it only tracks whatever models.py
+    # currently says. Freeze explicit CREATE TABLE statements here before this
+    # schema ships on an independent release train.
     for table_name in TABLES:
         Base.metadata.tables[table_name].create(bind, checkfirst=True)
 

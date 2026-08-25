@@ -3,7 +3,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from qdrant_client import AsyncQdrantClient
@@ -17,7 +17,7 @@ from app.procurement import ProcurementRiskService
 from app.schedule import ScheduleService
 from app.database import check_database, create_database_engine, create_session_factory, initialize_database
 from app.graph import GraphStore
-from app.ingestion import IngestionError, LocalHashEmbedder
+from app.ingestion import IngestionError, build_embedder
 from app.impact_chain import ImpactChainService
 from app.workflow import KnowledgeService, build_workflow
 
@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         url=settings.qdrant_url, api_key=settings.qdrant_api_key, check_compatibility=False
     )
     app.state.settings = settings
-    app.state.embedder = LocalHashEmbedder(settings)
+    app.state.embedder = build_embedder(settings)
     app.state.graph_store = GraphStore(settings.graph_dir)
     app.state.knowledge_service = KnowledgeService(settings, app.state.qdrant, app.state.embedder)
     app.state.compliance_service = ComplianceService(settings)
@@ -66,11 +66,20 @@ app.add_middleware(
 )
 
 
-def error_response(status_code: int, code: str, message: str, details: object | None = None) -> JSONResponse:
+def error_response(
+    status_code: int,
+    code: str,
+    message: str,
+    details: object | None = None,
+    headers: dict[str, str] | None = None,
+) -> JSONResponse:
     body = {"error": {"code": code, "message": message}}
     if details is not None:
         body["error"]["details"] = details
-    return JSONResponse(status_code=status_code, content=body)
+    # headers matter for at least one status: RFC 7235 requires
+    # WWW-Authenticate on a 401, and rebuilding the response here previously
+    # discarded whatever the raising code set.
+    return JSONResponse(status_code=status_code, content=body, headers=headers)
 
 
 @app.exception_handler(RequestValidationError)
@@ -85,7 +94,12 @@ async def ingestion_error(_: Request, exc: IngestionError) -> JSONResponse:
 
 @app.exception_handler(StarletteHTTPException)
 async def http_error(_: Request, exc: StarletteHTTPException) -> JSONResponse:
-    return error_response(exc.status_code, "http_error", str(exc.detail))
+    return error_response(
+        exc.status_code,
+        "http_error",
+        str(exc.detail),
+        headers=getattr(exc, "headers", None),
+    )
 
 
 @app.exception_handler(Exception)
@@ -123,8 +137,23 @@ async def ready(request: Request) -> JSONResponse:
 
 
 from app.api import benchmark_router, evaluation_router, mitigation_router, router as project_router
+from app.auth import enforce_project_access
+from app.auth_api import member_router, router as auth_router
 
-app.include_router(project_router)
-app.include_router(evaluation_router)
-app.include_router(mitigation_router)
-app.include_router(benchmark_router)
+# Unauthenticated by design: /auth/login is how a caller obtains a token, and
+# /auth/me reports who they are. Everything else goes behind the guard.
+app.include_router(auth_router)
+
+# enforce_project_access is attached at the router rather than per route. It
+# resolves the caller, then reads project_id out of the path and checks
+# membership - viewer to read, reviewer to mutate. Applying it here means a
+# route added later is covered without anyone remembering to annotate it, and a
+# forgotten annotation on a security check is a silent hole. When
+# ATLAS_AUTH_ENABLED is false it returns immediately, so behaviour is unchanged.
+_guard = [Depends(enforce_project_access)]
+
+app.include_router(project_router, dependencies=_guard)
+app.include_router(member_router, dependencies=_guard)
+app.include_router(evaluation_router, dependencies=_guard)
+app.include_router(mitigation_router, dependencies=_guard)
+app.include_router(benchmark_router, dependencies=_guard)

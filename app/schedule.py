@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from app.config import Settings
 from app.ingestion import Citation, IngestionError
-from app.llm import GeminiGateway
+from app.llm import LLMGateway
 from app.models import Document
 
 
@@ -54,6 +54,110 @@ class ScheduleScenario(BaseModel):
     workforce_availability: float = Field(default=1, gt=0, le=1)
     weather_impact_days: dict[str, Annotated[int, Field(ge=0)]] = Field(default_factory=dict)
     mitigation_recovery_days: dict[str, Annotated[int, Field(ge=0)]] = Field(default_factory=dict)
+
+
+class SiteConditionDay(BaseModel):
+    """One dated row of the site log, kept so a delay day can be pointed at."""
+
+    record_date: date
+    task_id: str
+    weather_condition: str
+    lost_workday: bool
+    planned_crew: int
+    present_crew: int
+    absence_reason: str
+
+
+class SiteConditions(BaseModel):
+    """Weather and workforce read off a project document rather than asserted.
+
+    Both used to arrive as scenario knobs - a caller passed
+    `weather_impact_days={"T-160": 4}` and the explanation read "synthetic
+    weather impact adds 4 days", with nothing behind the 4. Derived here from a
+    dated site log, each figure carries the rows that produced it, so weather
+    and workforce answer the same question as every other number in the
+    project: which document, and which line of it.
+    """
+
+    source_filename: str
+    source_document_id: uuid.UUID | None = None
+    record_count: int
+    window_start: date
+    window_end: date
+    weather_impact_days: dict[str, int]
+    weather_dates: dict[str, list[date]]
+    workforce_availability: float
+    workforce_planned_crew_days: int
+    workforce_present_crew_days: int
+    workforce_absence_reasons: list[str]
+
+    def weather_note(self, task_id: str) -> str | None:
+        dates = self.weather_dates.get(task_id)
+        if not dates:
+            return None
+        shown = ", ".join(item.isoformat() for item in dates[:4])
+        if len(dates) > 4:
+            shown += f", +{len(dates) - 4} more"
+        return f"{self.source_filename} records {len(dates)} weather-lost workdays for {task_id} ({shown})"
+
+    @property
+    def workforce_note(self) -> str:
+        return (
+            f"{self.source_filename} records {self.workforce_present_crew_days} of "
+            f"{self.workforce_planned_crew_days} planned crew-days worked "
+            f"({self.workforce_availability:.0%} availability)"
+        )
+
+
+def load_site_conditions(path: Path, document: Document | None = None) -> SiteConditions:
+    with path.open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    if not rows:
+        raise IngestionError("empty_site_conditions", "The site conditions log has no records")
+
+    days: list[SiteConditionDay] = []
+    for index, row in enumerate(rows, start=2):  # row 1 is the header
+        try:
+            days.append(
+                SiteConditionDay(
+                    record_date=date.fromisoformat(row["record_date"].strip()),
+                    task_id=row["task_id"].strip(),
+                    weather_condition=row.get("weather_condition", "").strip(),
+                    lost_workday=row.get("lost_workday", "").strip().lower() in {"true", "yes", "1"},
+                    planned_crew=int(row.get("planned_crew") or 0),
+                    present_crew=int(row.get("present_crew") or 0),
+                    absence_reason=row.get("absence_reason", "").strip(),
+                )
+            )
+        except (KeyError, ValueError) as error:
+            raise IngestionError("invalid_site_conditions", f"Row {index} is not a valid site record") from error
+
+    weather_dates: dict[str, list[date]] = {}
+    for day in days:
+        if day.lost_workday:
+            weather_dates.setdefault(day.task_id, []).append(day.record_date)
+
+    # Availability is measured over days the crew could actually work. Counting
+    # a weather stand-down as an absence would charge the same lost day twice:
+    # once as a weather day and again as reduced productivity.
+    worked = [day for day in days if not day.lost_workday]
+    planned = sum(day.planned_crew for day in worked)
+    present = sum(day.present_crew for day in worked)
+    availability = round(present / planned, 4) if planned else 1.0
+
+    return SiteConditions(
+        source_filename=document.filename if document else path.name,
+        source_document_id=document.id if document else None,
+        record_count=len(days),
+        window_start=min(day.record_date for day in days),
+        window_end=max(day.record_date for day in days),
+        weather_impact_days={task: len(dates) for task, dates in weather_dates.items()},
+        weather_dates={task: sorted(dates) for task, dates in weather_dates.items()},
+        workforce_availability=min(1.0, max(availability, 0.01)),
+        workforce_planned_crew_days=planned,
+        workforce_present_crew_days=present,
+        workforce_absence_reasons=sorted({day.absence_reason for day in worked if day.absence_reason}),
+    )
 
 
 class ScheduleTaskTiming(BaseModel):
@@ -112,7 +216,7 @@ class ScheduleAnalysis(BaseModel):
 
 class ScheduleNarrator:
     def __init__(self, settings: Settings) -> None:
-        self.gateway = GeminiGateway(settings)
+        self.gateway = LLMGateway(settings)
 
     async def enrich(self, risk: ScheduleRisk) -> ScheduleRisk:
         if not self.gateway.client:
@@ -142,13 +246,18 @@ class ScheduleService:
         self.settings = settings
         self.narrator = narrator or ScheduleNarrator(settings)
 
-    async def analyze(self, document: Document, scenario: ScheduleScenario) -> ScheduleAnalysis:
+    async def analyze(
+        self,
+        document: Document,
+        scenario: ScheduleScenario,
+        conditions: SiteConditions | None = None,
+    ) -> ScheduleAnalysis:
         if document.document_type != "schedule":
             raise IngestionError("invalid_schedule_document", "Select a schedule document")
         tasks = load_schedule(Path(document.storage_path))
         order = validate_dependencies(tasks)
         timings = calculate_cpm(tasks, order)
-        forecast_start, forecast_finish, parent, origins = propagate_delays(tasks, order, scenario)
+        forecast_start, forecast_finish, parent, origins = propagate_delays(tasks, order, scenario, conditions)
         analysis_date = scenario.analysis_date or date.today()
         risks = []
         for task_id in order:
@@ -168,7 +277,7 @@ class ScheduleService:
                 affected_equipment=sorted(
                     {tasks[item].equipment_id for item in chain_ids if tasks[item].equipment_id}
                 ),
-                root_cause=root_cause(root, scenario),
+                root_cause=root_cause(root, scenario, conditions),
                 dependency_chain=[f"{item}: {tasks[item].name}" for item in chain_ids],
                 predicted_delay_days=delay,
                 actual_or_simulated_delay_days=reported_delay,
@@ -180,13 +289,21 @@ class ScheduleService:
                 first_alert_date=analysis_date,
                 affected_completion_date=forecast_finish[task_id],
                 severity=severity,
-                mitigation_inputs=mitigation_inputs(root, scenario),
-                mitigation_options=mitigations(root, scenario),
+                mitigation_inputs=mitigation_inputs(root, scenario, conditions),
+                mitigation_options=mitigations(root, scenario, conditions),
                 explanation=f"Scenario-based analysis shows {delay} calendar days of delay propagated through the listed dependency chain.",
-                assumptions=assumptions(scenario),
+                assumptions=assumptions(scenario, conditions),
                 evidence=[
-                    citation(document, root_id),
-                    citation(document, task_id),
+                    item
+                    for item in (
+                        citation(document, root_id),
+                        citation(document, task_id),
+                        # Present only when weather or workforce actually moved
+                        # this task, so the reviewer can open the dated rows
+                        # behind those days instead of taking them on trust.
+                        conditions_citation(conditions, root_id) if conditions else None,
+                    )
+                    if item is not None
                 ],
             )
             risks.append(await self.narrator.enrich(risk))
@@ -208,7 +325,7 @@ class ScheduleService:
                 for task_id in order
             ],
         )
-        return ScheduleAnalysis(risks=risks, assumptions=assumptions(scenario), snapshot=snapshot)
+        return ScheduleAnalysis(risks=risks, assumptions=assumptions(scenario, conditions), snapshot=snapshot)
 
 
 def load_schedule(path: Path) -> dict[str, ScheduleTask]:
@@ -233,7 +350,10 @@ def load_schedule(path: Path) -> dict[str, ScheduleTask]:
                 notes=row.get("notes", ""),
             )
         except (KeyError, ValueError) as exc:
-            raise IngestionError("invalid_schedule", "Schedule contains invalid task data") from exc
+            raise IngestionError(
+                "invalid_schedule",
+                "Schedule contains invalid task data"
+            ) from exc
         if not task.task_id or task.task_id in tasks:
             raise IngestionError("invalid_schedule", "Schedule task IDs must be unique")
         tasks[task.task_id] = task
@@ -305,12 +425,15 @@ def total_float(tasks: dict[str, ScheduleTask], order: list[str]) -> dict[str, i
 
 
 def propagate_delays(
-    tasks: dict[str, ScheduleTask], order: list[str], scenario: ScheduleScenario
+    tasks: dict[str, ScheduleTask],
+    order: list[str],
+    scenario: ScheduleScenario,
+    conditions: SiteConditions | None = None,
 ) -> tuple[dict[str, date], dict[str, date], dict[str, str | None], dict[str, str]]:
     start_dates, finish, parent, origins = {}, {}, {}, {}
     for task_id in order:
         task = tasks[task_id]
-        scenario_delay, direct_cause = scenario_effect(task, scenario)
+        scenario_delay, direct_cause = scenario_effect(task, scenario, conditions)
         duration = max(task.baseline_duration, task.forecast_duration + scenario_delay)
         predecessor = max(task.dependencies, key=lambda item: finish[item], default=None)
         if predecessor:
@@ -342,7 +465,15 @@ def propagate_delays(
     return start_dates, finish, parent, origins
 
 
-def scenario_effect(task: ScheduleTask, scenario: ScheduleScenario) -> tuple[int, str | None]:
+def scenario_effect(
+    task: ScheduleTask, scenario: ScheduleScenario, conditions: SiteConditions | None = None
+) -> tuple[int, str | None]:
+    """Extra days on a task, and the cause to show for them.
+
+    When a site conditions log is supplied it replaces the scenario's weather
+    and workforce values, and the cause names the document and the dates rather
+    than restating the number it was handed.
+    """
     procurement = scenario.procurement.get(task.task_id)
     extra, causes = 0, []
     if procurement:
@@ -353,13 +484,18 @@ def scenario_effect(task: ScheduleTask, scenario: ScheduleScenario) -> tuple[int
             lead_time_delay = procurement.lead_time_days - task.forecast_duration
             extra += lead_time_delay
             causes.append(f"procurement lead time adds {lead_time_delay} days")
-    if scenario.workforce_availability < 1 and task.category in {"Construction", "Commissioning"}:
-        extra += math.ceil(task.forecast_duration * (1 / scenario.workforce_availability - 1))
-        causes.append(f"workforce availability is {scenario.workforce_availability:.0%}")
-    weather_days = scenario.weather_impact_days.get(task.task_id, 0)
+    availability = conditions.workforce_availability if conditions else scenario.workforce_availability
+    if availability < 1 and task.category in {"Construction", "Commissioning"}:
+        extra += math.ceil(task.forecast_duration * (1 / availability - 1))
+        causes.append(
+            conditions.workforce_note if conditions else f"workforce availability is {availability:.0%}"
+        )
+    weather_source = conditions.weather_impact_days if conditions else scenario.weather_impact_days
+    weather_days = weather_source.get(task.task_id, 0)
     if weather_days:
         extra += weather_days
-        causes.append(f"synthetic weather impact adds {weather_days} days")
+        note = conditions.weather_note(task.task_id) if conditions else None
+        causes.append(note or f"scenario input applies {weather_days} weather days")
     recovery_days = scenario.mitigation_recovery_days.get(task.task_id, 0)
     if recovery_days:
         extra -= recovery_days
@@ -379,11 +515,11 @@ def dependency_chain(task_id: str, parent: dict[str, str | None], origins: dict[
     return list(reversed(chain))
 
 
-def root_cause(task: ScheduleTask, scenario: ScheduleScenario) -> str:
+def root_cause(task: ScheduleTask, scenario: ScheduleScenario, conditions: SiteConditions | None = None) -> str:
     delivery_date = scenario.equipment_delivery_dates.get(task.task_id)
     if task.is_delivery_milestone and delivery_date:
         return f"equipment delivery date constrained to {delivery_date.isoformat()}"
-    _, cause = scenario_effect(task, scenario)
+    _, cause = scenario_effect(task, scenario, conditions)
     return cause or "forecast schedule deviation propagated through dependencies"
 
 
@@ -395,37 +531,101 @@ def classify_risk(delay_days: int, available_float_days: int) -> str:
     return "medium"
 
 
-def mitigations(root: ScheduleTask, scenario: ScheduleScenario) -> list[str]:
+def mitigations(
+    root: ScheduleTask, scenario: ScheduleScenario, conditions: SiteConditions | None = None
+) -> list[str]:
     options = ["Confirm the recovery schedule and protect successor start dates."]
     if root.category in {"Procurement", "Delivery"} or root.is_delivery_milestone:
         options.append("Expedite the supplier recovery plan and confirm delivery logistics.")
-    if scenario.workforce_availability < 1:
+    availability = conditions.workforce_availability if conditions else scenario.workforce_availability
+    if availability < 1:
         options.append("Re-sequence or add qualified crews to restore planned productivity.")
-    if scenario.weather_impact_days:
+        for reason in (conditions.workforce_absence_reasons if conditions else []):
+            options.append(f"Address the recorded crew shortfall: {reason}.")
+    if (conditions.weather_impact_days if conditions else scenario.weather_impact_days):
         options.append("Use weather contingency windows and resequence weather-sensitive work.")
     return options
 
 
-def mitigation_inputs(root: ScheduleTask, scenario: ScheduleScenario) -> dict[str, object]:
+def mitigation_inputs(
+    root: ScheduleTask, scenario: ScheduleScenario, conditions: SiteConditions | None = None
+) -> dict[str, object]:
     procurement = scenario.procurement.get(root.task_id)
+    weather_source = conditions.weather_impact_days if conditions else scenario.weather_impact_days
     return {
         "root_task_id": root.task_id,
         "procurement_delay_days": procurement.delay_days if procurement else 0,
         "delivery_date": scenario.equipment_delivery_dates.get(root.task_id),
-        "workforce_availability": scenario.workforce_availability,
-        "weather_impact_days": scenario.weather_impact_days.get(root.task_id, 0),
+        "workforce_availability": (
+            conditions.workforce_availability if conditions else scenario.workforce_availability
+        ),
+        "weather_impact_days": weather_source.get(root.task_id, 0),
         "recovery_days": scenario.mitigation_recovery_days.get(root.task_id, 0),
+        # Which of the two the reviewer is looking at, so a figure is never
+        # mistaken for evidence when a caller simply typed it in.
+        "weather_and_workforce_source": (
+            f"{conditions.source_filename} ({conditions.record_count} daily records, "
+            f"{conditions.window_start.isoformat()} to {conditions.window_end.isoformat()})"
+            if conditions
+            else "caller-supplied scenario input"
+        ),
+        "weather_dates": (
+            [item.isoformat() for item in conditions.weather_dates.get(root.task_id, [])]
+            if conditions
+            else []
+        ),
     }
 
 
-def assumptions(scenario: ScheduleScenario) -> list[str]:
-    return [
+def assumptions(scenario: ScheduleScenario, conditions: SiteConditions | None = None) -> list[str]:
+    items = [
         "This is scenario-based risk analysis, not a trained historical prediction.",
         "Durations and dependency propagation use calendar days from the supplied schedule.",
-        f"Workforce availability is modeled at {scenario.workforce_availability:.0%}.",
-        f"Synthetic weather impacts are applied only to listed task IDs ({len(scenario.weather_impact_days)} inputs).",
-        f"Mitigation recovery is applied only to listed task IDs ({len(scenario.mitigation_recovery_days)} inputs).",
     ]
+    if conditions:
+        items += [
+            f"Weather and workforce are read from {conditions.source_filename} "
+            f"({conditions.record_count} daily records, {conditions.window_start.isoformat()} to "
+            f"{conditions.window_end.isoformat()}), not supplied as scenario inputs.",
+            f"Workforce availability of {conditions.workforce_availability:.0%} is "
+            f"{conditions.workforce_present_crew_days} of {conditions.workforce_planned_crew_days} "
+            "planned crew-days, measured over days not already lost to weather so that a lost day "
+            "is not counted twice.",
+            f"Weather days are the dated rows flagged as lost workdays "
+            f"({sum(conditions.weather_impact_days.values())} across "
+            f"{len(conditions.weather_impact_days)} tasks).",
+        ]
+    else:
+        items += [
+            f"Workforce availability is modeled at {scenario.workforce_availability:.0%} from caller input.",
+            "Weather impacts are caller-supplied and applied only to listed task IDs "
+            f"({len(scenario.weather_impact_days)} inputs).",
+        ]
+    items.append(
+        f"Mitigation recovery is applied only to listed task IDs ({len(scenario.mitigation_recovery_days)} inputs)."
+    )
+    return items
+
+
+def conditions_citation(conditions: SiteConditions, task_id: str) -> Citation | None:
+    """A citation into the site log, pointing at the rows that moved this task."""
+    if conditions.source_document_id is None:
+        return None
+    dates = conditions.weather_dates.get(task_id, [])
+    if dates:
+        section = f"Lost workdays {dates[0].isoformat()} to {dates[-1].isoformat()}"
+    elif conditions.workforce_availability < 1:
+        section = (
+            f"Crew records {conditions.window_start.isoformat()} to {conditions.window_end.isoformat()}"
+        )
+    else:
+        return None
+    return Citation(
+        document_id=conditions.source_document_id,
+        filename=conditions.source_filename,
+        page=1,
+        section=section,
+    )
 
 
 def citation(document: Document, task_id: str) -> Citation:

@@ -3,16 +3,137 @@
 @tailwind utilities;
 
 * { box-sizing: border-box; }
-html { background: #f5f7fa; }
-body { margin: 0; color: #172235; font-family: Arial, Helvetica, sans-serif; }
-button, input, select, textarea { font: inherit; }
+
+html {
+  background: theme('colors.canvas');
+  -webkit-text-size-adjust: 100%;
+  /* Anchor links land below the sticky header rather than under it. */
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  color: theme('colors.ink');
+  font-family: var(--font-sans), "Segoe UI", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* A long story page must never introduce a sideways scrollbar; a single
+     over-wide child would otherwise shift the whole layout. */
+  overflow-x: hidden;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 
-.mesh { background-image: linear-gradient(125deg, rgba(11,31,54,.04) 25%, transparent 25%), linear-gradient(305deg, rgba(11,31,54,.04) 25%, transparent 25%); background-size: 28px 28px; }
-.graph-node { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; }
-.demo-panel { border-radius: .75rem; }
+/*
+ * Headings get balanced wrapping and tighter tracking as they grow. Large text
+ * set at body tracking reads loose and amateurish; this is the single highest-
+ * value typographic adjustment on the page.
+ */
+h1, h2, h3, h4 { text-wrap: balance; }
+h1, h2 { letter-spacing: -0.02em; }
 
-@media (min-width: 1280px) and (min-height: 760px) {
-  main > div { height: calc(100vh - 69px); overflow: hidden; }
-  main > div > section { max-height: calc(100vh - 117px); overflow: auto; }
+/* Paragraphs avoid a single word alone on the last line. */
+p { text-wrap: pretty; }
+
+/* Digits in metric grids and tables should line up in columns. */
+table, .tabular { font-variant-numeric: tabular-nums; }
+
+/* Keyboard focus must be visible on every control, not just inputs. */
+:focus-visible {
+  outline: 2px solid theme('colors.signal');
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* A pointer click should not leave a focus ring behind on a card or button. */
+:focus:not(:focus-visible) { outline: none; }
+
+/*
+ * Drafting-paper ground: one faint hairline grid, in the spirit of a marked-up
+ * drawing. Replaces a pair of overlapping 125deg/305deg gradients that produced
+ * a visible moire behind dense tables.
+ */
+.mesh {
+  background-image:
+    linear-gradient(to right, rgba(11, 31, 54, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11, 31, 54, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/*
+ * Fades the grid out toward the bottom of a tall panel so it does not compete
+ * with content that sits low on the page.
+ */
+.mesh-fade {
+  mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+}
+
+.demo-panel { border-radius: 0.75rem; }
+
+/* Scroll containers keep their own scrollbar; the page body never moves sideways. */
+.scroll-x { overflow-x: auto; overscroll-behavior-x: contain; }
+
+.scroll-y {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.slate.300') transparent;
+}
+.scroll-y::-webkit-scrollbar { width: 10px; height: 10px; }
+.scroll-y::-webkit-scrollbar-thumb {
+  background: theme('colors.slate.300');
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+.scroll-y::-webkit-scrollbar-thumb:hover { background-clip: content-box; background-color: theme('colors.slate.400'); }
+.scroll-y::-webkit-scrollbar-track { background: transparent; }
+
+/*
+ * View transition between the story, the sign-in screen and the workspace.
+ *
+ * A cross-fade with a small rise, not a slide: the three views are different
+ * places rather than adjacent pages, and a horizontal slide would imply an
+ * order they do not have.
+ */
+.view-enter { animation: view-enter 380ms cubic-bezier(.16,.84,.28,1) both; }
+@keyframes view-enter {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Hides content from sight while leaving it available to a screen reader. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/*
+ * Reduced motion.
+ *
+ * Durations collapse rather than animations being removed, so any element whose
+ * final state is applied by a class still arrives there - it simply arrives
+ * instantly. Transforms are also neutralised, because a collapsed duration on a
+ * transform can still land an element a few pixels from where it belongs.
+ *
+ * `scroll-behavior: auto` matters as much as the rest: smooth programmatic
+ * scrolling is itself a motion trigger.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .view-enter { animation: none; }
 }

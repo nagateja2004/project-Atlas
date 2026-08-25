@@ -18,7 +18,7 @@ from app.models import (
     Document,
     Equipment,
     NonConformance,
-    ScheduleTask,
+    ScheduleTask as ScheduleTaskRecord,
     Shipment,
 )
 
@@ -243,10 +243,10 @@ class CommissioningService:
             select(Shipment).where(Shipment.project_id == project_id, Shipment.equipment_id == equipment_id)
         )).all())
         installation = list((await session.scalars(
-            select(ScheduleTask).where(
-                ScheduleTask.project_id == project_id,
-                ScheduleTask.equipment_id == equipment_id,
-                ScheduleTask.name.ilike("%install%"),
+            select(ScheduleTaskRecord).where(
+                ScheduleTaskRecord.project_id == project_id,
+                ScheduleTaskRecord.equipment_id == equipment_id,
+                ScheduleTaskRecord.name.ilike("%install%"),
             )
         )).all())
         ncrs = list((await session.scalars(
@@ -290,19 +290,27 @@ def assess(step: ProcedureStep, observation: str | None) -> StepStatus:
         return "FAIL"
     expected, observed = _measurement(step.acceptance_criterion), _measurement(observation)
     criterion = step.acceptance_criterion.lower()
-    if expected and observed and any(token in criterion for token in ("minimum", "not less", "maintain", "supports")):
-        return "PASS" if observed >= expected else "FAIL"
+    comparable = bool(expected and observed) and expected[1] == observed[1]
+    if comparable and any(token in criterion for token in ("minimum", "not less", "maintain", "supports")):
+        return "PASS" if observed[0] >= expected[0] else "FAIL"
     if any(token in text for token in ("pass", "verified", "confirmed", "complete", "meets")):
         return "PASS"
     return "NEEDS_REVIEW"
 
 
-def _measurement(text: str) -> float | None:
-    match = re.search(r"(\d+(?:\.\d+)?)\s*(?:-|\s)(?:minutes?|mins?|mm)\b", text, re.IGNORECASE)
+def _measurement(text: str) -> tuple[float, str] | None:
+    """
+    First quantity in `text`, with its normalized unit.
+
+    The unit is returned so callers can refuse to compare unlike quantities;
+    previously only the magnitude was returned, so a criterion in millimetres
+    could be compared against an observation in minutes.
+    """
+    match = re.search(r"(\d+(?:\.\d+)?)\s*(?:-|\s)(minutes?|mins?|mm)\b", text, re.IGNORECASE)
     if not match:
         return None
-    value, unit = float(match.group(1)), match.group(0).lower()
-    return value if "mm" in unit else value
+    unit = match.group(2).lower()
+    return float(match.group(1)), "mm" if unit == "mm" else "minutes"
 
 
 def test_record_response(record: CommissioningTestRecord, non_conformances: list[NonConformance]) -> TestRecordResponse:

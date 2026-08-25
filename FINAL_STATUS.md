@@ -1,14 +1,21 @@
 # Project Atlas Final QA Status
 
-Feature development is frozen. QA date: 2026-07-21 (Asia/Kolkata).
+Feature development was frozen for QA on **2026-07-21 (Asia/Kolkata)**, and the
+table below records that run.
+
+> ⚠️ **Work shipped after the freeze.** Authentication and per-project RBAC, the
+> frontend rebuild, evidenced weather/workforce inputs, and the expanded
+> evaluation sets all post-date it. Rows re-verified on **2026-08-24** say so;
+> rows still carrying the freeze-date evidence are marked *last verified
+> 2026-07-21* and should be re-run before submission.
 
 ## QA requirements
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
-| Backend tests | PASS | `python3 -m pytest -q`: 88 passed, 20 dependency deprecation warnings |
+| Backend tests | PASS | `python3 -m pytest -q`: **222 passed** (re-verified 2026-08-24; was 88 at the freeze) |
 | Backend compile check | PASS | `python3 -m compileall -q app scripts evaluation migrations` |
-| Frontend tests | PASS | Vitest: 9 passed across 2 files after executive and Digital Thread integration |
+| Frontend tests | PASS | Vitest: 22 passed (*last verified 2026-07-21*; not re-run for the 2026-08-24 changes, which are backend and documentation only) |
 | Frontend lint | PASS | `npm run lint`: no errors or warnings |
 | Frontend type check | PASS | `npm run typecheck` |
 | Production frontend build | PASS | Next.js production build completed; `/` generated |
@@ -21,7 +28,7 @@ Feature development is frozen. QA date: 2026-07-21 (Asia/Kolkata).
 | Counterfactual mitigation simulator | PASS | Three deterministic evidence-backed scenarios, explicit configured/unknown assumptions, persisted selection, recalculated counterfactual chain, and non-mutation regression passed |
 | Manual-coordination benchmarks | PASS | Project-scoped measured/projected records, exact hours-saved calculation, synthetic labelling, typed API client, and executive card passed focused tests; no measurements are seeded |
 | SWGR-A vertical scenario | PASS | Idempotent integration test verifies cited rating deviation → resubmission → 35-day ETA variance → 28-day exposure → readiness 65→45 → expedite scenario delay 35→17 days |
-| Clean seed | PASS | Isolated API/PostgreSQL/Qdrant run ingested 27/27 documents and seeded 5 shipments |
+| Clean seed | NEEDS RE-VERIFICATION | The 27/27 figure predates the site conditions log being added to the seed. The seed layout now carries 28 documents; upload validation and extraction are covered by tests, but a full clean seed has not been re-run |
 | Complete evaluation | PASS | `python3 -m evaluation.run_all` completed and refreshed `evaluation/latest.json` and `.md` |
 | UPS-01 end-to-end smoke | PASS | Focused `UPS-01` Impact Chain test passed; live clean seed passed using corpus tag `UPS-A` |
 | Project isolation | PASS | Query plan, hybrid retrieval, and Equipment Digital Thread cross-project tests passed |
@@ -55,10 +62,11 @@ Feature development is frozen. QA date: 2026-07-21 (Asia/Kolkata).
 
 - Compliance: TP/FP/FN/TN 6/0/0/6; precision/recall/F1 1.0/1.0/1.0.
 - Synthetic evaluator: 27/27 ingestion, RFI Recall@5 1.0, both expected pairs rank 1, citations 17/17.
-- Schedule: one planted case, predicted/simulated delay 35 days, absolute error 0 days.
-- Supply chain: 5/5 shipments, 15 supplier tiers, mean alert latency 55 minutes, alternative success 1.0.
+- Schedule: 12 labelled cases over 6 tasks and 2 analysis dates; mean absolute prediction error 1.5 days, max 3; lead time 0-65 days, median 28.
+- Supply chain: 5/5 shipments, 15 supplier tiers, 8 alert events, latency 20-420 minutes (median 75, 6 of 8 inside two hours), first alert 17-55 days before planned arrival, alternative success 1.0.
 - Commissioning: 21/21 steps evaluated, coverage 1.0, expected/actual NCR 1/1.
-- Advanced RAG did not beat baseline overall: advanced Recall@12 is 1.0, but current advanced correct-document/page/citation-precision metrics are 0.0.
+- Advanced RAG did not beat baseline overall, on a 16-case held-out split (was 3 cases). Advanced wins Recall@12 1.0 vs 0.9231, MRR 0.7521 vs 0.6269, correct-document rate 0.8462 vs 0.6923, and uses 2.6x fewer input tokens; it loses citation precision 0.2432 vs 0.3226 and completeness 0.6429 vs 0.7143.
+- The evaluation is now reproducible run-to-run. It previously was not: the parameter search broke ties on measured wall-clock latency, so the host decided which hyperparameters won.
 - Manual effort remains `NOT_MEASURED` until benchmark records are submitted; the dashboard does not seed or infer an hours-saved claim.
 
 ## Release-blocking defects fixed during QA
@@ -74,7 +82,7 @@ One-command local demo:
 
 ```bash
 cp .env.example .env
-# Set GEMINI_API_KEY in .env
+# Set GROQ_API_KEY in .env
 ./scripts/start_demo.sh
 ```
 
@@ -105,4 +113,4 @@ python3 -m pytest -q
 - Create a commit, run a full-history secret scan, publish the repository, and verify it signed out.
 - Export and verify the final pitch deck; record and verify the public demo video; complete Unstop submission checks.
 - Verify one cited response with a valid Gemini key/model before presenting live-provider behavior.
-- Atlas local PostgreSQL now binds to host port 55432 to avoid the unrelated service occupying port 5432.
+- Atlas local PostgreSQL binds to host port 5433 to avoid the unrelated service occupying port 5432.

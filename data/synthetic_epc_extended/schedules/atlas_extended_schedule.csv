@@ -1,0 +1,11 @@
+project_id,data_classification,task_id,task_name,depends_on,category,is_delivery_milestone,baseline_start,baseline_finish,forecast_start,forecast_finish,status,risk_flag,delay_days,notes
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-200,Detailed design release for extended scope,,Design,false,2026-01-12,2026-02-06,2026-01-12,2026-02-06,complete,on_track,0,Design release complete
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-210,Release chiller purchase order,T-200,Procurement,false,2026-02-09,2026-02-13,2026-02-09,2026-02-13,complete,on_track,0,Purchase order released
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-220,Chiller fabrication,T-210,Procurement,false,2026-02-16,2026-06-05,2026-02-16,2026-07-03,in_progress,at_risk,28,Synthetic compressor casting shortage
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-230,Chiller factory performance test,T-220,Procurement,false,2026-06-08,2026-06-10,2026-07-06,2026-07-08,not_started,at_risk,28,Forecast from synthetic vendor update
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-240,CH-A delivery milestone,T-230,Delivery,true,2026-06-17,2026-06-17,2026-07-15,2026-07-15,not_started,critical,28,Delivery date referenced by MM-101 and CO-101
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-250,Chiller installation and pipework connection,T-240,Installation,false,2026-06-22,2026-07-17,2026-07-20,2026-08-14,not_started,at_risk,28,Follows CH-A delivery
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-260,Mechanical plant energization,T-250,Commissioning,false,2026-07-20,2026-07-31,2026-08-17,2026-08-28,not_started,at_risk,28,Depends on chiller installation
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-270,Integrated systems test,T-260,Commissioning,false,2026-08-03,2026-08-21,2026-08-31,2026-09-18,not_started,at_risk,28,Consumes remaining synthetic float
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-280,Generator delivery milestone,T-200,Delivery,true,2026-08-10,2026-08-10,2026-08-10,2026-08-10,not_started,on_track,0,GEN-A long-lead package on plan
+atlas-demo-dc-02,SYNTHETIC EPC DEMO DATA,T-290,Transformer delivery milestone,T-200,Delivery,true,2026-07-27,2026-07-27,2026-07-27,2026-07-27,not_started,on_track,0,XFMR-A on plan

@@ -61,7 +61,7 @@ def retrieval_filter(
     if document_ids:
         conditions.append(FieldCondition(key="document_id", match=MatchAny(any=[str(value) for value in document_ids])))
     if equipment_ids:
-        conditions.append(FieldCondition(key="equipment_tags", match=MatchAny(any=equipment_ids)))
+        conditions.append(FieldCondition(key="equipment_ids", match=MatchAny(any=equipment_ids)))
     if vendor_ids:
         conditions.append(FieldCondition(key="vendor", match=MatchAny(any=vendor_ids)))
     if rfi_status:

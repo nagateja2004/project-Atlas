@@ -5,6 +5,7 @@ import hashlib
 import json
 import tempfile
 import uuid
+from datetime import date, datetime
 from pathlib import Path
 from statistics import fmean
 from typing import Any
@@ -106,6 +107,32 @@ async def _compliance_metrics(truth: dict[str, Any], settings: Settings) -> dict
     return evaluate_ground_truth(findings, GROUND_TRUTH).model_dump()
 
 
+def _distribution(values) -> dict[str, float]:
+    """Min, quartiles and max of a small integer sample.
+
+    Written out rather than taken from `statistics.quantiles`, which needs at
+    least two points and interpolates between them - on a sample this size the
+    interpolated figure would read as more precision than the data carries.
+    Each value here is one an actual case produced.
+    """
+    ordered = sorted(values)
+    if not ordered:
+        return {}
+
+    def at(fraction: float) -> float:
+        return float(ordered[min(len(ordered) - 1, int(fraction * (len(ordered) - 1) + 0.5))])
+
+    return {
+        "n": len(ordered),
+        "min": float(ordered[0]),
+        "p25": at(0.25),
+        "median": at(0.5),
+        "p75": at(0.75),
+        "p90": at(0.9),
+        "max": float(ordered[-1]),
+    }
+
+
 async def _schedule_metrics(truth: dict[str, Any], settings: Settings) -> dict[str, Any]:
     expected = _require(truth, "expected_schedule_risks", GROUND_TRUTH)
     if not expected:
@@ -136,7 +163,13 @@ async def _schedule_metrics(truth: dict[str, Any], settings: Settings) -> dict[s
                 "absolute_prediction_error_days": abs(risk.predicted_delay_days - actual),
             }
         )
+    # Means alone described a single case, because there was a single case. With
+    # a set of them the spread is the part worth reading: a mean absolute error
+    # of 1.5 days hides that every downstream case is over-predicted by the same
+    # 3 days while every procurement case is exact. Signed error is reported
+    # next to absolute error so that bias stays visible instead of cancelling.
     return {
+        "case_count": len(cases),
         "mean_lead_time_days": round(fmean(item["lead_time_days"] for item in cases), 2),
         "mean_predicted_delay_days": round(fmean(item["predicted_delay_days"] for item in cases), 2),
         "mean_actual_or_simulated_delay_days": round(
@@ -146,6 +179,12 @@ async def _schedule_metrics(truth: dict[str, Any], settings: Settings) -> dict[s
         "mean_absolute_prediction_error_days": round(
             fmean(item["absolute_prediction_error_days"] for item in cases), 2
         ),
+        "lead_time_days_distribution": _distribution(item["lead_time_days"] for item in cases),
+        "prediction_error_days_distribution": _distribution(item["prediction_error_days"] for item in cases),
+        "absolute_prediction_error_days_distribution": _distribution(
+            item["absolute_prediction_error_days"] for item in cases
+        ),
+        "cases_within_3_days": sum(item["absolute_prediction_error_days"] <= 3 for item in cases),
         "cases": cases,
     }
 
@@ -165,11 +204,27 @@ async def _supply_chain_metrics(source: dict[str, Any], workspace: Path) -> dict
             await session.flush()
             result = await seed_synthetic_supply_chain(session, project.id, SUPPLY_CHAIN_DATA)
             event_latencies, risky, alternatives = [], 0, 0
+            shipments_with_events = 0
+            # How much warning the first alert gave before the date the item was
+            # supposed to land. Alert latency says how fast the system reacted
+            # to a signal; this says whether reacting that fast was any use.
+            lead_times = [
+                (
+                    date.fromisoformat(item["planned_arrival"])
+                    - min(
+                        datetime.fromisoformat(event["alert_generated_at"].replace("Z", "+00:00")).date()
+                        for event in item["risk_events"]
+                    )
+                ).days
+                for item in expected_shipments
+                if item.get("risk_events")
+            ]
             for shipment in result.shipments:
                 risk = await shipment_risk(session, project.id, shipment.shipment_id)
                 if not risk:
                     raise EvaluationInputError(f"Shipment risk was not produced: {shipment.reference}")
                 event_latencies.extend(event.alert_latency_minutes for event in risk.risk_events)
+                shipments_with_events += bool(risk.risk_events)
                 if risk.forecast_delay_days > 0:
                     risky += 1
                     comparison = await compare_alternatives(session, project.id, shipment.shipment_id)
@@ -182,7 +237,15 @@ async def _supply_chain_metrics(source: dict[str, Any], workspace: Path) -> dict
                 "supplier_tiers_total": sum(tiers),
                 "mean_supplier_tiers_per_shipment": round(fmean(tiers), 2),
                 "risk_events_with_alert_latency": len(event_latencies),
+                "shipments_with_risk_events": shipments_with_events,
                 "mean_alert_latency_minutes": round(fmean(event_latencies), 2) if event_latencies else None,
+                # The mean was computed over two events, both fast and both on
+                # the tier-1 supplier. A single slow alert moves it by hours, so
+                # the spread is the honest figure to read - and the maximum is
+                # the one that says what this alerting actually guarantees.
+                "alert_latency_minutes_distribution": _distribution(event_latencies),
+                "events_alerted_within_2_hours": sum(item <= 120 for item in event_latencies),
+                "alert_lead_time_days_distribution": _distribution(lead_times),
                 "risky_shipments": risky,
                 "alternatives_generated": alternatives,
                 "alternative_generation_success": alternatives / risky if risky else None,
@@ -296,6 +359,14 @@ def _manual_effort(path: Path) -> dict[str, Any]:
     }
 
 
+def _provenance_lines(report: dict[str, Any]) -> list[str]:
+    provenance = report.get("provenance") or {}
+    if not provenance:
+        return []
+    rows = "\n".join(f"| {key.replace(chr(95), chr(32))} | {value} |" for key, value in provenance.items())
+    return ["## Provenance", "", "| Field | Value |", "| --- | --- |", rows, ""]
+
+
 def _markdown(report: dict[str, Any]) -> str:
     lines = [
         "# Project Atlas Evaluation",
@@ -333,7 +404,23 @@ async def evaluate_all(
         _require(truth, key, ground_truth_path)
     supply_source = _required_json(SUPPLY_CHAIN_DATA)
     manual = _manual_effort(manual_time_path)
-    settings = Settings(gemini_api_key=None)
+    # groq_api_key=None forces the deterministic path. The field name must match
+    # the real setting: Settings uses extra="ignore", so a wrong name is dropped
+    # silently and the harness would quietly make live provider calls.
+    settings = Settings(groq_api_key=None)
+    if settings.groq_api_key is not None:
+        raise EvaluationInputError(
+            "Deterministic evaluation requires groq_api_key to be unset; "
+            "the override was ignored, so results could include live model calls."
+        )
+    provenance = {
+        "llm_calls": "none",
+        "generation": "deterministic extractive responder",
+        "embedding_backend": settings.embedding_backend,
+        "embedding_model": (
+            settings.embedding_model if settings.embedding_backend == "sentence_transformer" else "n/a"
+        ),
+    }
     with tempfile.TemporaryDirectory(prefix="atlas-all-eval-") as directory:
         workspace = Path(directory)
         rag_report = await evaluate_rag(workspace / "rag")
@@ -344,6 +431,7 @@ async def evaluate_all(
             "supply_chain": await _supply_chain_metrics(supply_source, workspace),
             "commissioning": await _commissioning_metrics(truth, settings, workspace),
             "manual_effort": manual,
+            "provenance": provenance,
         }
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "latest.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")

@@ -14,9 +14,9 @@
 ## Known limitations
 
 - The synthetic corpus is fictional and not an official TIA-942, BICSI, Uptime Institute, or other third-party standard.
-- Local demo mode has no authentication; do not expose it publicly.
+- Authentication ships **disabled by default**, so local demo mode has none; do not expose an unconfigured instance publicly. With `ATLAS_AUTH_ENABLED=true` it is enforced, but issued tokens cannot be revoked, there is no password-reset flow, and `/auth/login` is not rate-limited.
 - Production database migrations are not provisioned; local schema creation is enabled for Compose.
-- Knowledge-answer generation and optional narrative enrichment require `ATLAS_GEMINI_API_KEY`; embeddings are local and deterministic.
+- Knowledge-answer generation and optional narrative enrichment require `ATLAS_GROQ_API_KEY`; embeddings run in-process from a self-hosted sentence-transformer model.
 - The evaluation’s latency is an isolated in-process API measurement, not a production latency SLA.
 - No cached answer is presented as a live response. The live demo seeds and calls the active API; the isolated evaluator explicitly uses deterministic test doubles.
 - Prompt-injection checks and untrusted-evidence instructions are implemented; production needs adversarial evaluation, monitoring, and policy tuning.

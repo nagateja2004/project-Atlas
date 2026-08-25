@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.lock
+
+      # Retrieval and reranking download model weights on first use. Caching
+      # them keeps runs to ~2 minutes instead of re-fetching every time.
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ runner.os }}-${{ hashFiles('requirements-dev.lock') }}
+          restore-keys: hf-${{ runner.os }}-
+
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.lock
+          pip install -e . --no-deps
+
+      # Guards a defect that has shipped twice, invisible locally and fatal here:
+      # an import satisfied by the developer's environment but absent from the
+      # lock. pywin32 was pinned without a platform marker; email-validator was
+      # needed by pydantic.EmailStr and never pinned at all.
+      - name: Verify every import is pinned in the lock
+        run: python scripts/check_locked_imports.py --lock requirements-dev.lock
+
+      # Guards the defect that shipped once already: app/ imported from tests/,
+      # which is absent in a packaged install, so the app died at import.
+      - name: Verify the app imports without the test package
+        run: |
+          mkdir -p /tmp/packaged && cp -r app /tmp/packaged/
+          cd /tmp/packaged && python -c "import app.main; print('packaged import OK')"
+
+      - name: Byte-compile
+        run: python -m compileall -q app scripts evaluation migrations
+
+      - name: Tests
+        run: python -m pytest -q
+
+  frontend:
+    name: Frontend (lint, typecheck, test, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # A live provider key was committed to this repository once. This fails
+      # the build on a recurrence rather than relying on review to catch it.
+      - name: Reject committed provider keys
+        run: |
+          set +e
+          patterns='AIza[0-9A-Za-z_-]{35}|gsk_[0-9A-Za-z]{40,}|sk-[0-9A-Za-z]{32,}|AQ\.[0-9A-Za-z_-]{30,}'
+          hits=$(git grep -nIE "$patterns" -- . ':!*.lock' ':!.github/workflows/ci.yml' | grep -v '\.env\.example')
+          if [ -n "$hits" ]; then
+            echo "::error::Possible committed credential:"
+            echo "$hits"
+            exit 1
+          fi
+          echo "no credential patterns found"

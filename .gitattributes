@@ -1,0 +1,36 @@
+# core.autocrlf=true is set on this machine, which rewrites checked-out files to
+# CRLF. For anything that is executed by a Linux shell that is not cosmetic - it
+# is a hard failure:
+#
+#   - deploy/bootstrap-ec2.sh is pasted into EC2 user data. With CRLF, cloud-init
+#     hands bash lines ending in \r and every command dies with
+#     "$'\r': command not found".
+#   - A Dockerfile RUN line, an entrypoint script, or a Caddyfile directive
+#     carrying \r fails the same way inside the container.
+#
+# So pin LF for everything that crosses into Linux, regardless of local config.
+
+* text=auto
+
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+*.Dockerfile    text eol=lf
+Caddyfile       text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.ini           text eol=lf
+.dockerignore   text eol=lf
+.gitignore      text eol=lf
+
+# Lock files are consumed by pip inside the image.
+*.lock          text eol=lf
+
+# Not line-based; never let Git touch them.
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.pdf           binary
+*.ico           binary
+*.woff          binary
+*.woff2         binary

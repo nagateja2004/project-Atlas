@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import Settings
 from app.equipment import document_equipment_id
 from app.ingestion import Citation, IngestionError, _extract_text, _extract_pdf, _extract_schedule, entity_references
-from app.llm import GeminiGateway
+from app.llm import LLMGateway
 from app.models import AuditEvent, ComplianceFinding, Document
 
 ComplianceStatus = Literal["COMPLIANT", "NON_COMPLIANT", "MISSING_INFORMATION", "NEEDS_REVIEW"]
@@ -94,7 +94,7 @@ class ComplianceMetrics(BaseModel):
 
 class ComplianceExplainer:
     def __init__(self, settings: Settings) -> None:
-        self.gateway = GeminiGateway(settings)
+        self.gateway = LLMGateway(settings)
 
     async def explain(self, draft: FindingDraft) -> str:
         if not self.gateway.client:
@@ -293,15 +293,22 @@ def normalize_value(raw: str) -> tuple[float | str | None, str | None]:
     voltage = re.search(r"(\d+)\s*/\s*(\d+)\s*V", raw, re.IGNORECASE)
     if voltage:
         return f"{voltage.group(1)}/{voltage.group(2)}", "V"
-    numeric = re.search(r"(\d+(?:\.\d+)?)\s*(kAIC|kW|MW|minutes?|mins?|inches?|inch|in|mm)\b", raw, re.IGNORECASE)
+    numeric = re.search(
+        r"(\d+(?:\.\d+)?)\s*(kAIC|kW|MW|minutes|minute|mins|min|inches|inch|in|mm)\b", raw, re.IGNORECASE
+    )
     if numeric:
         value, unit = float(numeric.group(1)), numeric.group(2).lower()
         conversions = {
             "mw": (1_000, "kW"), "kw": (1, "kW"), "mm": (1 / 25.4, "inches"), "in": (1, "inches"),
             "inch": (1, "inches"), "inches": (1, "inches"), "minute": (1, "minutes"), "minutes": (1, "minutes"),
-            "mins": (1, "minutes"), "kaic": (1, "kAIC"),
+            "min": (1, "minutes"), "mins": (1, "minutes"), "kaic": (1, "kAIC"),
         }
-        factor, normalized_unit = conversions[unit]
+        # An unmapped unit must degrade to "not normalizable" (NEEDS_REVIEW) rather
+        # than raise, so a new alternation branch can never become a 500.
+        conversion = conversions.get(unit)
+        if conversion is None:
+            return None, None
+        factor, normalized_unit = conversion
         return value * factor, normalized_unit
     enclosure = re.search(r"\btype\s*(\d+[a-z]?)\b", raw, re.IGNORECASE)
     if enclosure:

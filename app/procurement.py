@@ -1,3 +1,4 @@
+import asyncio
 import csv
 import io
 import json
@@ -223,7 +224,7 @@ async def import_shipment_csv(
         rows = list(csv.DictReader(io.StringIO(content.decode("utf-8-sig"))))
     except UnicodeDecodeError as exc:
         raise IngestionError("invalid_shipment_csv", "Shipment CSV must be UTF-8") from exc
-    if not rows or not REQUIRED_IMPORT_COLUMNS <= set(rows[0]):
+    if not rows or not set(rows[0]) >= REQUIRED_IMPORT_COLUMNS:
         missing = sorted(REQUIRED_IMPORT_COLUMNS - set(rows[0] if rows else []))
         raise IngestionError("invalid_shipment_csv", f"Shipment CSV is empty or missing columns: {', '.join(missing)}")
     if len(rows) > 1_000:
@@ -339,13 +340,6 @@ async def assess_persisted_shipment(
     if not shipment or not all((shipment.planned_delivery, shipment.forecast_delivery, shipment.required_on_site_date)):
         return None
     vendor = await session.get(Vendor, shipment.vendor_id) if shipment.vendor_id else None
-    variance = (shipment.forecast_delivery - shipment.planned_delivery).days
-    exposure = max(
-        0,
-        (shipment.forecast_delivery - shipment.required_on_site_date).days - shipment.available_float_days,
-    )
-    severity = schedule_exposure_severity(variance, exposure)
-    alert_at = shipment.first_alert_at
     impact = await session.scalar(
         select(ImpactEvent).where(
             ImpactEvent.project_id == project_id,
@@ -354,6 +348,20 @@ async def assess_persisted_shipment(
             ImpactEvent.source_id == str(shipment.id),
         )
     )
+    return _shipment_assessment(shipment, vendor, impact)
+
+
+def _shipment_assessment(
+    shipment: Shipment, vendor: Vendor | None, impact: ImpactEvent | None
+) -> ImportedShipmentAssessment:
+    """Pure assessment builder shared by the single and batch paths."""
+    variance = (shipment.forecast_delivery - shipment.planned_delivery).days
+    exposure = max(
+        0,
+        (shipment.forecast_delivery - shipment.required_on_site_date).days - shipment.available_float_days,
+    )
+    severity = schedule_exposure_severity(variance, exposure)
+    alert_at = shipment.first_alert_at
     return ImportedShipmentAssessment(
         shipment_id=shipment.id,
         equipment_id=shipment.equipment_id,
@@ -382,8 +390,32 @@ async def imported_shipment_assessments(
         .where(Shipment.project_id == project_id, Shipment.required_on_site_date.is_not(None))
         .order_by(Shipment.reference)
     )).all())
-    results = [await assess_persisted_shipment(session, project_id, item.id) for item in shipments]
-    return [item for item in results if item and (not alerts_only or item.severity != "on_track")]
+    if not shipments:
+        return []
+    # Three queries total instead of three per shipment: the previous version
+    # re-selected each shipment it had already loaded, then looked up its vendor
+    # and delivery-risk event one row at a time.
+    vendor_ids = {item.vendor_id for item in shipments if item.vendor_id}
+    vendors = {
+        vendor.id: vendor
+        for vendor in (await session.scalars(select(Vendor).where(Vendor.id.in_(vendor_ids)))).all()
+    } if vendor_ids else {}
+    impacts = {
+        event.source_id: event
+        for event in (await session.scalars(
+            select(ImpactEvent).where(
+                ImpactEvent.project_id == project_id,
+                ImpactEvent.type == "DELIVERY_RISK",
+                ImpactEvent.source_id.in_([str(item.id) for item in shipments]),
+            )
+        )).all()
+    }
+    results = [
+        _shipment_assessment(item, vendors.get(item.vendor_id), impacts.get(str(item.id)))
+        for item in shipments
+        if all((item.planned_delivery, item.forecast_delivery, item.required_on_site_date))
+    ]
+    return [item for item in results if not alerts_only or item.severity != "on_track"]
 
 
 async def shipment_timeline(
@@ -474,7 +506,8 @@ async def _ensure_delivery_impact(
 async def seed_synthetic_supply_chain(
     session: AsyncSession, project_id: uuid.UUID, source: Path
 ) -> ShipmentListResponse:
-    data = json.loads(source.read_text())
+    # Read off the event loop: this is a synchronous filesystem call.
+    data = json.loads(await asyncio.to_thread(source.read_text, encoding="utf-8"))
     for item in data["shipments"]:
         if not await session.scalar(
             select(Equipment).where(

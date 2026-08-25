@@ -25,33 +25,49 @@
     "note": "Add measured manual_hours, atlas_hours, and sample_count values before claiming hours saved.",
     "status": "NOT_MEASURED"
   },
+  "provenance": {
+    "embedding_backend": "sentence_transformer",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "generation": "deterministic extractive responder",
+    "llm_calls": "none"
+  },
   "rag": {
     "advanced": {
-      "average_input_tokens": 94.0,
-      "average_latency_ms": 21.62,
-      "average_output_tokens": 10.0,
-      "citation_precision": 0.0,
-      "correct_document_rate": 0.0,
-      "correct_page_rate": 0.0,
-      "mrr": 1.0,
+      "average_input_tokens": 172.94,
+      "average_latency_ms": 123.36,
+      "average_output_tokens": 122.75,
+      "citation_precision": 0.2432,
+      "correct_document_rate": 0.8462,
+      "correct_page_rate": 0.6923,
+      "mrr": 0.7521,
       "recall_at_12": 1.0,
-      "recall_at_5": 0.75,
+      "recall_at_5": 0.9231,
       "unsupported_claim_rate": 0.0
     },
     "baseline": {
-      "average_input_tokens": 413.33,
-      "average_latency_ms": 1.35,
-      "average_output_tokens": 227.33,
-      "citation_precision": 0.8333,
-      "correct_document_rate": 1.0,
-      "correct_page_rate": 1.0,
-      "mrr": 1.0,
-      "recall_at_12": 0.75,
-      "recall_at_5": 0.75,
+      "average_input_tokens": 457.88,
+      "average_latency_ms": 41.56,
+      "average_output_tokens": 271.44,
+      "citation_precision": 0.3226,
+      "correct_document_rate": 0.6923,
+      "correct_page_rate": 0.6923,
+      "mrr": 0.6269,
+      "recall_at_12": 0.9231,
+      "recall_at_5": 0.9231,
       "unsupported_claim_rate": 0.0
     }
   },
   "schedule": {
+    "absolute_prediction_error_days_distribution": {
+      "max": 3.0,
+      "median": 3.0,
+      "min": 0.0,
+      "n": 12,
+      "p25": 0.0,
+      "p75": 3.0,
+      "p90": 3.0
+    },
+    "case_count": 12,
     "cases": [
       {
         "absolute_prediction_error_days": 0,
@@ -61,24 +77,162 @@
         "prediction_error_days": 0,
         "schedule_csv_reported_delay_days": 35,
         "task_id": "T-140"
+      },
+      {
+        "absolute_prediction_error_days": 0,
+        "actual_or_simulated_delay_days": 35,
+        "lead_time_days": 23,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 0,
+        "schedule_csv_reported_delay_days": 35,
+        "task_id": "T-120"
+      },
+      {
+        "absolute_prediction_error_days": 0,
+        "actual_or_simulated_delay_days": 35,
+        "lead_time_days": 28,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 0,
+        "schedule_csv_reported_delay_days": 35,
+        "task_id": "T-130"
+      },
+      {
+        "absolute_prediction_error_days": 3,
+        "actual_or_simulated_delay_days": 30,
+        "lead_time_days": 49,
+        "predicted_delay_days": 33,
+        "prediction_error_days": 3,
+        "schedule_csv_reported_delay_days": 30,
+        "task_id": "T-160"
+      },
+      {
+        "absolute_prediction_error_days": 3,
+        "actual_or_simulated_delay_days": 32,
+        "lead_time_days": 56,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 3,
+        "schedule_csv_reported_delay_days": 32,
+        "task_id": "T-170"
+      },
+      {
+        "absolute_prediction_error_days": 3,
+        "actual_or_simulated_delay_days": 32,
+        "lead_time_days": 65,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 3,
+        "schedule_csv_reported_delay_days": 32,
+        "task_id": "T-180"
+      },
+      {
+        "absolute_prediction_error_days": 0,
+        "actual_or_simulated_delay_days": 35,
+        "lead_time_days": 0,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 0,
+        "schedule_csv_reported_delay_days": 35,
+        "task_id": "T-120"
+      },
+      {
+        "absolute_prediction_error_days": 0,
+        "actual_or_simulated_delay_days": 35,
+        "lead_time_days": 0,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 0,
+        "schedule_csv_reported_delay_days": 35,
+        "task_id": "T-130"
+      },
+      {
+        "absolute_prediction_error_days": 3,
+        "actual_or_simulated_delay_days": 30,
+        "lead_time_days": 19,
+        "predicted_delay_days": 33,
+        "prediction_error_days": 3,
+        "schedule_csv_reported_delay_days": 30,
+        "task_id": "T-160"
+      },
+      {
+        "absolute_prediction_error_days": 3,
+        "actual_or_simulated_delay_days": 32,
+        "lead_time_days": 26,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 3,
+        "schedule_csv_reported_delay_days": 32,
+        "task_id": "T-170"
+      },
+      {
+        "absolute_prediction_error_days": 3,
+        "actual_or_simulated_delay_days": 32,
+        "lead_time_days": 35,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 3,
+        "schedule_csv_reported_delay_days": 32,
+        "task_id": "T-180"
+      },
+      {
+        "absolute_prediction_error_days": 0,
+        "actual_or_simulated_delay_days": 35,
+        "lead_time_days": 5,
+        "predicted_delay_days": 35,
+        "prediction_error_days": 0,
+        "schedule_csv_reported_delay_days": 35,
+        "task_id": "T-140"
       }
     ],
-    "mean_absolute_prediction_error_days": 0.0,
-    "mean_actual_or_simulated_delay_days": 35.0,
-    "mean_lead_time_days": 35.0,
-    "mean_predicted_delay_days": 35.0,
-    "mean_prediction_error_days": 0.0
+    "cases_within_3_days": 12,
+    "lead_time_days_distribution": {
+      "max": 65.0,
+      "median": 28.0,
+      "min": 0.0,
+      "n": 12,
+      "p25": 19.0,
+      "p75": 35.0,
+      "p90": 56.0
+    },
+    "mean_absolute_prediction_error_days": 1.5,
+    "mean_actual_or_simulated_delay_days": 33.17,
+    "mean_lead_time_days": 28.42,
+    "mean_predicted_delay_days": 34.67,
+    "mean_prediction_error_days": 1.5,
+    "prediction_error_days_distribution": {
+      "max": 3.0,
+      "median": 3.0,
+      "min": 0.0,
+      "n": 12,
+      "p25": 0.0,
+      "p75": 3.0,
+      "p90": 3.0
+    }
   },
   "supply_chain": {
+    "alert_latency_minutes_distribution": {
+      "max": 420.0,
+      "median": 75.0,
+      "min": 20.0,
+      "n": 8,
+      "p25": 40.0,
+      "p75": 90.0,
+      "p90": 270.0
+    },
+    "alert_lead_time_days_distribution": {
+      "max": 55.0,
+      "median": 51.0,
+      "min": 17.0,
+      "n": 5,
+      "p25": 50.0,
+      "p75": 54.0,
+      "p90": 55.0
+    },
     "alternative_generation_success": 1.0,
     "alternatives_generated": 3,
+    "events_alerted_within_2_hours": 6,
     "expected_shipments": 5,
-    "mean_alert_latency_minutes": 55.0,
+    "mean_alert_latency_minutes": 126.25,
     "mean_supplier_tiers_per_shipment": 3.0,
     "representation_rate": 1.0,
-    "risk_events_with_alert_latency": 2,
+    "risk_events_with_alert_latency": 8,
     "risky_shipments": 3,
     "shipments_represented": 5,
+    "shipments_with_risk_events": 5,
     "supplier_tiers_total": 15
   }
 }

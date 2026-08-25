@@ -12,7 +12,7 @@ from app.models import (
     EvidenceRecord,
     ImpactEvent,
     MitigationScenario,
-    ScheduleTask,
+    ScheduleTask as ScheduleTaskRecord,
     Shipment,
 )
 from app.procurement import assess_persisted_shipment, schedule_exposure_severity
@@ -111,15 +111,19 @@ async def simulate_mitigations(
             Shipment.project_id == payload.project_id,
         )
     )
+    # Previously this passed a bare `False` into .where() when shipment was None,
+    # relying on operator precedence to read as a condition. Return early instead.
+    if not shipment:
+        raise IngestionError("mitigation_risk_not_found", "Select a project-scoped shipment risk", 404)
     event = await session.scalar(
         select(ImpactEvent).where(
             ImpactEvent.id == payload.impact_event_id,
             ImpactEvent.project_id == payload.project_id,
-            ImpactEvent.equipment_id == shipment.equipment_id if shipment else False,
+            ImpactEvent.equipment_id == shipment.equipment_id,
             ImpactEvent.type.in_(("DELIVERY_RISK", "SCHEDULE_IMPACT")),
         )
     )
-    if not shipment or not event or event.source_id != str(shipment.id):
+    if not event or event.source_id != str(shipment.id):
         raise IngestionError("mitigation_risk_not_found", "Select a project-scoped shipment risk", 404)
     risk = await assess_persisted_shipment(session, payload.project_id, shipment.id)
     if not risk:
@@ -152,9 +156,9 @@ async def simulate_mitigations(
             scenarios=scenarios,
         )
     tasks = list((await session.scalars(
-        select(ScheduleTask).where(
-            ScheduleTask.project_id == payload.project_id,
-            ScheduleTask.equipment_id == shipment.equipment_id,
+        select(ScheduleTaskRecord).where(
+            ScheduleTaskRecord.project_id == payload.project_id,
+            ScheduleTaskRecord.equipment_id == shipment.equipment_id,
         )
     )).all())
     commissioning_tasks = [

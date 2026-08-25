@@ -9,7 +9,7 @@ flowchart LR
         Upload["Upload and validation"] --> Original["Original document storage<br/>project-scoped local filesystem"]
         Original --> Parse["Structure-aware parsing<br/>PDF, OCR fallback, CSV"]
         Parse --> Contextual["Parent sections and child chunks<br/>original_text + contextual_text"]
-        Contextual --> Dense["Dense index<br/>contextual embeddings"]
+        Contextual --> Dense["Dense index<br/>sentence-transformer contextual embeddings"]
         Contextual --> BM25["BM25 lexical index/ranking<br/>contextual payloads"]
     end
 
@@ -67,7 +67,7 @@ flowchart LR
     API --> Observe["Implemented observability<br/>structured logs, stage latency,<br/>candidate IDs, tokens and status"]
     Observe --> Eval
 
-    Gateway["Gemini gateway<br/>optional extraction, explanation and generation"]
+    Gateway["Groq gateway<br/>optional extraction, explanation and generation"]
     Gate -.->|"configured model call"| Gateway
     Gateway -.-> Generate
     Compliance -.->|"evidence-backed explanation only"| Gateway

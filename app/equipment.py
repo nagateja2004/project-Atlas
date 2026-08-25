@@ -337,17 +337,20 @@ async def _ensure_evidence(session, document, tag, revision, approval):
 
 
 async def _sync_requirements(session, document, tag, chunks, metadata, revision, approval):
+    # One query for the document's existing parameters instead of one per
+    # spec reference. `seen` also absorbs rows added earlier in this loop.
+    seen = set((await session.scalars(
+        select(Requirement.parameter).where(
+            Requirement.project_id == document.project_id,
+            Requirement.equipment_id == tag,
+            Requirement.document_id == document.id,
+        )
+    )).all())
     for reference in metadata.get("spec_references", []):
         source = next((item for item in chunks if str(reference) in item.text), None)
-        if not source or await session.scalar(
-            select(Requirement).where(
-                Requirement.project_id == document.project_id,
-                Requirement.equipment_id == tag,
-                Requirement.document_id == document.id,
-                Requirement.parameter == str(reference),
-            )
-        ):
+        if not source or str(reference) in seen:
             continue
+        seen.add(str(reference))
         session.add(
             Requirement(
                 project_id=document.project_id,
@@ -443,6 +446,16 @@ async def _sync_schedule(session, document, chunks, revision, approval):
 
 
 async def _sync_commissioning_steps(session, document, tag, chunks, revision, approval):
+    # One query for the whole document instead of one per line of procedure text.
+    # step_index increases monotonically here, so no in-run duplicate can slip
+    # past a snapshot taken before the loop.
+    existing = set((await session.scalars(
+        select(CommissioningStep.step_index).where(
+            CommissioningStep.project_id == document.project_id,
+            CommissioningStep.equipment_id == tag,
+            CommissioningStep.procedure_document_id == document.id,
+        )
+    )).all())
     index = 0
     for chunk in chunks:
         for line in chunk.text.splitlines():
@@ -450,14 +463,7 @@ async def _sync_commissioning_steps(session, document, tag, chunks, revision, ap
             if not match:
                 continue
             index += 1
-            if await session.scalar(
-                select(CommissioningStep).where(
-                    CommissioningStep.project_id == document.project_id,
-                    CommissioningStep.equipment_id == tag,
-                    CommissioningStep.procedure_document_id == document.id,
-                    CommissioningStep.step_index == index,
-                )
-            ):
+            if index in existing:
                 continue
             instruction = match.group(1).strip()
             session.add(

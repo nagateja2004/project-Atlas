@@ -58,7 +58,7 @@ def test_switchgear_vertical_scenario_is_complete_and_idempotent(tmp_path) -> No
     client = TestClient(app)
     try:
         app.state.session_factory = sessions
-        settings = Settings(gemini_api_key=None, auto_create_schema=False)
+        settings = Settings(groq_api_key=None, auto_create_schema=False)
         app.state.compliance_service = ComplianceService(settings)
         app.state.commissioning_service = CommissioningService(settings)
         project = client.post("/projects", json={"name": "Switchgear vertical demo"}).json()

@@ -1,0 +1,47 @@
+project_id,data_classification,record_date,task_id,task_name,weather_condition,lost_workday,planned_crew,present_crew,absence_reason,notes
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-01,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-04,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-05,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-06,T-150,Electrical room ready,fair — no weather restriction,false,8,6,certified electricians reassigned to another synthetic site,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-07,T-150,Electrical room ready,fair — no weather restriction,false,8,6,certified electricians reassigned to another synthetic site,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-08,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-11,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-12,T-150,Electrical room ready,thunderstorm — crane lifts suspended,true,8,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-13,T-150,Electrical room ready,thunderstorm — crane lifts suspended,true,8,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-14,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-15,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-18,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-19,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-20,T-150,Electrical room ready,fair — no weather restriction,false,8,7,reported sick,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-21,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-22,T-150,Electrical room ready,fair — no weather restriction,false,8,8,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-25,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-26,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-27,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-28,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-05-29,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-01,T-230,Install and test UPS-A,heavy rain — external works stopped,true,4,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-02,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-03,T-230,Install and test UPS-A,fair — no weather restriction,false,4,3,reported sick,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-04,T-230,Install and test UPS-A,fair — no weather restriction,false,4,3,vendor technician travel delay,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-05,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-08,T-230,Install and test UPS-A,fair — no weather restriction,false,4,4,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-25,T-160,Install SWGR-A,fair — no weather restriction,false,10,10,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-26,T-160,Install SWGR-A,monsoon onset — site access flooded,true,10,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-29,T-160,Install SWGR-A,monsoon rain — external works stopped,true,10,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-06-30,T-160,Install SWGR-A,monsoon rain — external works stopped,true,10,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-01,T-160,Install SWGR-A,monsoon rain — roof penetrations deferred,true,10,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-02,T-160,Install SWGR-A,fair — no weather restriction,false,10,10,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-03,T-160,Install SWGR-A,fair — no weather restriction,false,10,10,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-06,T-170,Energize critical distribution,fair — no weather restriction,false,6,6,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-07,T-170,Energize critical distribution,monsoon rain — switchroom humidity above limit,true,6,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-08,T-170,Energize critical distribution,monsoon rain — switchroom humidity above limit,true,6,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-09,T-170,Energize critical distribution,fair — no weather restriction,false,6,4,commissioning engineer shortage,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-10,T-170,Energize critical distribution,fair — no weather restriction,false,6,4,commissioning engineer shortage,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-13,T-180,Integrated systems test,fair — no weather restriction,false,6,6,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-14,T-180,Integrated systems test,fair — no weather restriction,false,6,6,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-15,T-180,Integrated systems test,monsoon rain — external works stopped,true,6,0,weather stand-down,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-16,T-180,Integrated systems test,fair — no weather restriction,false,6,6,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-17,T-180,Integrated systems test,fair — no weather restriction,false,6,6,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-20,T-180,Integrated systems test,fair — no weather restriction,false,6,6,,Synthetic daily site record.
+atlas-demo-dc-01,SYNTHETIC EPC DEMO DATA — NOT A REAL SITE RECORD,2026-07-21,T-180,Integrated systems test,fair — no weather restriction,false,6,6,,Synthetic daily site record.

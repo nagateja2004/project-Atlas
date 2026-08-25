@@ -1,0 +1,58 @@
+# One public origin in front of both containers.
+#
+# Why path routing instead of two hostnames: app/api.py mounts routers at BOTH
+# /projects and /api/* (evaluation, mitigations, benchmarks). A single
+# "/api/* -> strip_prefix -> api" rule would rewrite /api/evaluation to
+# /evaluation and 404 half the API. So the API prefixes are matched verbatim
+# and everything else falls through to Next.js.
+#
+# /auth/* belongs on this list. It was missing once, and the failure is quiet
+# rather than loud: the sign-in request reaches Next.js, which answers with the
+# dashboard's HTML, so the browser gets a 200 full of HTML where it expected
+# JSON instead of an error naming the real problem.
+#
+# Serving both from one origin also means src/lib/api.ts can keep its
+# production fallback of "" (same-origin), so no NEXT_PUBLIC_API_URL is baked
+# into the bundle and the instance's address can change without a rebuild.
+# CORS is never exercised at all.
+{
+	email {$ATLAS_ACME_EMAIL:atlas@example.invalid}
+}
+
+# Set ATLAS_SITE_ADDRESS to a hostname (e.g. 13-51-2-3.sslip.io) and Caddy
+# provisions a real Let's Encrypt certificate automatically. Left unset it
+# serves plain HTTP on :80, which is fine for a first smoke test.
+{$ATLAS_SITE_ADDRESS::80} {
+	encode zstd gzip
+
+	log {
+		output stdout
+	}
+
+	# 50 MB is the application's own ATLAS_MAX_UPLOAD_BYTES. The headroom here
+	# lets FastAPI reject an oversized upload with its structured error
+	# envelope instead of Caddy cutting the connection first.
+	request_body {
+		max_size 60MB
+	}
+
+	@api path /projects /projects/* /api/* /auth /auth/* /health /ready /docs /docs/* /openapi.json /redoc
+
+	handle @api {
+		reverse_proxy api:8000 {
+			# Ingestion is synchronous - there is no worker queue - and is
+			# bounded by ATLAS_INGESTION_TIMEOUT_SECONDS (default 300). A proxy
+			# read timeout under that value severs a large scanned-PDF upload
+			# before FastAPI can respond, which is the failure mode called out
+			# in DEPLOY.md.
+			transport http {
+				read_timeout 360s
+				write_timeout 360s
+			}
+		}
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

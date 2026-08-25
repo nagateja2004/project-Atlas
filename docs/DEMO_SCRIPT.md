@@ -1,6 +1,6 @@
-# Three-minute UPS-01 connected demo
+# Three-minute UPS-A connected demo
 
-Use a freshly seeded `Atlas Synthetic Demo` project. Say “synthetic” for documents, shipments, schedule values, costs, and results. The dashboard calls the story “UPS-01”; select `UPS-A`, the equipment tag in the seeded source documents.
+Use a freshly seeded `Atlas Synthetic Demo` project. Say “synthetic” for documents, shipments, schedule values, costs, and results. Select `UPS-A` throughout; that is the equipment tag in the seeded source documents, and the walkthrough now uses the same name.
 
 ## Before recording
 
@@ -15,7 +15,7 @@ Use a freshly seeded `Atlas Synthetic Demo` project. Say “synthetic” for doc
 | Time | Exact clicks/action | What to say |
 | --- | --- | --- |
 | 0:00–0:20 | Click **Project overview**. Point to the synthetic badge, document count, and API status. | “Atlas connects synthetic EPC evidence by project and equipment. AI suggestions remain separate from human-approved records.” |
-| 0:20–0:40 | Click **Equipment thread** → select **UPS-A** → **Load thread** → **Open evidence drawer**. | “This is the UPS-01 connected story; the seeded source tag is UPS-A. The thread links current documents, findings, RFIs, shipment, schedule, commissioning, and evidence without crossing projects.” |
+| 0:20–0:40 | Click **Equipment thread** → select **UPS-A** → **Load thread** → **Open evidence drawer**. | “This is the UPS-A connected story. The thread links current documents, findings, RFIs, shipment, schedule, commissioning, and evidence without crossing projects.” |
 | 0:40–1:05 | Click **Compliance findings** → choose `UPS_Specification.md` and `UPS-002_VoltEdge_UPS-A.md` → **Run comparison**. On the voltage finding, click **Evidence**, close it, then **Approve**. | “The deterministic rule detects the synthetic 480/277 V versus 415/240 V deviation. Evidence is cited; approval is a human action.” |
 | 1:05–1:35 | Click **Impact Chain** → **Retry inputs** if needed → **Run connected flow**. Point to delay, float, readiness, and the three scenarios. Click **Evidence chain** and close it. Choose one scenario → **Approve**. | “Atlas resolves the equipment, shipment, CPM impact, readiness, and three deterministic mitigations. Days, cost, and score come from scenario inputs; the model cannot alter them.” |
 | 1:35–1:58 | Click **Knowledge / RFI** → **Knowledge chat**. Ask: `What is the minimum UPS-A battery autonomy?` → **Ask Copilot**. Point to the cited page/section. | “The answer is generated only from selected project evidence and important claims carry citations. Insufficient evidence is returned instead of a guess.” |
